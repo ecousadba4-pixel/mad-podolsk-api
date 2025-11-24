@@ -25,11 +25,5 @@ function onCardClick(key) {
       </article>
     </div>
   </section>
-</template>
 
-<style scoped>
-.smeta-cards__list { display: flex; gap: 16px; flex-wrap: wrap }
-.smeta-card { width: 220px; padding: 14px; background: #fff; border-radius: 10px; border: 1px solid #e6e6e6; cursor: pointer }
-.smeta-card__title { margin: 0 0 8px; font-size: 16px }
-.smeta-card__row { display:flex; justify-content: space-between; padding: 4px 0 }
-</style>
+</template>
