@@ -523,33 +523,39 @@ month-selector__label {
   border-collapse: collapse;
   table-layout: fixed;
 }
+/* Modern lightweight table styles for smeta breakdown */
+.smeta-breakdown-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  background: transparent;
+  font-size: var(--font-size-body);
+}
 .smeta-breakdown-table thead th {
   text-align: left;
   font-size: var(--font-size-label);
   color: var(--text-muted);
   text-transform: uppercase;
-  padding: 10px 8px;
-  vertical-align: bottom;
-}
-
-/* Contrast header: accent tint with readable text */
-.smeta-breakdown-table thead th {
-  background: color-mix(in srgb, var(--accent) 12%, #ffffff 88%);
-  color: #0f172a; /* dark text over light tint */
+  padding: 12px 12px;
+  vertical-align: middle;
+  background: color-mix(in srgb, var(--accent) 8%, #ffffff 92%);
   font-weight: 700;
-  border-bottom: 2px solid color-mix(in srgb, var(--accent) 18%, #000000 82%);
 }
-
-/* clickable sortable headers */
-.smeta-breakdown-table thead th.sortable{ cursor: pointer; user-select: none }
-.smeta-breakdown-table .sort-indicator{ margin-left:6px; font-size:0.9em; opacity:0.9 }
 .smeta-breakdown-table th.numeric,
 .smeta-breakdown-table td.numeric {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 .smeta-breakdown-table td, .smeta-breakdown-table th {
-  padding: 10px 8px;
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(15,23,42,0.04);
+  vertical-align: middle;
+}
+.smeta-breakdown-table td:first-child {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
   border-bottom: 1px solid var(--border-soft);
 }
 .smeta-breakdown-table tbody tr:hover { background: rgba(0,0,0,0.02); }
@@ -568,9 +574,17 @@ month-selector__label {
 
 /* Light zebra striping for rows to improve readability */
 .smeta-breakdown-table tbody tr:nth-child(odd) {
-  background: rgba(0,0,0,0.02);
+  background: rgba(15,23,42,0.02);
 }
-.smeta-breakdown-table tbody tr:hover { background: rgba(0,0,0,0.04); }
+.smeta-breakdown-table tbody tr:hover { background: rgba(15,23,42,0.04); }
+
+/* Rounded header and subtle card feel */
+.smeta-breakdown-table thead th:first-child { border-top-left-radius: 10px }
+.smeta-breakdown-table thead th:last-child { border-top-right-radius: 10px }
+.smeta-breakdown-table thead th { box-shadow: inset 0 -1px 0 rgba(15,23,42,0.02) }
+
+/* Soft transition for hover & opacity changes */
+.smeta-breakdown-table tbody tr, .smeta-breakdown-table td, .smeta-breakdown-table th { transition: background-color 140ms ease, color 140ms ease }
 
 /* make cards share same row and wrap as needed */
 .smeta-cards__list { align-items: stretch }

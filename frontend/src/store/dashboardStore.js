@@ -109,7 +109,17 @@ export const useDashboardStore = defineStore('dashboard', {
       this.smetaDetailsLoading = true
       try {
         const res = await api.getSmetaDetails(this.selectedMonth, smetaKey)
-        this.smetaDetails = (res && res.rows) || []
+        const raw = (res && res.rows) || []
+        // Normalize row shape so UI always has title/plan/fact/delta
+        const norm = raw.map(r => {
+          const title = r.title || r.description || r.work_name || r.name || r.label || ''
+          const plan = Number(r.plan ?? r.planned_amount ?? r.planned ?? r.planned_amount_month ?? 0)
+          const fact = Number(r.fact ?? r.fact_amount ?? r.fact_amount_done ?? r.fact_amount_month ?? 0)
+          const delta = Number(r.delta ?? (fact - plan))
+          const progressPercent = r.progressPercent ?? (plan ? Math.round((fact / plan) * 100) : 0)
+          return { ...r, title, plan, fact, delta, progressPercent }
+        })
+        this.smetaDetails = norm
       } catch (err) {
         this.smetaDetails = []
       } finally {

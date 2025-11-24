@@ -18,8 +18,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, idx) in sortedItems" :key="item.title || idx" @click="$emit('select', item)" style="cursor:pointer">
-            <td>{{ item.title }}</td>
+          <tr v-for="(item, idx) in sortedItems" :key="item.title || item.description || item.work_name || idx" @click="$emit('select', item)" style="cursor:pointer">
+            <td>{{ item.title || item.description || item.work_name }}</td>
             <td class="numeric">{{ formatMoney(item.plan) }}</td>
             <td class="numeric">{{ formatMoney(item.fact) }}</td>
             <td :class="{'negative': (Number(item.fact || 0) - Number(item.plan || 0)) < 0}" class="numeric">{{ formatMoney(Number(item.fact || 0) - Number(item.plan || 0)) }}</td>

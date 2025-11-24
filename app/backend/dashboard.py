@@ -39,7 +39,8 @@ def monthly_summary(month: str = Query(..., description="YYYY-MM")):
     )
     plan_leto = int(plan_leto_row['sum'] or 0)
     plan_zima = int(plan_zima_row['sum'] or 0)
-    plan_vnereglament = int((plan_leto + plan_zima) * 0.43)
+    # Внерегламент рассчитывается как 43% от суммы лето+зима (округляем до целых)
+    plan_vnereglament = int(round((plan_leto + plan_zima) * 0.43))
     plan_total = plan_leto + plan_zima + plan_vnereglament
 
     # fact sums
@@ -90,6 +91,104 @@ def monthly_summary(month: str = Query(..., description="YYYY-MM")):
             "avg_daily_revenue": avg_daily_revenue,
         },
     }
+
+
+@router.get("")
+def combined_dashboard(month: Optional[str] = Query(None, description="YYYY-MM or YYYY-MM-DD (optional)")):
+    """Комбинированный endpoint, возвращающий сводку и элементы за месяц.
+
+    Этот маршрут используется фронтендом как fallback, когда старые конкретные пути недоступны.
+    Принимает `month` в виде `YYYY-MM` или `YYYY-MM-DD` (если не указан, вернёт общее состояние, где возможно).
+    """
+    month_key = None
+    if month:
+        # поддерживаем оба формата: YYYY-MM и YYYY-MM-DD
+        try:
+            if len(month) >= 7:
+                month_key = month[:7]
+                # валидация простая: пробуем собрать дату
+                datetime.strptime(month_key + "-01", "%Y-%m-%d")
+        except Exception:
+            raise HTTPException(status_code=400, detail="invalid month format")
+
+    # summary: повторяем логику из monthly_summary, если month указан
+    summary = {
+        "planned_amount": None,
+        "fact_amount": None,
+        "completion_pct": None,
+        "delta_amount": None,
+        "contract_amount": None,
+        "contract_executed": None,
+        "contract_completion_pct": None,
+        "average_daily_revenue": None,
+        "daily_revenue": None,
+    }
+
+    items = []
+
+    if month_key:
+        # план
+        pl_leto_row = db.query_one(
+            "SELECT COALESCE(SUM(planned_amount),0) AS sum FROM skpdi_plan_vs_fact_monthly WHERE to_char(month_start,'YYYY-MM')=%s AND smeta_code=%s",
+            (month_key, 'лето'),
+        )
+        pl_zima_row = db.query_one(
+            "SELECT COALESCE(SUM(planned_amount),0) AS sum FROM skpdi_plan_vs_fact_monthly WHERE to_char(month_start,'YYYY-MM')=%s AND smeta_code=%s",
+            (month_key, 'зима'),
+        )
+        pl_leto = float(pl_leto_row['sum'] or 0)
+        pl_zima = float(pl_zima_row['sum'] or 0)
+        pl_vn = round((pl_leto + pl_zima) * 0.43)
+        plan_total = int(pl_leto + pl_zima + pl_vn)
+
+        # факт
+        f_leto = float(db.query_one("SELECT COALESCE(SUM(fact_amount_done),0) AS sum FROM skpdi_plan_vs_fact_monthly WHERE to_char(month_start,'YYYY-MM')=%s AND smeta_code=%s", (month_key, 'лето'))['sum'] or 0)
+        f_zima = float(db.query_one("SELECT COALESCE(SUM(fact_amount_done),0) AS sum FROM skpdi_plan_vs_fact_monthly WHERE to_char(month_start,'YYYY-MM')=%s AND smeta_code=%s", (month_key, 'зима'))['sum'] or 0)
+        f_vn = float(db.query_one("SELECT COALESCE(SUM(fact_amount_done),0) AS sum FROM skpdi_plan_vs_fact_monthly WHERE to_char(month_start,'YYYY-MM')=%s AND smeta_code IN ('внерегл_ч_1','внерегл_ч_2')", (month_key, ))['sum'] or 0)
+        fact_total = int(f_leto + f_zima + f_vn)
+
+        # contract
+        contract_row = db.query_one("SELECT COALESCE(SUM(contract_amount),0) AS sum FROM podolsk_mad_2025_contract_amount")
+        contract_amount = int(contract_row['sum'] or 0)
+
+        contract_completion_pct = (float(fact_total) / contract_amount) if contract_amount else None
+
+        # avg daily revenue
+        ym = datetime.strptime(month_key + "-01", "%Y-%m-%d")
+        from calendar import monthrange
+        days_in_month = monthrange(ym.year, ym.month)[1]
+        today = datetime.utcnow().date()
+        if today.year == ym.year and today.month == ym.month:
+            denom = max(1, today.day - 1)
+        else:
+            denom = days_in_month
+        avg_daily_revenue = int(fact_total / denom) if denom else 0
+
+        summary.update({
+            "planned_amount": float(plan_total),
+            "fact_amount": float(fact_total),
+            "completion_pct": None,
+            "delta_amount": float(fact_total - plan_total),
+            "contract_amount": contract_amount,
+            "contract_executed": None,
+            "contract_completion_pct": contract_completion_pct,
+            "average_daily_revenue": avg_daily_revenue,
+        })
+
+        # items: вернуть строки из представления skpdi_plan_vs_fact_monthly
+        items = db.query("SELECT to_char(month_start,'YYYY-MM-DD') AS month_start, smeta AS smeta, work_name, planned_amount, fact_amount FROM skpdi_plan_vs_fact_monthly WHERE to_char(month_start,'YYYY-MM')=%s ORDER BY planned_amount DESC", (month_key,))
+
+    # last_updated: можно попытаться вернуть из агрегирующей таблицы
+    last_updated_row = db.query_one("SELECT MAX(loaded_at) AS loaded_at FROM skpdi_fact_agg")
+    last_updated = None
+    if last_updated_row:
+        loaded = last_updated_row.get('loaded_at')
+        try:
+            last_updated = loaded.isoformat()
+        except Exception:
+            last_updated = str(loaded)
+
+    return {"month": month or None, "last_updated": last_updated, "summary": summary, "items": items, "has_data": bool(items)}
 
 
 @router.get("/monthly/daily-revenue")
