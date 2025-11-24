@@ -78,8 +78,8 @@ export async function getMonthlyDailyRevenue(month) {
 
 export async function getDaily(date) {
   try {
-    // API expects query parameter `day` (see OpenAPI)
-    return await request(`/api/dashboard/daily?day=${encodeURIComponent(date)}`)
+    // Backend expects query parameter `date` (YYYY-MM-DD)
+    return await request(`/api/dashboard/daily?date=${encodeURIComponent(date)}`)
   } catch (err) {
     return {
       date,
@@ -89,5 +89,13 @@ export async function getDaily(date) {
       ],
       total: { amount: 100000 }
     }
+  }
+}
+
+export async function getSmetaDescriptionDaily(month, smeta_key, description) {
+  try {
+    return await request(`/api/dashboard/monthly/smeta-description-daily?month=${encodeURIComponent(month)}&smeta_key=${encodeURIComponent(smeta_key)}&description=${encodeURIComponent(description)}`)
+  } catch (err) {
+    return { month, smeta_key, description, rows: [] }
   }
 }

@@ -40,7 +40,7 @@ async function load(){
   if (!props.month || !props.smeta_key || !props.description) return
   loading.value = true
   try{
-    const res = await api.request(`/api/dashboard/monthly/smeta-description-daily?month=${encodeURIComponent(props.month)}&smeta_key=${encodeURIComponent(props.smeta_key)}&description=${encodeURIComponent(props.description)}`)
+    const res = await api.getSmetaDescriptionDaily(props.month, props.smeta_key, props.description)
     rows.value = res.rows || []
   }catch(err){
     // fallback via api helper (use getSmetaDetails then transform) — but keep simple
