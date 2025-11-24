@@ -43,6 +43,25 @@ jobs:
             ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
           fi
 
+      - name: Debug SSH (temporary)
+        if: always()
+        run: |
+          echo "--- SSH debug start ---"
+          mkdir -p ~/.ssh
+          # write provided key to a temp file with correct permissions
+          echo "Writing private key to /tmp/deploy_key"
+          printf "%s" "${{ secrets.SSH_PRIVATE_KEY_MAD }}" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+
+          echo "Attempting verbose SSH connection (will exit immediately if succeeds)"
+          ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no -o ConnectTimeout=15 -vvv ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} exit || true
+
+          echo "Attempting rsync with verbose SSH (dry run)"
+          RSYNC_RSH="ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no -vvv" \
+            rsync -avz --delete --dry-run -e "$RSYNC_RSH" ${{ env.BUILD_DIR }}/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }} || true
+
+          echo "--- SSH debug end ---"
+
       - name: Deploy dist folder to server via rsync
         run: |
           rsync -avz --delete \
