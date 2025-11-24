@@ -28,7 +28,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--gap-sm);
-  padding: 6px var(--gap-md);
+  padding: var(--gap-sm) var(--gap-md);
   border-radius: var(--radius-xxl);
   border: 1px solid var(--border-soft);
   background: #fff;
@@ -46,7 +46,7 @@
 }
 
 .mockup-lead {
-  margin: 4px 0 0;
+  margin: var(--gap-xs) 0 0;
   color: var(--text-muted);
   max-width: 960px;
   line-height: 1.6;

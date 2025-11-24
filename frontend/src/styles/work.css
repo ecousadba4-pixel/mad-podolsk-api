@@ -181,9 +181,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 6px;
+  gap: var(--gap-sm);
   cursor: pointer;
-  padding: 4px 6px;
+  padding: var(--gap-xs) var(--gap-sm);
   border-radius: 999px;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
@@ -372,7 +372,7 @@
 .daily-cell {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--gap-xs);
 }
 
 .daily-cell-label {
@@ -422,7 +422,7 @@
 
 .work-mobile-sort-control select {
   width: 100%;
-  padding: 10px 36px 10px 12px;
+  padding: var(--gap-md) var(--gap-xl) var(--gap-md) var(--card-inner-gap);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-soft);
   background: #fff;
@@ -465,13 +465,13 @@
     align-items: flex-start;
     column-gap: clamp(12px, 4vw, 20px);
     row-gap: var(--gap-sm);
-    padding: 14px var(--gap-md) 8px;
+    padding: var(--card-frame-gap) var(--gap-md) var(--gap-xs);
   }
 
   .work-list-mobile-title {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--gap-xs);
     flex: 1;
     min-width: 0;
   }
@@ -622,7 +622,7 @@
       "unit volume amount";
     row-gap: var(--gap-md);
     align-items: flex-start;
-    padding: 14px 14px 12px;
+    padding: var(--card-frame-gap) var(--card-frame-gap) var(--gap-md);
     border-bottom: 1px solid var(--border-soft);
   }
 
@@ -665,7 +665,7 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-areas: "total-label total-label total-amount";
     align-items: center;
-    padding: 16px 14px;
+    padding: var(--card-padding) var(--card-frame-gap);
     gap: var(--gap-md);
   }
 

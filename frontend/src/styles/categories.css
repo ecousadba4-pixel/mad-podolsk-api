@@ -68,7 +68,7 @@
 
 .category-pill {
   font-size: var(--font-size-label);
-  padding: 2px 6px;
+  padding: 2px var(--gap-sm);
   border-radius: var(--radius-sm);
   background: rgba(47, 111, 237, 0.12);
   color: var(--text-muted);
