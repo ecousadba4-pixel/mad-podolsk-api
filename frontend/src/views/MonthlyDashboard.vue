@@ -1,21 +1,10 @@
 <script setup>
-import { computed, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useDashboardStore } from '../store/dashboardStore.js'
-import MonthSelector from '../components/MonthSelector.vue'
 
-// store
 const store = useDashboardStore()
 
-// двустороннее связывание с MonthSelector
-const selectedMonth = computed({
-  get: () => store.selectedMonth,
-  set: async (value) => {
-    store.setSelectedMonth(value)
-    await store.fetchMonthlySummary()
-  }
-})
-
-// загрузка данных при первом заходе
+// При первом заходе на страницу загружаем данные
 onMounted(async () => {
   if (!store.monthlySummary) {
     await store.fetchMonthlySummary()
@@ -25,19 +14,7 @@ onMounted(async () => {
 
 <template>
   <section class="dashboard">
-
-    <!-- Заголовок -->
-    <header class="dashboard__toolbar">
-    
-      <!-- Month Selector -->
-      <div class="dashboard__controls">
-        <MonthSelector v-model="selectedMonth" />
-      </div>
-    </header>
-
-    <!-- Контент -->
     <main class="dashboard__content">
-
       <!-- LOADING -->
       <div v-if="store.monthlyLoading" class="dashboard__state">
         Загружаем данные…
@@ -53,7 +30,6 @@ onMounted(async () => {
 
       <!-- ДАННЫЕ ПОЛУЧЕНЫ -->
       <div v-else-if="store.monthlySummary" class="dashboard__grid">
-
         <!-- Карточка: Контракт -->
         <section class="dashboard-card">
           <h2 class="dashboard-card__title">Контракт</h2>
@@ -79,14 +55,12 @@ onMounted(async () => {
             </span>
           </div>
         </section>
-
       </div>
 
       <!-- НЕТ ДАННЫХ -->
       <div v-else class="dashboard__state">
         Данные ещё не загружены.
       </div>
-
     </main>
   </section>
 </template>
@@ -96,36 +70,6 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 24px;
-}
-
-/* Header */
-.dashboard__toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 16px;
-}
-
-.dashboard__title-block {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.dashboard__title {
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0;
-}
-
-.dashboard__subtitle {
-  margin: 0;
-  color: #555;
-}
-
-.dashboard__controls {
-  display: flex;
-  align-items: center;
 }
 
 /* Content area */
