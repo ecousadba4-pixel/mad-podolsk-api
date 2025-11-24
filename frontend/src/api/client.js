@@ -1,5 +1,9 @@
 // Простая обёртка над fetch с базовым URL и обработкой ошибок
-const BASE = 'https://mad-podolsk-karinausadba.amvera.io' // внешний домен backend
+// В development можно переопределить базу через Vite: VITE_API_BASE
+const DEFAULT_BASE = 'https://mad-podolsk-karinausadba.amvera.io'
+const BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE)
+  ? import.meta.env.VITE_API_BASE
+  : DEFAULT_BASE
 
 async function request(path, options = {}) {
   const url = path.startsWith('http') ? path : `${BASE}${path}`
