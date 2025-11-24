@@ -178,6 +178,12 @@
   border: 1px solid #d0d0d0;
   font-size: 14px;
 }
+/* label inside header month control */
+.app-header__month-label {
+  font-size: 11px;
+  color: #777;
+  display: block;
+}
 
 /* HelloWorld */
 .read-the-docs {

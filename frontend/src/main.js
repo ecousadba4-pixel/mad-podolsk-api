@@ -14,6 +14,7 @@ import './styles/summary.css'
 import './styles/tokens.css'
 import './styles/utilities.css'
 import './styles/work.css'
+import './styles/categories.css'
 
 const app = createApp(App)
 

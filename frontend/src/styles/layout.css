@@ -51,6 +51,12 @@ body {
 	padding: 16px clamp(12px, 3vw, 28px) 48px;
 }
 
+/* Page content wrapper used by App.vue */
+.page__content {
+  padding: 24px;
+  flex-grow: 1;
+}
+
 header {
         display: flex;
         flex-direction: column;

@@ -1,5 +1,5 @@
 // Простая обёртка над fetch с базовым URL и обработкой ошибок
-const BASE = '' // при деплое API будет проксироваться или доступно по абсолютному URL
+const BASE = 'https://mad-podolsk-karinausadba.amvera.io' // внешний домен backend
 
 async function request(path, options = {}) {
   const url = path.startsWith('http') ? path : `${BASE}${path}`

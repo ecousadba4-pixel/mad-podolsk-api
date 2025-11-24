@@ -1,30 +1,18 @@
 <script setup>
 import AppHeader from './components/AppHeader.vue'
+import { useDashboardStore } from './store/dashboardStore.js'
+
+const store = useDashboardStore()
 </script>
 
 <template>
-  <div id="app-layout">
-    <!-- общий хедер с заголовком и переключателем режимов -->
+  <div class="page" :data-view-mode="store.mode">
     <AppHeader />
 
-    <!-- зона контента роутера (По месяцам / По дням) -->
-    <main class="app-content">
+    <main class="app-content page__content">
       <RouterView />
     </main>
   </div>
 </template>
 
-<style>
-#app-layout {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: #f7f7f7;
-}
-
-/* отступы для основного содержимого */
-.app-content {
-  padding: 24px;
-  flex-grow: 1;
-}
-</style>
+<!-- styles moved to `src/styles/layout.css` -->
