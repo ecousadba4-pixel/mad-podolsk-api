@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDashboardStore } from '../store/dashboardStore.js'
+import LastUpdatedBadge from './LastUpdatedBadge.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -51,7 +52,8 @@ const selectedMonth = computed({
           :class="{ 'mode-btn--active': isMonthly }"
           @click="goToMonthly"
         >
-          По месяцам
+          <span class="mode-btn-line1">По</span>
+          <span class="mode-btn-line2">месяцам</span>
         </button>
         <button
           type="button"
@@ -59,7 +61,8 @@ const selectedMonth = computed({
           :class="{ 'mode-btn--active': isDaily }"
           @click="goToDaily"
         >
-          По дням
+          <span class="mode-btn-line1">По</span>
+          <span class="mode-btn-line2">дням</span>
         </button>
       </div>
 
@@ -72,6 +75,8 @@ const selectedMonth = computed({
           class="app-header__month-input"
         />
       </label>
+
+      <LastUpdatedBadge :loadedAt="store.monthlySummary?.loaded_at" />
     </div>
   </header>
 </template>

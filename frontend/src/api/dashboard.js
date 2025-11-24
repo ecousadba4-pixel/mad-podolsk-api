@@ -24,6 +24,14 @@ export async function getMonthlySummary(month) {
   }
 }
 
+export async function getLastLoaded() {
+  try {
+    return await request(`/api/dashboard/last-loaded`)
+  } catch (err) {
+    return { loaded_at: new Date().toISOString() }
+  }
+}
+
 export async function getBySmeta(month) {
   try {
     return await request(`/api/dashboard/monthly/by-smeta?month=${encodeURIComponent(month)}`)
@@ -70,7 +78,8 @@ export async function getMonthlyDailyRevenue(month) {
 
 export async function getDaily(date) {
   try {
-    return await request(`/api/dashboard/daily?date=${encodeURIComponent(date)}`)
+    // API expects query parameter `day` (see OpenAPI)
+    return await request(`/api/dashboard/daily?day=${encodeURIComponent(date)}`)
   } catch (err) {
     return {
       date,

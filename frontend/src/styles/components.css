@@ -110,6 +110,57 @@
   color: var(--text-muted);
 }
 
+/* ContractExecution specific */
+.contract-execution .panel-meta {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+.contract-execution .panel-meta-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 120px;
+}
+.contract-execution .panel-meta-label {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.contract-execution .panel-meta-value {
+  font-size: var(--font-size-h3);
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 6px;
+}
+
+.contract-execution__body {
+  padding-top: 6px;
+}
+.contract-progress__bar{
+  width: 100%;
+  height: 14px;
+  background: var(--bg-muted);
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  overflow: hidden;
+}
+.contract-progress__fill{
+  height: 100%;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 75%, #ffffff) 0%, var(--accent) 100%);
+  width: 0%;
+  transition: width 0.45s ease;
+}
+
+/* Make the contract execution panel span full row (match header/content width) */
+.dashboard__grid > .contract-execution {
+  flex: 1 1 100%;
+  width: 100%;
+}
+
+.contract-execution { box-sizing: border-box; }
+
 /* --- Component styles moved from scoped Vue files --- */
 
 /* AppHeader */
@@ -119,10 +170,10 @@
   z-index: 10;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  padding: 24px 32px 16px;
+  align-items: center;
+  padding: 16px 32px;
   gap: 24px;
-  background: #fff;
+  background: transparent;
 }
 .app-header__left {
   display: flex;
@@ -146,48 +197,154 @@
 }
 .app-header__mode-switch {
   display: inline-flex;
-  padding: 2px;
-  border-radius: 999px;
-  background: #f3f3f3;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
 }
 .mode-btn {
   border: none;
   background: transparent;
-  padding: 6px 14px;
-  border-radius: 999px;
-  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 10px;
   cursor: pointer;
-  color: #555;
+  color: var(--text-main);
+  font-weight: 600;
+  line-height: 1;
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.12s ease;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-family: var(--font-sans);
+  min-height: 56px;
+  padding: 8px 18px;
+}
+.mode-btn-line1{
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: none;
+}
+.mode-btn-line2{
+  font-size: 14px;
+  line-height: 1;
+  color: var(--text-main);
+}
+.mode-btn--active .mode-btn-line1,
+.mode-btn--active .mode-btn-line2{
+  color: #fff !important;
+}
+
+.mode-btn:not(.mode-btn--active) .mode-btn-line1,
+.mode-btn:not(.mode-btn--active) .mode-btn-line2{
+  color: var(--text-muted) !important;
+}
+.mode-btn:not(.mode-btn--active):hover {
+  background: rgba(15, 23, 42, 0.04);
 }
 .mode-btn--active {
-  background: #111827;
+  background: var(--accent);
   color: #fff;
+  box-shadow: none;
 }
 .app-header__month {
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #777;
+  position: relative;
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 10px 14px;
+  min-width: 220px;
+  box-shadow: var(--shadow-soft);
+  font-family: var(--font-sans);
+  height: 56px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .app-header__month-input {
   margin-top: 4px;
-  padding: 6px 10px;
+  padding: 0;
   border-radius: 6px;
-  border: 1px solid #d0d0d0;
-  font-size: 14px;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  background: transparent;
+  color: var(--text-main);
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  width: 100%;
 }
 /* label inside header month control */
 .app-header__month-label {
-  font-size: 11px;
-  color: #777;
+  font-size: 13px;
+  color: var(--text-muted);
   display: block;
 }
+
+/* dropdown chevron on the right */
+.app-header__month::after{
+  content: '';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted);
+  pointer-events: none;
+}
+
+/* keep input text left aligned and remove native spinner */
+.app-header__month-input::-webkit-calendar-picker-indicator{ opacity: 0; }
 
 /* HelloWorld */
 .read-the-docs {
   color: #888;
+}
+
+/* LastUpdatedBadge */
+.last-updated {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  padding: 8px 12px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+  min-width: 220px;
+}
+.last-updated__dot{
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--success);
+  flex: 0 0 12px;
+}
+.last-updated__text{
+  display: flex;
+  flex-direction: column;
+}
+.last-updated__label{
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.last-updated__time{
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
 /* Month selector components (shared for simple and filter variants) */

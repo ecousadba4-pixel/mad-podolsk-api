@@ -43,6 +43,8 @@ export const useDashboardStore = defineStore('dashboard', {
     monthlySummary: null,
     monthlyLoading: false,
     monthlyError: null,
+    // last loaded timestamp from DB
+    loadedAt: null,
 
     // by-smeta cards
     smetaCards: [],
@@ -84,6 +86,11 @@ export const useDashboardStore = defineStore('dashboard', {
       try {
         const res = await api.getMonthlySummary(this.selectedMonth)
         this.monthlySummary = res || MOCK_MONTHLY_SUMMARY
+        // try to fetch last loaded timestamp separately (backend may expose it)
+        try{
+          const l = await api.getLastLoaded()
+          this.loadedAt = l && l.loaded_at ? l.loaded_at : this.loadedAt
+        }catch(_){ /* ignore */ }
       } catch (err) {
         this.monthlyError = err?.message || 'Не удалось загрузить summary'
       } finally {
@@ -101,6 +108,10 @@ export const useDashboardStore = defineStore('dashboard', {
       } finally {
         this.smetaCardsLoading = false
       }
+    },
+
+    setLoadedAt(ts){
+      this.loadedAt = ts
     },
 
     async fetchSmetaDetails(smetaKey) {

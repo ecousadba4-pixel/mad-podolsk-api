@@ -205,6 +205,24 @@ def monthly_smeta_description_daily(month: str = Query(..., description="YYYY-MM
     return {"month": month, "smeta_key": smeta_key, "description": description, "rows": rows}
 
 
+@router.get("/last-loaded")
+def last_loaded():
+    """Return the most recent loaded_at timestamp from the aggregation table.
+
+    Frontend expects JSON: {"loaded_at": "2025-11-24T12:34:56"} or {"loaded_at": null}
+    """
+    row = db.query_one("SELECT MAX(loaded_at) AS loaded_at FROM skpdi_fact_agg")
+    if not row:
+        return {"loaded_at": None}
+    loaded = row.get('loaded_at')
+    if loaded is None:
+        return {"loaded_at": None}
+    # psycopg2 may return a datetime/date; convert to ISO string
+    try:
+        return {"loaded_at": loaded.isoformat()}
+    except Exception:
+        return {"loaded_at": str(loaded)}
+
 @router.get("/daily")
 def daily(date: str = Query(..., description="YYYY-MM-DD")):
     try:
