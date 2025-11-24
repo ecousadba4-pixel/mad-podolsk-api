@@ -100,7 +100,7 @@
 .panel-title-mobile {
   display: none;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--gap-xs);
 }
 
 .panel-title-mobile-label {
@@ -124,7 +124,7 @@
 /* ContractExecution specific */
 .contract-execution .panel-meta {
   display: flex;
-  gap: 24px;
+  gap: var(--gap-lg);
   align-items: center;
 }
 .contract-execution .panel-meta-item {
@@ -147,11 +147,12 @@
 }
 
 .contract-execution__body {
-  padding-top: 6px;
+  padding-top: var(--gap-sm);
 }
 .contract-progress__bar{
   width: 100%;
-  height: 14px;
+  /* увеличиваем высоту в 2 раза (было 14px) */
+  height: 28px;
   background: var(--bg-muted);
   border-radius: 999px;
   border: 1px solid var(--border-soft);
@@ -182,14 +183,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 32px;
-  gap: 24px;
+  padding: calc(var(--card-padding) * 0.7) calc(var(--card-padding) * 1.6);
+  gap: var(--gap-lg);
   background: transparent;
 }
 .app-header__left {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--gap-xs);
 }
 .app-header__title {
   margin: 0;
@@ -204,7 +205,7 @@
 .app-header__right {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: var(--gap-lg);
 }
 
 /* Ensure all controls in the header have the same vertical height */
@@ -235,7 +236,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: var(--gap-xs);
   font-family: var(--font-sans);
   min-height: 56px;
   padding: 8px 18px;
@@ -270,7 +271,7 @@
 .app-header__month {
   display: inline-flex;
   flex-direction: column;
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #777;
@@ -278,7 +279,7 @@
   background: var(--bg-card, #fff);
   border: 1px solid var(--border-soft);
   border-radius: 12px;
-  padding: 10px var(--card-inner-gap);
+  padding: calc(var(--card-inner-gap) * 0.8) var(--card-inner-gap);
   min-width: 220px;
   box-shadow: var(--shadow-soft);
   font-family: var(--font-sans);
@@ -288,7 +289,7 @@
   justify-content: center;
 }
 .app-header__month-input {
-  margin-top: 4px;
+  margin-top: var(--gap-xs);
   padding: 0;
   border-radius: 6px;
   border: none;
@@ -334,7 +335,7 @@
 .last-updated {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--gap-md);
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
   padding: var(--gap-sm) var(--card-inner-gap);
@@ -383,16 +384,16 @@
 .month-selector {
   display: inline-flex;
   flex-direction: column;
-  font-size: 13px;
+  font-size: var(--font-size-body-sm);
 }
 .month-selector.inline {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--gap-md);
 }
 .month-selector.inline .month-selector__label { color: #444; font-weight: 500 }
-.month-selector__label {
-  font-size: 11px;
+month-selector__label {
+  font-size: var(--font-size-label);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #777;
@@ -411,10 +412,11 @@
 
 /* Smeta cards */
 /* Use a responsive grid: 1 column on small screens, 3 columns on desktop */
+.meta-cards__list { /* keep legacy if referenced accidentally */ }
 .smeta-cards__list {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 18px;
+  gap: var(--grid-gap);
   align-items: start;
 }
 
@@ -425,10 +427,10 @@
 }
 
 /* panel body adjustments for smeta block */
-.smeta-panel { padding: 20px; }
-.smeta-panel .panel-header { margin-bottom: 12px }
+.smeta-panel { padding: var(--card-padding); }
+.smeta-panel .panel-header { margin-bottom: var(--gap-sm) }
 .smeta-panel .panel-title { font-size: var(--font-size-h2); }
-.smeta-panel .panel-body { padding: 4px 2px 0 2px }
+.smeta-panel .panel-body { padding: 0 var(--gap-xs) 0 var(--gap-xs) }
 
 /* make cards share same row and wrap as needed */
 .smeta-cards__list { align-items: stretch }
@@ -440,40 +442,40 @@
   width: 100%;
   flex-direction: column;
   background: var(--bg-card);
-  border-radius: 18px;
-  padding: 18px 20px 16px 20px;
+  border-radius: var(--radius-lg);
+  padding: var(--card-padding);
   box-shadow: var(--shadow-card);
   border: 1px solid var(--border-soft);
   overflow: hidden;
   box-sizing: border-box;
 }
 /* accent removed: left vertical strip was removed per design */
-.smeta-card__body{ flex:1; display:flex; flex-direction:column; gap:8px; min-width:0 }
+.smeta-card__body{ flex:1; display:flex; flex-direction:column; gap:var(--gap-sm); min-width:0 }
 .smeta-card__head{ display:flex; justify-content:space-between; align-items:center }
-.smeta-card__title{ margin:0; font-size:18px; font-weight:700; color:var(--text-main) }
-.smeta-card__meta-pill{ background: rgba(15,23,42,0.06); padding:6px 10px; border-radius:12px; font-size:var(--font-size-caption); color:var(--text-muted) }
+.smeta-card__title{ margin:0; font-size: var(--font-size-h2); font-weight:700; color:var(--text-main) }
+.smeta-card__meta-pill{ background: rgba(15,23,42,0.06); padding: var(--gap-xs) var(--card-inner-gap); border-radius:12px; font-size:var(--font-size-caption); color:var(--text-muted) }
 
-.smeta-card__numbers{ display:flex; gap:24px; align-items:baseline; flex-wrap:nowrap; justify-content:space-between }
+.smeta-card__numbers{ display:flex; gap:var(--gap-lg); align-items:baseline; flex-wrap:nowrap; justify-content:space-between }
 .smeta-card__col{ display:flex; flex-direction:column; min-width:0; flex:1; align-items:center }
-.smeta-card__label{ font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em }
-.smeta-card__value{ font-size:18px; font-weight:800; color:var(--text-main); margin-top:4px }
+.smeta-card__label{ font-size: var(--font-size-label); color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em }
+.smeta-card__value{ font-size: var(--font-size-h2); font-weight:800; color:var(--text-main); margin-top:var(--gap-xs) }
 .smeta-card__value.delta-negative{ color:var(--danger) }
 
-.smeta-card__progress{ display:flex; flex-direction:column; gap:6px; width:100% }
+.smeta-card__progress{ display:flex; flex-direction:column; gap:var(--gap-sm); width:100% }
 .smeta-card__progress-label{ font-size:11px; color:var(--text-muted); text-transform:uppercase }
-.smeta-progress__wrap{ display:flex; align-items:center; gap:12px }
+.smeta-progress__wrap{ display:flex; align-items:center; gap:var(--gap-md) }
 .smeta-progress__bar{ flex:1; min-width:0; height:12px; background: var(--bg-muted); border-radius:999px; border:1px solid var(--border-soft); overflow:hidden }
 .smeta-progress__fill{ height:100%; background: linear-gradient(90deg, #f4a261 0%, var(--accent) 100%); width:0%; transition: width .5s ease }
 .smeta-card__progress-percent{ min-width:48px; text-align:right; font-weight:700; white-space:nowrap }
 
 /* Monthly dashboard */
-.dashboard { display: flex; flex-direction: column; gap: 24px }
+.dashboard { display: flex; flex-direction: column; gap: var(--section-gap) }
 .dashboard__content { min-height: 200px }
-.dashboard__state { font-size: var(--font-size-body-sm); padding: 12px; color: #555 }
+.dashboard__state { font-size: var(--font-size-body-sm); padding: var(--gap-sm); color: #555 }
 .dashboard__state--error { color: #c00 }
-.dashboard__grid { display: flex; flex-wrap: wrap; gap: 24px }
-.dashboard-card { padding: 20px; border-radius: 12px; border: 1px solid #e0e0e0; background: #fff; width: 320px }
-.dashboard-card__title { margin: 0 0 12px; font-size: var(--font-size-h2); font-weight: 600 }
-.dashboard-card__row { display: flex; justify-content: space-between; padding: 4px 0 }
+.dashboard__grid { display: flex; flex-wrap: wrap; gap: var(--grid-gap) }
+.dashboard-card { padding: var(--card-padding); border-radius: var(--radius-sm); border: 1px solid #e0e0e0; background: #fff; width: 320px }
+.dashboard-card__title { margin: 0 0 var(--gap-md) 0; font-size: var(--font-size-h2); font-weight: 600 }
+.dashboard-card__row { display: flex; justify-content: space-between; padding: var(--gap-xs) 0 }
 .dashboard-card__label { color: #777 }
 .dashboard-card__value { font-weight: 500 }

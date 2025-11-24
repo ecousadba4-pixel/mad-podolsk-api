@@ -3,7 +3,6 @@ import { onMounted } from 'vue'
 import { useDashboardStore } from '../store/dashboardStore.js'
 import SmetaCardsSection from '../components/sections/SmetaCardsSection.vue'
 import SmetaDetailsTable from '../components/sections/SmetaDetailsTable.vue'
-import DailyTable from '../components/sections/DailyTable.vue'
 import ContractExecutionSection from '../components/sections/ContractExecutionSection.vue'
 import SummaryKpiSection from '../components/sections/SummaryKpiSection.vue'
 import DailyRevenueModal from '../components/modals/DailyRevenueModal.vue'
@@ -58,14 +57,7 @@ function refreshMonthData() {
           <SmetaDetailsTable :items="store.smetaDetails" @select="(item)=>{ store.setSelectedDescription(item.title); smetaDescVisible = true }" />
         </section>
 
-        <!-- Дневная таблица (можно загрузить вручную для выбранной даты) -->
-        <section class="dashboard-section">
-          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-            <button class="btn" @click="store.fetchDaily(store.selectedDate)">Загрузить дневную таблицу</button>
-            <div class="dashboard__small">Дата: <strong>{{ store.selectedDate }}</strong></div>
-          </div>
-          <DailyTable :rows="store.dailyRows" />
-        </section>
+        <!-- Дневная таблица теперь показывается в отдельном режиме "По дням" -->
 
         <!-- Модальные окна -->
         <DailyRevenueModal :visible="dailyRevenueVisible" :month="store.selectedMonth" @close="dailyRevenueVisible = false" />

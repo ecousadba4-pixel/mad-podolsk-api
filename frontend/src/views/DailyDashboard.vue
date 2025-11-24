@@ -1,33 +1,26 @@
 <template>
   <main class="page">
-    <header class="page-header">
-      <div class="page-header__titles">
-        <h1 class="page-title">СКПДИ · МАД · Подольск</h1>
-        <p class="page-subtitle">работы в статусе «Рассмотрено»</p>
+    <section class="page-content">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+        <button class="btn" @click="store.fetchDaily(store.selectedDate)">Загрузить дневную таблицу</button>
+        <div class="dashboard__small">Дата: <strong>{{ store.selectedDate }}</strong></div>
       </div>
 
-      <nav class="mode-switch">
-        <RouterLink
-          to="/"
-          class="mode-switch__btn"
-        >
-          По месяцам
-        </RouterLink>
-        <RouterLink
-          to="/daily"
-          class="mode-switch__btn mode-switch__btn--active"
-        >
-          По дням
-        </RouterLink>
-      </nav>
-    </header>
-
-    <section class="page-content">
-      <!-- Здесь позже появится таблица по дням -->
-      <p>Заглушка: экран «По дням».</p>
+      <DailyTable :rows="store.dailyRows" />
     </section>
   </main>
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
+import { useDashboardStore } from '../store/dashboardStore.js'
+import DailyTable from '../components/sections/DailyTable.vue'
+
+const store = useDashboardStore()
+
+onMounted(()=>{
+  // пометить режим и загрузить данные за текущую выбранную дату
+  store.setMode && store.setMode('daily')
+  store.fetchDaily(store.selectedDate)
+})
 </script>

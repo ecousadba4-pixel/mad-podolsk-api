@@ -3,6 +3,11 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--card-frame-gap);
   width: 100%;
+  
+  .summary-label,
+  .summary-sub {
+    font-size: var(--font-size-tiny);
+  }
   margin-bottom: var(--section-gap);
   align-items: stretch;
   grid-auto-rows: 1fr;
@@ -19,6 +24,11 @@
 }
 .summary-grid {
   display: block;
+  
+  .summary-label,
+  .summary-sub {
+    font-size: var(--font-size-tiny);
+  }
   margin-bottom: var(--section-gap);
 }
 
@@ -38,7 +48,7 @@
 
   .summary-label,
   .summary-sub {
-    font-size: 0.68rem;
+    font-size: var(--font-size-tiny);
   }
 
   .summary-label {
@@ -69,7 +79,7 @@
   box-sizing: border-box;
   transition: var(--transition-lift), var(--transition-border);
   align-items: stretch;
-  gap: 2px;
+  gap: var(--gap-xs);
   position: relative; /* закрепляем иконку внутри карточки */
 }
 
@@ -222,7 +232,7 @@
   width: 100%;
   text-align: left;
   padding-left: var(--card-inner-indent);
-  margin-top: 12px; /* воздух между заголовком и значением */
+  margin-top: var(--gap-md); /* воздух между заголовком и значением */
 }
 
 /* Make sure value inside interactive card has identical numeric rendering
@@ -251,7 +261,7 @@
   /* Уменьшаем отступ между заголовком и значением на мобильных */
   .summary-value,
   .summary-card-interactive .summary-value {
-    margin-top: 6px;
+    margin-top: var(--gap-sm);
   }
 }
 
@@ -308,8 +318,8 @@
   margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding-top: 6px;
+  gap: var(--gap-sm);
+  padding-top: var(--gap-sm);
 }
 
 .summary-progress-labels {
@@ -323,7 +333,7 @@
 
 .summary-progress-labels strong {
   color: var(--text-main);
-  font-size: 0.86rem;
+  font-size: var(--font-size-body-sm);
   letter-spacing: 0;
 }
 

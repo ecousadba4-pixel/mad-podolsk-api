@@ -22,7 +22,7 @@
   padding-bottom: clamp(var(--gap-sm), 1.2vw, 16px);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--gap-xs);
   width: 100%;
   contain: layout style paint;
   min-height: 141px;
@@ -99,7 +99,7 @@
 .category-values {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.9fr) minmax(0, 1.3fr);
-  gap: 6px;
+  gap: var(--gap-sm);
   font-size: var(--font-size-caption);
   margin-top: clamp(0px, 0.4vw, 6px);
 }
@@ -107,14 +107,14 @@
 .category-values span {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--gap-xs);
   min-width: 0;
 }
 
   .category-values span + span {
     border-left: 1px solid var(--border-soft);
     padding-left: var(--card-inner-gap);
-    margin-left: 2px;
+    margin-left: var(--gap-xs);
   }
 
 @media (max-width: 640px) {
@@ -135,7 +135,8 @@
   display: inline-flex;
   align-items: baseline;
   justify-content: flex-end;
-  gap: 3px;
+  gap: var(--gap-xs);
+  flex-wrap: nowrap;
   flex-wrap: nowrap;
   max-width: 100%;
   white-space: nowrap;
@@ -147,7 +148,7 @@
 
 @media (min-width: 768px) {
   .category-values {
-    column-gap: 14px;
+    column-gap: var(--gap-md);
   }
   .category-values span {
     min-width: 0;
@@ -182,8 +183,8 @@
   margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding-top: 3px;
+  gap: var(--gap-xs);
+  padding-top: var(--gap-xs);
 }
 
 .category-progress-labels {
