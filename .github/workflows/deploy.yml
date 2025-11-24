@@ -48,18 +48,23 @@ jobs:
         run: |
           echo "--- SSH debug start ---"
           mkdir -p ~/.ssh
-          # write provided key to a temp file with correct permissions
+          # write provided key to a temp file
           echo "Writing private key to /tmp/deploy_key"
           printf "%s" "${{ secrets.SSH_PRIVATE_KEY_MAD }}" > /tmp/deploy_key
-          echo "Key fingerprint (ssh-keygen -lf):"
-          ssh-keygen -lf /tmp/deploy_key || true
+          # set strict permissions immediately so ssh-keygen/ssh accept the key
           chmod 600 /tmp/deploy_key
+          echo "Key fingerprint (private key):"
+          ssh-keygen -lf /tmp/deploy_key || true
+          # generate public key from private to compare on server if needed
+          ssh-keygen -y -f /tmp/deploy_key > /tmp/deploy_key.pub || true
+          echo "Key fingerprint (public key):"
+          ssh-keygen -lf /tmp/deploy_key.pub || true
 
           echo "Attempting verbose SSH connection (will exit immediately if succeeds)"
-          ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no -o ConnectTimeout=15 -vvv ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} exit || true
+          ssh -i /tmp/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -o ConnectTimeout=15 -vvv ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} exit || true
 
           echo "Attempting rsync with verbose SSH (dry run)"
-          RSYNC_RSH="ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no -vvv" \
+          RSYNC_RSH="ssh -i /tmp/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -vvv" \
             rsync -avz --delete --dry-run -e "$RSYNC_RSH" ${{ env.BUILD_DIR }}/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }} || true
 
           echo "--- SSH debug end ---"
