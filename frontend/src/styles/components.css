@@ -401,6 +401,15 @@
 /* Smeta cards */
 .smeta-cards__list { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start }
 
+/* panel body adjustments for smeta block */
+.smeta-panel { padding: 20px; }
+.smeta-panel .panel-header { margin-bottom: 12px }
+.smeta-panel .panel-title { font-size: 20px; }
+.smeta-panel .panel-body { padding: 4px 2px 0 2px }
+
+/* make cards share same row and wrap as needed */
+.smeta-cards__list { align-items: stretch }
+
 /* Large smeta card to match the design */
 .smeta-card--large {
   position: relative;

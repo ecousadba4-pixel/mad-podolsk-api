@@ -15,10 +15,17 @@ function formatNumber(v){ if (v === null || v === undefined) return '-'; return 
 </script>
 
 <template>
-  <section class="smeta-cards">
-    <div v-if="store.smetaCardsLoading">Загрузка карточек…</div>
+  <section class="panel smeta-panel">
+    <div class="panel-header">
+      <div class="panel-title-group">
+        <h3 class="panel-title">Работы в разрезе смет</h3>
+      </div>
+    </div>
 
-    <div v-else class="smeta-cards__list">
+    <div class="panel-body">
+      <div v-if="store.smetaCardsLoading">Загрузка карточек…</div>
+
+      <div v-else class="smeta-cards__list">
       <article v-for="c in cards" :key="c.smeta_key" class="smeta-card smeta-card--large card--interactive" @click="onCardClick(c.smeta_key)">
         <div class="smeta-card__accent" aria-hidden="true"></div>
         <div class="smeta-card__body">
@@ -51,6 +58,7 @@ function formatNumber(v){ if (v === null || v === undefined) return '-'; return 
           </div>
         </div>
       </article>
+      </div>
     </div>
   </section>
 
