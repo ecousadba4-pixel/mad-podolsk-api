@@ -7,7 +7,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: MonthlyDashboard },
-    { path: '/daily', component: DailyDashboard },
+    { path: '/daily', component: DailyDashboard }
   ],
 })
 
