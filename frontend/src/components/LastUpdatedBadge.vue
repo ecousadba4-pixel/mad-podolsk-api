@@ -32,11 +32,11 @@ const formatted = computed(()=>{
   if (!v) return ''
   const d = (typeof v === 'string') ? new Date(v) : new Date(v)
   if (isNaN(d)) return String(v)
-  const day = d.getDate()
-  const monthName = MONTHS[d.getMonth()]
+  const day = pad(d.getDate())
+  const month = pad(d.getMonth() + 1)
   const year = d.getFullYear()
   const hh = pad(d.getHours())
   const mm = pad(d.getMinutes())
-  return `${day} ${monthName} ${year} г., ${hh}:${mm}`
+  return `${day}.${month}.${year}, ${hh}:${mm}`
 })
 </script>
