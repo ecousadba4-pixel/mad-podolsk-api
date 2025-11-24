@@ -1,34 +1,23 @@
-// frontend/src/store/dashboardStore.js
+// src/store/dashboardStore.js
 import { defineStore } from 'pinia'
 
 export const useDashboardStore = defineStore('dashboard', {
   state: () => ({
-    mode: 'monthly',          // режим: по месяцам / по дням
-    selectedMonth: null,      
-    selectedDate: null,       
-    selectedSmeta: null,      
-    selectedDescription: null,
-
-    monthlySummary: null,
-    dailyRevenue: null,
-    smetaCards: null,
-    smetaDetails: null,
-    smetaDescriptionDaily: null,
-    dailyRows: null,
-
-    isLoading: false,
-    error: null,
+    // базовое состояние, потом расширим по спецификации
+    mode: 'monthly', // 'monthly' | 'daily'
+    selectedMonth: null,
+    selectedDate: null,
   }),
-
   actions: {
     setMode(mode) {
       this.mode = mode
     },
-    setMonth(month) {
+    setSelectedMonth(month) {
       this.selectedMonth = month
     },
-    setDate(date) {
+    setSelectedDate(date) {
       this.selectedDate = date
-    }
-  }
+    },
+  },
 })
+
