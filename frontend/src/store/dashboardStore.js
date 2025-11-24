@@ -1,50 +1,102 @@
 // frontend/src/store/dashboardStore.js
 import { defineStore } from 'pinia'
-
-// ===============================
-// MOCK ДЛЯ monthly summary
-// ===============================
-const MOCK_MONTHLY_SUMMARY = {
-  plan_total: 5_000_000,
-  fact_total: 4_200_000,
-  contract_planfact_pct: 84
-}
+import * as api from '../api/dashboard.js'
 
 export const useDashboardStore = defineStore('dashboard', {
   state: () => ({
-    // выбранный месяц
+    // фильтры / режимы
+    mode: 'monthly', // 'monthly' | 'daily'
     selectedMonth: new Date().toISOString().slice(0, 7), // YYYY-MM
+    selectedDate: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
+    selectedSmeta: null, // 'leto' | 'zima' | 'vnereglement'
+    selectedDescription: null,
 
-    // данные по месяцу
+    // monthly summary
     monthlySummary: null,
     monthlyLoading: false,
-    monthlyError: null
+    monthlyError: null,
+
+    // by-smeta cards
+    smetaCards: [],
+    smetaCardsLoading: false,
+
+    // details for selected smeta
+    smetaDetails: [],
+    smetaDetailsLoading: false,
+
+    // daily data
+    dailyRows: [],
+    dailyLoading: false
   }),
 
   actions: {
-    // обновление выбранного месяца
+    setMode(m) {
+      this.mode = m
+    },
+
     setSelectedMonth(month) {
       this.selectedMonth = month
     },
 
-    // загрузка данных по месяцу (пока MOCK)
+    setSelectedDate(date) {
+      this.selectedDate = date
+    },
+
+    setSelectedSmeta(smetaKey) {
+      this.selectedSmeta = smetaKey
+    },
+
+    setSelectedDescription(desc) {
+      this.selectedDescription = desc
+    },
+
     async fetchMonthlySummary() {
       this.monthlyLoading = true
       this.monthlyError = null
-
       try {
-        // имитируем задержку запроса
-        await new Promise(resolve => setTimeout(resolve, 400))
-
-        // подставляем мок-данные
-        this.monthlySummary = {
-          ...MOCK_MONTHLY_SUMMARY,
-          month: this.selectedMonth
-        }
-      } catch (error) {
-        this.monthlyError = 'Не удалось загрузить данные'
+        const res = await api.getMonthlySummary(this.selectedMonth)
+        this.monthlySummary = res
+      } catch (err) {
+        this.monthlyError = err?.message || 'Не удалось загрузить summary'
       } finally {
         this.monthlyLoading = false
+      }
+    },
+
+    async fetchSmetaCards() {
+      this.smetaCardsLoading = true
+      try {
+        const res = await api.getBySmeta(this.selectedMonth)
+        this.smetaCards = res.cards || []
+      } catch (err) {
+        this.smetaCards = []
+      } finally {
+        this.smetaCardsLoading = false
+      }
+    },
+
+    async fetchSmetaDetails(smetaKey) {
+      this.smetaDetailsLoading = true
+      this.smetaDetails = []
+      try {
+        const res = await api.getSmetaDetails(this.selectedMonth, smetaKey)
+        this.smetaDetails = res.rows || []
+      } catch (err) {
+        this.smetaDetails = []
+      } finally {
+        this.smetaDetailsLoading = false
+      }
+    },
+
+    async fetchDaily(date) {
+      this.dailyLoading = true
+      try {
+        const res = await api.getDaily(date)
+        this.dailyRows = res.rows || []
+      } catch (err) {
+        this.dailyRows = []
+      } finally {
+        this.dailyLoading = false
       }
     }
   }
