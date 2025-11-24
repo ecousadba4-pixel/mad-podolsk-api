@@ -13,6 +13,7 @@ jobs:
       DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
       DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
       DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      FORCE_DEPLOY: ${{ secrets.FORCE_DEPLOY }}
       DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
 
     steps:
@@ -63,7 +64,16 @@ jobs:
 
           echo "Deploying to ${DEPLOY_USER_RESOLVED}@${DEPLOY_HOST_RESOLVED}:${DEPLOY_PATH_RESOLVED}"
 
-          rsync -avzr --delete \
+          # if FORCE_DEPLOY secret is not set to "true", perform a dry-run to avoid accidental overwrite
+          if [ "${FORCE_DEPLOY}" = "true" ]; then
+            DRY_FLAG=""
+            echo "FORCE_DEPLOY=true: performing real deploy"
+          else
+            DRY_FLAG="--dry-run"
+            echo "FORCE_DEPLOY!=true: performing dry-run (no files will be changed on target)"
+          fi
+
+          rsync -avzr ${DRY_FLAG} --delete \
             --exclude=".git" \
             --exclude=".github" \
             -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
