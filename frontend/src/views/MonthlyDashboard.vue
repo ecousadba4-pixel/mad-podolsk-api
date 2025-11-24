@@ -1,194 +1,164 @@
-<!-- frontend/src/views/MonthlyDashboard.vue -->
+<script setup>
+import { computed, onMounted } from 'vue'
+import { useDashboardStore } from '../store/dashboardStore.js' // путь из папки views
+
+const store = useDashboardStore()
+
+// Привязываем input type="month" к selectedMonth в store
+const selectedMonth = computed({
+  get: () => store.selectedMonth,
+  set: (value) => {
+    if (!value) return
+    store.setSelectedMonth(value)       // 1) обновляем месяц в store
+    store.fetchMonthlySummary()         // 2) грузим данные по новому месяцу
+  }
+})
+
+// При первом заходе на страницу загружаем данные
+onMounted(() => {
+  if (!store.monthlySummary) {
+    store.fetchMonthlySummary()
+  }
+})
+</script>
+
 <template>
-  <section class="dashboard-page">
-    <!-- Верхняя панель: заголовок раздела + выбор месяца -->
-    <header class="dashboard-header">
-      <div class="dashboard-header__titles">
-        <h2 class="dashboard-header__title">
-          Месячный дашборд
-        </h2>
-        <p class="dashboard-header__subtitle">
-          Выберите месяц, чтобы посмотреть план / факт и исполнение контракта
-        </p>
+  <section class="dashboard">
+    <!-- Заголовок дашборда -->
+    <header class="dashboard__toolbar">
+      <div class="dashboard__title-block">
+        <h1 class="dashboard__title">СКПДИ · МАД · Подольск</h1>
+        <p class="dashboard__subtitle">Работы в статусе «Рассмотрено»</p>
       </div>
 
-      <!-- MonthSelector -->
-      <div class="dashboard-header__controls">
+      <!-- Выбор месяца -->
+      <div class="dashboard__controls">
         <label class="month-selector">
           <span class="month-selector__label">Месяц</span>
           <input
-            class="month-selector__input"
+            v-model="selectedMonth"
             type="month"
-            v-model="localMonth"
-            @change="onMonthChange"
+            class="month-selector__input"
           />
         </label>
       </div>
     </header>
 
-    <!-- Основное содержимое -->
-    <main class="dashboard-content">
-      <!-- Состояние загрузки -->
-      <div v-if="isLoading" class="dashboard-state dashboard-state--loading">
-        Загружаем данные за выбранный месяц…
+    <!-- Контент по месяцу -->
+    <main class="dashboard__content">
+      <div v-if="store.monthlyLoading" class="dashboard__state">
+        Загружаем данные…
       </div>
 
-      <!-- Ошибка -->
-      <div v-else-if="error" class="dashboard-state dashboard-state--error">
-        Произошла ошибка при загрузке данных: {{ error }}
+      <div
+        v-else-if="store.monthlyError"
+        class="dashboard__state dashboard__state--error"
+      >
+        Ошибка загрузки: {{ store.monthlyError }}
       </div>
 
-      <!-- Данные получены -->
-      <div v-else-if="summary" class="dashboard-summary">
-        <!-- Здесь временно просто выводим summary как JSON.
-             Позже заменим на реальные карточки / таблицы. -->
-        <pre class="dashboard-summary__debug">
-{{ formattedSummary }}
-        </pre>
+      <div v-else-if="store.monthlySummary" class="dashboard__grid">
+        <!-- Пока минимальный вывод, дальше превратим в красивые карточки -->
+        <section class="dashboard-card">
+          <h2 class="dashboard-card__title">Контракт</h2>
+          <p class="dashboard-card__value">
+            План: {{ store.monthlySummary.plan_total }}
+          </p>
+          <p class="dashboard-card__value">
+            Факт: {{ store.monthlySummary.fact_total }}
+          </p>
+          <p class="dashboard-card__value">
+            Исполнение: {{ store.monthlySummary.contract_planfact_pct }} %
+          </p>
+        </section>
       </div>
 
-      <!-- Пока ничего не выбрано / нет данных -->
-      <div v-else class="dashboard-state dashboard-state--empty">
-        Выберите месяц, чтобы увидеть данные.
+      <div v-else class="dashboard__state">
+        Данные ещё не загружены.
       </div>
     </main>
   </section>
 </template>
 
-<script setup>
-import { computed, ref, onMounted } from 'vue'
-import { useDashboardStore } from '../store/dashboardStore'
-
-// подключаем store
-const store = useDashboardStore()
-
-// локальное значение для input type="month"
-const localMonth = ref(store.selectedMonth || getCurrentMonth())
-
-// вычислимые значения из стора
-const summary = computed(() => store.monthlySummary)
-const isLoading = computed(() => store.loadingMonthly)
-const error = computed(() => store.errorMonthly)
-
-// для временного отображения — красиво отформатированный JSON
-const formattedSummary = computed(() =>
-  JSON.stringify(summary.value, null, 2)
-)
-
-// утилита: текущий месяц в формате YYYY-MM (для <input type="month">)
-function getCurrentMonth () {
-  const now = new Date()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  return `${now.getFullYear()}-${month}`
-}
-
-// обработчик изменения месяца
-async function onMonthChange () {
-  if (!localMonth.value) return
-  store.setMonth(localMonth.value)
-  await store.loadMonthlySummary()
-}
-
-// при первом открытии страницы
-onMounted(async () => {
-  if (!store.selectedMonth) {
-    store.setMonth(localMonth.value)
-  } else {
-    // если месяц уже был в store (например, пришли из другого экрана)
-    localMonth.value = store.selectedMonth
-  }
-
-  await store.loadMonthlySummary()
-})
-</script>
-
 <style scoped>
-.dashboard-page {
+.dashboard {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 24px;
 }
 
-/* Шапка */
-.dashboard-header {
+.dashboard__toolbar {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  gap: 1.5rem;
+  gap: 16px;
 }
 
-.dashboard-header__titles {
+.dashboard__title-block {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 4px;
 }
 
-.dashboard-header__title {
-  font-size: 1.4rem;
+.dashboard__title {
+  font-size: 24px;
   font-weight: 600;
+  margin: 0;
 }
 
-.dashboard-header__subtitle {
-  font-size: 0.9rem;
-  color: #666;
+.dashboard__subtitle {
+  margin: 0;
+  color: #555;
 }
 
-/* MonthSelector */
-.dashboard-header__controls {
+.dashboard__controls {
   display: flex;
   align-items: center;
 }
 
-.month-selector {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.85rem;
-}
-
 .month-selector__label {
-  color: #555;
-}
-
-.month-selector__input {
-  padding: 0.35rem 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-/* Основной блок */
-.dashboard-content {
-  min-height: 200px;
-}
-
-/* Состояния */
-.dashboard-state {
-  padding: 1rem;
-  border-radius: 4px;
-  font-size: 0.95rem;
-}
-
-.dashboard-state--loading {
-  background: #f5f7ff;
-}
-
-.dashboard-state--error {
-  background: #ffecec;
-  color: #b00020;
-}
-
-.dashboard-state--empty {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   color: #777;
 }
 
-/* Временный вывод summary */
-.dashboard-summary__debug {
-  padding: 1rem;
-  border-radius: 4px;
-  background: #f6f6f6;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
-  font-size: 0.85rem;
-  overflow-x: auto;
+.month-selector__input {
+  display: block;
+  margin-top: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #d0d0d0;
+}
+
+.dashboard__content {
+  min-height: 200px;
+}
+
+.dashboard__state {
+  font-size: 14px;
+  color: #555;
+}
+
+.dashboard__state--error {
+  color: #c00;
+}
+
+.dashboard-card {
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  max-width: 320px;
+}
+
+.dashboard-card__title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.dashboard-card__value {
+  margin: 2px 0;
 }
 </style>
