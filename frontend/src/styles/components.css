@@ -195,6 +195,13 @@
   align-items: center;
   gap: 24px;
 }
+
+/* Ensure all controls in the header have the same vertical height */
+.app-header__right > * {
+  display: inline-flex;
+  align-items: center;
+  min-height: 56px;
+}
 .app-header__mode-switch {
   display: inline-flex;
   padding: 4px;
@@ -324,6 +331,11 @@
   box-shadow: var(--shadow-soft);
   min-width: 220px;
 }
+
+/* match header control height so badge aligns with other header controls */
+.last-updated {
+  min-height: 56px;
+}
 .last-updated__dot{
   width: 12px;
   height: 12px;
@@ -334,6 +346,7 @@
 .last-updated__text{
   display: flex;
   flex-direction: column;
+  align-items: stretch;
 }
 .last-updated__label{
   font-size: 11px;
@@ -345,6 +358,14 @@
   font-size: 13px;
   font-weight: 700;
   color: var(--text-main);
+}
+
+/* make label and time have identical width (fill text container) */
+.last-updated__label,
+.last-updated__time{
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Month selector components (shared for simple and filter variants) */
