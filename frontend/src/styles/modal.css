@@ -47,8 +47,8 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--gap-md);
-  /* reduced bottom margin to bring table closer to header */
-  margin-bottom: var(--gap-sm);
+  /* reduced bottom margin (halved) to bring table closer to header */
+  margin-bottom: 2px;
 }
 
 .modal-title {
@@ -311,14 +311,14 @@
 /* Compact table rows inside modal: reduce padding/line-height for denser display */
 .modal .smeta-breakdown-table th,
 .modal .smeta-breakdown-table td {
-  padding: 6px 8px;
+  padding: 4px 8px; /* tighter vertical padding */
 }
 .modal .smeta-breakdown-table td {
   font-size: 0.95em;
-  line-height: 1.1;
+  line-height: 1.05;
 }
 .modal .smeta-breakdown-table thead th { text-align: center; }
-.modal .smeta-breakdown-table { margin-top: 6px; }
+.modal .smeta-breakdown-table { margin-top: 1px; }
 .modal .smeta-breakdown-table tr:hover { background: rgba(0,0,0,0.02); }
 .modal .modal-row-date { font-weight: 600; padding: 6px 8px; text-align: center }
 .modal .modal-row-value { padding: 6px 8px; text-align: right }

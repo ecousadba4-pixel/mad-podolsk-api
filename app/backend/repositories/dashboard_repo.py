@@ -47,6 +47,14 @@ def get_contract_amount_sum() -> Optional[dict]:
     return db.query_one("SELECT COALESCE(SUM(contract_amount),0) AS sum FROM podolsk_mad_2025_contract_amount")
 
 
+def get_total_fact_amount() -> Optional[dict]:
+    """Return total fact amount aggregated across all months.
+
+    Uses the plan_fact backend table which contains monthly fact_total values.
+    """
+    return db.query_one("SELECT COALESCE(SUM(fact_total),0) AS sum FROM skpdi_plan_fact_monthly_backend")
+
+
 def get_monthly_items(month_key: str) -> List[dict]:
     return db.query(
         """

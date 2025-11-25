@@ -724,8 +724,30 @@
 .smeta-card__progress{ display:flex; flex-direction:column; gap:var(--gap-sm); width:100% }
 .smeta-card__progress-label{ font-size:11px; color:var(--text-muted); text-transform:uppercase }
 .smeta-progress__wrap{ display:flex; align-items:center; gap:var(--gap-md) }
-.smeta-progress__bar{ flex:1; min-width:0; height:8px; background: var(--bg-muted); border-radius:999px; border:1px solid var(--border-soft); overflow:hidden }
-.smeta-progress__fill{ height:100%; background: linear-gradient(90deg, #f4a261 0%, var(--accent) 100%); width:0%; transition: width .5s ease }
+/* Use the same visual style as summary progress bar for consistency */
+.smeta-progress__bar{
+  width: 100%;
+  height: var(--gap-xs);
+  border-radius: var(--radius-xxl);
+  background: rgba(47, 111, 237, 0.12);
+  overflow: hidden;
+  position: relative;
+}
+.smeta-progress__fill{
+  position: absolute;
+  inset: 0;
+  width: 0;
+  border-radius: inherit;
+  --progress-color: var(--accent);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--progress-color) 75%, #ffffff) 0%,
+    var(--progress-color) 100%
+  );
+  box-shadow: 0 6px 12px color-mix(in srgb, var(--progress-color) 30%, transparent);
+  transition: width 0.35s ease;
+}
+.smeta-progress__fill.overflow{ box-shadow: 0 6px 16px rgba(34,197,94,0.25); }
 .smeta-card__progress-percent{ min-width:40px; text-align:right; font-weight:700; white-space:nowrap }
 
 /* Compact variant: reduce visual height of smeta cards by ~30% */

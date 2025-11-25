@@ -1,23 +1,29 @@
 <template>
-  <div class="modal" v-if="visible">
-    <div class="modal__backdrop" @click="$emit('close')"></div>
-    <div class="modal__dialog">
-      <header class="modal__header">
-        <h3>Расшифровка — {{ description }}</h3>
-        <button class="modal__close" @click="$emit('close')">✕</button>
+  <div v-if="visible" class="modal-backdrop visible" @click.self="$emit('close')">
+    <div class="modal" role="dialog" aria-modal="true">
+      <header class="modal-header">
+        <h3 class="modal-title">Расшифровка — {{ description }}</h3>
+        <button class="modal-close" @click="$emit('close')">✕</button>
       </header>
 
-      <div class="modal__body">
+      <div class="modal-body">
         <div v-if="loading">Загрузка…</div>
-        <table v-else class="modal-table">
+        <table v-else class="smeta-breakdown-table modal-table">
           <thead>
-            <tr><th>Дата</th><th>Объём</th><th>Сумма</th></tr>
+            <tr>
+              <th>Дата</th>
+              <th class="numeric">Объём</th>
+              <th class="numeric">Сумма</th>
+            </tr>
           </thead>
           <tbody>
             <tr v-for="r in rows" :key="r.date">
-              <td>{{ r.date }}</td>
-              <td>{{ r.volume }} {{ r.unit }}</td>
-              <td>{{ formatMoney(r.amount) }}</td>
+              <td class="modal-row-date">{{ formatDate(r.date) }}</td>
+              <td class="numeric">{{ r.volume }} <span class="modal-value-unit">{{ r.unit }}</span></td>
+              <td class="numeric modal-row-value">{{ formatMoney(r.amount) }}</td>
+            </tr>
+            <tr v-if="rows.length === 0">
+              <td colspan="3" class="muted">Нет данных за выбранный период</td>
             </tr>
           </tbody>
         </table>
@@ -35,6 +41,14 @@ const emit = defineEmits(['close'])
 
 const rows = ref([])
 const loading = ref(false)
+
+function formatDate(d){
+  if (!d) return '-'
+  const s = String(d).slice(0,10)
+  const parts = s.split('-')
+  if (parts.length !== 3) return s
+  return `${parts[2]}.${parts[1]}.${parts[0]}`
+}
 
 async function load(){
   if (!props.month || !props.smeta_key || !props.description) return

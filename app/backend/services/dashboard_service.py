@@ -143,14 +143,19 @@ def compute_avg_daily_revenue(month_key: str, fact_total: int):
 def build_monthly_summary(month_key: str):
     plan_fact = compute_plan_fact(month_key)
     summa_contract = compute_contract_amount()
-    contract_planfact_pct = float(plan_fact["fact_total"] / summa_contract) if summa_contract else None
+    # For the contract card, use total executed amount across all available months
+    # (do not filter by the selected month). This provides a cumulative 'Выполнено' value.
+    total_fact_row = dashboard_repo.get_total_fact_amount()
+    total_fact_all_months = int(total_fact_row["sum"] or 0) if total_fact_row else 0
+    contract_planfact_pct = float(total_fact_all_months / summa_contract) if summa_contract else None
     avg_daily_revenue = compute_avg_daily_revenue(month_key, plan_fact["fact_total"])
 
     return {
         "month": month_key,
         "contract": {
             "summa_contract": summa_contract,
-            "fact_total": plan_fact["fact_total"],
+            # show cumulative fact_total across all months for the contract card
+            "fact_total": total_fact_all_months,
             "contract_planfact_pct": contract_planfact_pct,
         },
         "kpi": {
