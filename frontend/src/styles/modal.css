@@ -187,16 +187,13 @@
 .modal .smeta-breakdown-table table { width: auto; }
 
 /* Increase column widths in modal table (approx. 2x) */
-.modal .smeta-breakdown-table th:first-child,
-.modal .smeta-breakdown-table td:first-child {
+.modal .smeta-breakdown-table :is(th, td):first-child {
   min-width: 220px; /* date column wider */
 }
-.modal .smeta-breakdown-table th:nth-child(2),
-.modal .smeta-breakdown-table td:nth-child(2) {
+.modal .smeta-breakdown-table :is(th, td):nth-child(2) {
   min-width: 240px; /* value column wider */
 }
-.modal .smeta-breakdown-table th,
-.modal .smeta-breakdown-table td {
+.modal .smeta-breakdown-table :is(th, td) {
   padding: var(--gap-sm) var(--gap-md);
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -210,14 +207,14 @@
 }
 
 /* On small screens keep modal full-width and more compact spacing */
-@media (max-width: 640px) {
+@media (width <= 640px) {
   .modal { width: 100%; padding: var(--gap-md); }
   .modal .smeta-breakdown-table th,
   .modal .smeta-breakdown-table td { padding: var(--gap-xs) var(--gap-sm); line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
 
 /* Very small screens: make modal full-bleed and more touch-friendly */
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .modal-backdrop { padding: 8px; }
   .modal {
     width: calc(100vw - 16px);
@@ -307,7 +304,7 @@
   font-size: var(--font-size-body);
 }
 
-@media (max-width: 767px) {
+@media (width <= 767px) {
   .modal-list {
     row-gap: var(--gap-xs);
     padding: 2px 0;

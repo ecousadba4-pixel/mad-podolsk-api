@@ -337,13 +337,14 @@ input[type="date"] {
 
 /* Зелёный индикатор обновления данных с "эхом" (светлый ореол) */
 .pill-dot {
-	width: 14px;
-	height: 14px;
-	border-radius: var(--radius-xxl);
-	background: var(--success);
-	position: relative;
-	flex: 0 0 auto;
-	box-shadow: 0 2px 6px rgba(15,157,88,0.18);
+        width: 14px;
+        height: 14px;
+        border-radius: var(--radius-xxl);
+        background: var(--success);
+        position: relative;
+        flex: 0 0 auto;
+        box-shadow: 0 2px 6px rgba(15,157,88,0.18);
+        isolation: isolate;
 }
 
 .pill-dot::after {
