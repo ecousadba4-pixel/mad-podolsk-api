@@ -29,6 +29,44 @@ def normalize_month(month: str) -> str:
     raise HTTPException(status_code=400, detail="invalid month format")
 
 
+def fetch_available_months(limit: Optional[int] = None) -> List[str]:
+    """Получить список месяцев в формате YYYY-MM, доступных в данных.
+
+    Приоритет источников:
+    1) skpdi_plan_vs_fact_monthly (основное представление для месячных данных)
+    2) skpdi_plan_fact_monthly_backend (агрегированная таблица)
+    3) skpdi_fact_with_money (сырые факты по дням)
+    """
+
+    months_set = set()
+    queries = [
+        "SELECT DISTINCT to_char(month_start,'YYYY-MM') AS month FROM skpdi_plan_vs_fact_monthly ORDER BY month DESC",
+        "SELECT DISTINCT month_key AS month FROM skpdi_plan_fact_monthly_backend ORDER BY month DESC",
+        "SELECT DISTINCT to_char(date_done,'YYYY-MM') AS month FROM skpdi_fact_with_money ORDER BY month DESC",
+    ]
+
+    for sql in queries:
+        try:
+            rows = db.query(sql)
+        except Exception:
+            continue
+
+        for r in rows:
+            raw_month = r.get("month") or r.get("month_key") or r.get("month_start")
+            if not raw_month:
+                continue
+            try:
+                normalized = normalize_month(str(raw_month))
+            except HTTPException:
+                continue
+            months_set.add(normalized)
+
+    months = sorted(months_set, reverse=True)
+    if limit is not None:
+        months = months[:limit]
+    return months
+
+
 def validate_month(month: str):
     normalize_month(month)
 
@@ -173,6 +211,7 @@ def combined_dashboard(month: Optional[str] = Query(None, description="YYYY-MM o
     }
 
     items = []
+    available_months = fetch_available_months(limit=24)
 
     if month_key:
         plan_fact = compute_plan_fact(month_key)
@@ -204,7 +243,20 @@ def combined_dashboard(month: Optional[str] = Query(None, description="YYYY-MM o
         except Exception:
             last_updated = str(loaded)
 
-    return {"month": month or None, "last_updated": last_updated, "summary": summary, "items": items, "has_data": bool(items)}
+    return {
+        "month": month or None,
+        "last_updated": last_updated,
+        "summary": summary,
+        "items": items,
+        "has_data": bool(items),
+        "available_months": available_months,
+    }
+
+
+@router.get("/months")
+def available_months(limit: Optional[int] = Query(None, ge=1, le=120, description="Максимальное количество месяцев")):
+    months = fetch_available_months(limit=limit)
+    return months
 
 
 @router.get("/monthly/daily-revenue")
