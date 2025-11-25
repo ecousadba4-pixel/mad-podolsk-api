@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.backend.dashboard import router as dashboard_router
+from app.backend.routers.dashboard import router as dashboard_router
 from app.backend import db
 import os
 
