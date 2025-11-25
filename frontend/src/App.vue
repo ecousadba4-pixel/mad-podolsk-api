@@ -51,11 +51,11 @@ function afterEnter() { clearHeight() }
 
     <main class="app-content page__content">
       <div ref="routerShell" class="router-shell">
-        <transition name="fade-slide" mode="out-in" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
-          <RouterView v-slot="{ Component }">
+        <RouterView v-slot="{ Component }">
+          <transition name="fade-slide" mode="out-in" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
             <component :is="Component" />
-          </RouterView>
-        </transition>
+          </transition>
+        </RouterView>
       </div>
     </main>
   </div>

@@ -26,19 +26,29 @@
         <div class="summary-value" :class="{'negative': kpi && kpi.delta < 0}">{{ formatMoney(kpi?.delta) }}</div>
       </article>
 
-      <article class="summary-card summary-card-interactive daily-average" @click="$emit('open-daily')">
-        <div class="summary-label daily-average type-label">СР.ДНЕВ. ВЫРУЧКА, ₽</div>
-        <div class="summary-value">{{ formatMoney(kpi?.avg_daily_revenue) }}</div>
-      </article>
+            <article class="summary-card summary-card-interactive daily-average" @click="$emit('open-daily')" :class="{ 'current-month': isCurrentMonth }">
+              <div class="summary-label daily-average type-label">СР.ДНЕВ. ВЫРУЧКА, ₽</div>
+              <div class="summary-value">{{ formatMoney(kpi?.avg_daily_revenue) }}</div>
+              <div class="summary-card-hint" aria-hidden="true" v-if="isCurrentMonth">i</div>
+            </article>
     </div>
   </section>
 </template>
 
 <script setup>
 import { computed, onMounted, onBeforeUnmount, watch, nextTick, ref } from 'vue'
+import { useDashboardStore } from '../../store/dashboardStore.js'
 
 const props = defineProps({ kpi: { type: Object, default: () => ({}) } })
 const emit = defineEmits(['open-daily'])
+
+// Покажем иконку-подсказку только если выбран текущий календарный месяц
+const store = useDashboardStore()
+const isCurrentMonth = computed(() => {
+  const sel = String(store.selectedMonth || '').slice(0, 7)
+  const now = new Date().toISOString().slice(0, 7)
+  return sel === now
+})
 
 const rawPercent = computed(() => {
   const plan = Number(props.kpi?.plan_total || 0)

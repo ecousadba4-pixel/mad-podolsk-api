@@ -78,8 +78,7 @@ const selectedMonth = computed({
           :class="{ 'mode-btn--active': isMonthly }"
           @click="goToMonthly"
         >
-          <span class="mode-btn-line1">По</span>
-          <span class="mode-btn-line2">месяцам</span>
+          <span class="mode-btn-text">По месяцам</span>
         </button>
         <button
           type="button"
@@ -87,8 +86,7 @@ const selectedMonth = computed({
           :class="{ 'mode-btn--active': isDaily }"
           @click="goToDaily"
         >
-          <span class="mode-btn-line1">По</span>
-          <span class="mode-btn-line2">дням</span>
+          <span class="mode-btn-text">По дням</span>
         </button>
       </div>
 

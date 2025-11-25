@@ -10,6 +10,9 @@ import DailyRevenueModal from '../components/modals/DailyRevenueModal.vue'
 import SmetaDescriptionDailyModal from '../components/modals/SmetaDescriptionDailyModal.vue'
 import { ref } from 'vue'
 
+const smetaSortKey = ref('plan')
+const smetaSortDir = ref(-1)
+
 const store = useDashboardStore()
 
 const selectedSmetaLabel = computed(() => {
@@ -61,15 +64,26 @@ function refreshMonthData() {
         <SmetaCardsSection />
 
         <!-- Детали сметы (появляются при выборе сметы) -->
-        <section v-if="store.smetaDetailsLoading || (store.smetaDetails && store.smetaDetails.length)" class="panel smeta-panel" style="flex: 1 1 100%; width: 100%;">
+        <section v-if="store.smetaDetailsLoading || (store.smetaDetails && store.smetaDetails.length)" class="panel smeta-panel smeta-details">
           <div class="panel-header">
             <div class="panel-title-group">
-              <h3 class="panel-title">Расшифровка работ по смете — {{ selectedSmetaLabel.replace('Расшифровка работ по смете', '') }}</h3>
+              <div class="panel-title-mobile">
+                <div class="panel-title-mobile-label">РАБОТЫ ПО СМЕТЕ</div>
+                <div class="panel-title-mobile-value">{{ selectedSmetaLabel.replace('Расшифровка работ по смете', '') }}</div>
+              </div>
+              <h3 class="panel-title">{{ selectedSmetaLabel }}</h3>
+            </div>
+            <div class="panel-header-controls">
+              <select class="smeta-sort-select" v-model="smetaSortKey" @change="smetaSortDir = -1">
+                <option value="plan">План — по убыванию</option>
+                <option value="fact">Факт — по убыванию</option>
+                <option value="delta">Отклонение — по убыванию</option>
+              </select>
             </div>
           </div>
           <div class="panel-body">
             <div class="smeta-details-wrapper" :class="{ 'is-loading': store.smetaDetailsLoading }" style="position:relative;">
-              <SmetaDetailsTable :items="store.smetaDetails" @select="(item)=>{ store.setSelectedDescription(item.title || item.description); smetaDescVisible = true }" />
+              <SmetaDetailsTable :items="store.smetaDetails" :sort-key="smetaSortKey" :sort-dir="smetaSortDir" @sort-changed="(p)=>{ smetaSortKey = p.key; smetaSortDir = p.dir }" @select="(item)=>{ store.setSelectedDescription(item.title || item.description); smetaDescVisible = true }" />
               <TableSkeleton v-if="store.smetaDetailsLoading" class="overlay-skeleton" />
             </div>
           </div>

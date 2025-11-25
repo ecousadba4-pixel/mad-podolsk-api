@@ -155,6 +155,19 @@
   color: var(--text-primary);
 }
 
+/* Controls placed in panel header (right side) — hidden on desktop, visible on mobile */
+.panel-header .panel-header-controls { display: none; }
+@media (max-width: 640px) {
+  .panel-header .panel-header-controls { display: flex; align-items: center; margin-left: 8px }
+  .smeta-sort-select { display: inline-block; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg-card); font-size: var(--font-size-body-sm); }
+}
+
+/* For smeta details panel show two-line mobile title and hide desktop title */
+@media (max-width: 640px) {
+  .smeta-panel .panel-title { display: none; }
+  .smeta-panel .panel-title-mobile { display: flex; }
+}
+
 .panel-subtitle {
   font-size: var(--font-size-caption);
   color: var(--text-muted);
@@ -229,6 +242,18 @@
   box-sizing: border-box;
   margin-left: 0;
   margin-right: 0;
+}
+
+/* Ensure the details panel always spans the full row and cannot be placed
+   to the right of other panels; this fixes layout break where the table
+   appeared shifted to the right. */
+.dashboard__grid > .smeta-panel.smeta-details {
+  flex-basis: 100% !important;
+  flex: 1 1 100% !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 @media (max-width: 640px) {
   /* On small screens, make the Smeta panel span the full available width */
@@ -349,18 +374,48 @@
   .app-header__mode-switch .mode-btn {
     flex: 1 1 50%;
     width: 50%;
-    padding: 8px 10px;
+    padding: 6px 8px;
     justify-content: center;
+    min-height: 36px;
   }
 
-  .app-header__mode-switch .mode-btn .mode-btn-line1,
-  .app-header__mode-switch .mode-btn .mode-btn-line2 {
-    display: block;
+  .app-header__mode-switch .mode-btn .mode-btn-text {
+    display: inline-block;
     text-align: center;
+    font-size: var(--font-size-body-sm);
+    white-space: nowrap;
   }
 
   /* Reduce extra rounded padding so buttons align edge-to-edge visually */
   .app-header__mode-switch { padding: 4px; border-radius: 10px; }
+
+  /* Month selector and last-updated share the second row and get equal width */
+  .app-header__month {
+    flex: 1 1 50%;
+    min-width: 0;
+    margin-right: calc(var(--gap-md) / 2);
+  }
+
+  .last-updated {
+    flex: 1 1 50%;
+    min-width: 0;
+    justify-content: flex-end;
+    margin-left: calc(var(--gap-md) / 2);
+  }
+}
+
+/* Extra small screens: reduce control heights and tweak contract execution layout */
+@media (max-width: 480px) {
+  .app-header__right > * { min-height: 36px; height: 36px }
+  .month-picker__toggle, .day-picker__toggle { min-height: 36px; height: 36px; padding: 0 8px }
+  .last-updated { min-height: 36px }
+
+  /* contract execution: labels row + values row style */
+  .contract-execution .panel-meta { display: flex; flex-direction: column; gap: calc(var(--gap-xs) * 0.6); }
+  .contract-execution .panel-meta-row { display: flex; gap: var(--gap-md); align-items: center }
+  .contract-execution .panel-meta-item { flex: 1 1 0; min-width: 0 }
+  .contract-execution .panel-meta-label { text-align: left }
+  .contract-execution .panel-meta-values .panel-meta-value { text-align: left }
 }
 
 .contract-execution { box-sizing: border-box; }
@@ -620,6 +675,17 @@
   .smeta-cards__list {
     grid-template-columns: repeat(3, 1fr);
   }
+}
+
+@media (max-width: 640px) {
+  /* Left-align smeta card titles on mobile for clearer hierarchy */
+  .smeta-card__head { justify-content: flex-start; align-items: flex-start; gap: var(--gap-sm); }
+  .smeta-card__title { text-align: left; font-size: var(--font-size-body); }
+  .smeta-card__meta-pill { margin-left: auto; }
+  .smeta-card__numbers { align-items: flex-start; }
+  .smeta-card__col { align-items: flex-start; }
+  .smeta-card__label { text-align: left }
+  .smeta-card__value { text-align: left }
 }
 
 /* panel body adjustments for smeta block */

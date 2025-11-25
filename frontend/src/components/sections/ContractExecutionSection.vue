@@ -5,9 +5,16 @@
         <div class="panel-title">Исполнение контракта</div>
       </div>
       <div class="panel-meta">
-        <div class="panel-meta-item"><div class="panel-meta-label">Контракт</div><div class="panel-meta-value">{{ formatMoney(contract?.summa_contract) }}</div></div>
-        <div class="panel-meta-item"><div class="panel-meta-label">Выполнено</div><div class="panel-meta-value">{{ formatMoney(contract?.fact_total) }}</div></div>
-        <div class="panel-meta-item"><div class="panel-meta-label">Исполнение</div><div class="panel-meta-value">{{ percent(contract?.contract_planfact_pct) }}</div></div>
+        <div class="panel-meta-row panel-meta-labels">
+          <div class="panel-meta-item"><div class="panel-meta-label">Контракт</div></div>
+          <div class="panel-meta-item"><div class="panel-meta-label">Выполнено</div></div>
+          <div class="panel-meta-item"><div class="panel-meta-label">Исполнение</div></div>
+        </div>
+        <div class="panel-meta-row panel-meta-values">
+          <div class="panel-meta-item"><div class="panel-meta-value">{{ formatMoney(contract?.summa_contract) }}</div></div>
+          <div class="panel-meta-item"><div class="panel-meta-value">{{ formatMoney(contract?.fact_total) }}</div></div>
+          <div class="panel-meta-item"><div class="panel-meta-value">{{ percent(contract?.contract_planfact_pct) }}</div></div>
+        </div>
       </div>
     </div>
 
