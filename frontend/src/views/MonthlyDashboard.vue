@@ -82,7 +82,7 @@ function refreshMonthData() {
             </div>
           </div>
           <div class="panel-body">
-            <div class="smeta-details-wrapper" :class="{ 'is-loading': store.smetaDetailsLoading }" style="position:relative;">
+            <div class="smeta-details-wrapper" :class="{ 'is-loading': store.smetaDetailsLoading }">
               <SmetaDetailsTable :items="store.smetaDetails" :sort-key="smetaSortKey" :sort-dir="smetaSortDir" @sort-changed="(p)=>{ smetaSortKey = p.key; smetaSortDir = p.dir }" @select="(item)=>{ store.setSelectedDescription(item.title || item.description); smetaDescVisible = true }" />
               <TableSkeleton v-if="store.smetaDetailsLoading" class="overlay-skeleton" />
             </div>

@@ -1,19 +1,31 @@
 /* Design tokens: colors, typography, spacing, radii, shadows, transitions */
 
 :root {
-	--font-sans: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-	--bg: #f1f4fa;
-	--bg-card: #ffffff;
-	--bg-muted: #f7f8fc;
-	--border-soft: #d8deec;
-	--border-strong: #b8c1d8;
-	--text-main: #0f172a;
-	--text-muted: #5e6473;
-	--accent: #2f6fed;
-	--brand-accent: #2f6fed;
-	--accent-strong: #1e4fd8;
-	--accent-soft: #e0e7ff;
-	--danger: #c0342b;
+        --font-sans: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        /* Surfaces */
+        --surface-base: #ffffff;
+        --surface-overlay: #ffffffd9;
+        --surface-highlight: #f4f6ff;
+        --surface-contrast: #0f172a;
+        --bg: #f1f4fa;
+        --bg-card: #ffffff;
+        --bg-muted: #f7f8fc;
+        --border-soft: #d8deec;
+        --border-neutral: #d0d0d0;
+        --border-faint: rgba(15, 23, 42, 0.04);
+        --border-strong: #b8c1d8;
+        --text-main: #0f172a;
+        --text-inverse: #ffffff;
+        --text-label-strong: #444444;
+        --text-subtle: #555555;
+        --text-muted: #5e6473;
+        --text-soft: #777777;
+        --text-faint: #888888;
+        --accent: #2f6fed;
+        --brand-accent: #2f6fed;
+        --accent-strong: #1e4fd8;
+        --accent-soft: #e0e7ff;
+        --danger: #c0342b;
 	--success: #0f9d58;
 	--chevron-color: rgba(94, 100, 115, 0.5);
 
@@ -61,16 +73,21 @@
 		--control-height-sm: 36px;
 
 	/* Shadows, gradients, transitions */
-	--shadow-btn-airy-hover: 0 12px 32px rgba(47, 111, 237, 0.16);
-	--shadow-btn-airy-active: 0 8px 22px rgba(47, 111, 237, 0.14);
-	--shadow-btn-airy-desktop: 0 6px 16px rgba(15, 23, 42, 0.08);
-	--shadow-btn-airy-desktop-hover: 0 8px 18px rgba(15, 23, 42, 0.1);
-	--shadow-btn-airy-desktop-active: 0 4px 12px rgba(15, 23, 42, 0.08);
-	--shadow-category-active: 0 18px 28px rgba(47, 111, 237, 0.15);
-	--shadow-category-indicator: 0 6px 16px rgba(47, 111, 237, 0.35);
-	--shadow-summary-hover: 0 10px 24px rgba(37, 99, 235, 0.12);
-	--gradient-page: linear-gradient(180deg, #f6f8fd 0%, #eef2fb 60%, #edf1fb 100%);
-	--gradient-skeleton: linear-gradient(90deg, var(--bg-muted) 25%, var(--bg-card) 50%, var(--bg-muted) 75%);
+        --shadow-btn-airy-hover: 0 12px 32px rgba(47, 111, 237, 0.16);
+        --shadow-btn-airy-active: 0 8px 22px rgba(47, 111, 237, 0.14);
+        --shadow-btn-airy-desktop: 0 6px 16px rgba(15, 23, 42, 0.08);
+        --shadow-btn-airy-desktop-hover: 0 8px 18px rgba(15, 23, 42, 0.1);
+        --shadow-btn-airy-desktop-active: 0 4px 12px rgba(15, 23, 42, 0.08);
+        --shadow-btn-primary: 0 10px 20px rgba(47, 111, 237, 0.18);
+        --shadow-btn-primary-active: 0 6px 12px rgba(47, 111, 237, 0.16);
+        --shadow-card: 0 12px 26px rgba(15, 23, 42, 0.08);
+        --shadow-soft: 0 8px 20px rgba(15, 23, 42, 0.06);
+        --shadow-strong: 0 14px 32px rgba(15, 23, 42, 0.12);
+        --shadow-category-active: 0 18px 28px rgba(47, 111, 237, 0.15);
+        --shadow-category-indicator: 0 6px 16px rgba(47, 111, 237, 0.35);
+        --shadow-summary-hover: 0 10px 24px rgba(37, 99, 235, 0.12);
+        --gradient-page: linear-gradient(180deg, #f6f8fd 0%, #eef2fb 60%, #edf1fb 100%);
+        --gradient-skeleton: linear-gradient(90deg, var(--bg-muted) 25%, var(--bg-card) 50%, var(--bg-muted) 75%);
 	--gradient-accent: linear-gradient(180deg, var(--accent), var(--accent-strong));
 	--gradient-btn-airy: linear-gradient(180deg, #ffffff 0%, #f7f9ff 100%);
 	--gradient-btn-airy-hover: linear-gradient(180deg, #ffffff 0%, #eef3ff 100%);

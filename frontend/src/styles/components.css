@@ -339,7 +339,7 @@
 }
 .contract-progress__fill{
   height: 100%;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 75%, #ffffff) 0%, var(--accent) 100%);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 75%, var(--surface-base)) 0%, var(--accent) 100%);
   width: 0%;
   transition: width 0.45s ease;
 }
@@ -614,7 +614,7 @@
 .app-header__subtitle {
   margin: 0;
   font-size: var(--font-size-body-sm);
-  color: #555;
+  color: var(--text-subtle);
 }
 .app-header__right {
   display: flex;
@@ -637,7 +637,7 @@
   height: var(--control-height);
   padding: 0;
   border-radius: 14px;
-  background: var(--bg-card, #fff);
+  background: var(--bg-card, var(--surface-base));
   border: 1px solid var(--border-soft);
   box-shadow: var(--shadow-soft);
   align-items: center;
@@ -673,7 +673,7 @@
 }
 .mode-btn--active .mode-btn-line1,
 .mode-btn--active .mode-btn-line2{
-  color: #fff !important;
+  color: var(--text-inverse) !important;
 }
 
 .mode-btn:not(.mode-btn--active) .mode-btn-line1,
@@ -685,7 +685,7 @@
 }
 .mode-btn--active {
   background: var(--accent);
-  color: #fff;
+  color: var(--text-inverse);
   box-shadow: none;
 }
 .app-header__month {
@@ -694,7 +694,7 @@
   font-size: var(--font-size-caption);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #777;
+  color: var(--text-soft);
   position: relative;
   /* make this a neutral wrapper when MonthPicker provides its own control
      avoid double frames by not drawing border/background here on desktop */
@@ -739,7 +739,7 @@
 
 /* HelloWorld */
 .read-the-docs {
-  color: #888;
+  color: var(--text-faint);
 }
 
 /* LastUpdatedBadge */
@@ -808,19 +808,19 @@
   align-items: center;
   gap: var(--gap-md);
 }
-.month-selector.inline .month-selector__label { color: #444; font-weight: 500 }
+.month-selector.inline .month-selector__label { color: var(--text-label-strong); font-weight: 500 }
 .month-selector__label {
   font-size: var(--font-size-label);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #777;
+  color: var(--text-soft);
 }
 .month-selector__input {
   display: block;
   margin-top: var(--gap-xs);
   padding: var(--gap-sm) var(--gap-md);
   border-radius: 6px;
-  border: 1px solid #d0d0d0;
+  border: 1px solid var(--border-neutral);
 }
 .month-selector__select {
   padding: var(--gap-sm) var(--gap-md);
@@ -861,28 +861,36 @@
 .smeta-panel .panel-body { padding: 0 var(--gap-xs) 0 var(--gap-xs) }
 
 /* Table layout for smeta breakdown/details to align headers and values */
-.smeta-breakdown-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-/* Modern lightweight table styles for smeta breakdown */
-.smeta-breakdown-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  table-layout: fixed;
-  background: transparent;
-  font-size: var(--font-size-body);
-}
-.smeta-breakdown-table thead th {
-  text-align: left;
+  .smeta-breakdown-table {
+    --smeta-col-unit: 140px;
+    --smeta-col-volume: 140px;
+    --smeta-col-amount: 140px;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  /* Modern lightweight table styles for smeta breakdown */
+  .smeta-breakdown-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    background: transparent;
+    font-size: var(--font-size-body);
+  }
+  .smeta-breakdown-table--daily {
+    --smeta-col-unit: 110px;
+    --smeta-col-volume: 120px;
+    --smeta-col-amount: 140px;
+  }
+  .smeta-breakdown-table thead th {
+    text-align: left;
   font-size: var(--font-size-label);
   color: var(--text-muted);
   text-transform: uppercase;
   padding: 12px 12px;
   vertical-align: middle;
-  background: color-mix(in srgb, var(--accent) 8%, #ffffff 92%);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-base) 92%);
   font-weight: 700;
 }
 .smeta-breakdown-table th.numeric,
@@ -890,29 +898,35 @@
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
-.smeta-breakdown-table td, .smeta-breakdown-table th {
-  padding: 14px 12px;
-  border-bottom: 1px solid rgba(15,23,42,0.04);
-  vertical-align: middle;
-}
-.smeta-breakdown-table td:first-child {
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
- 
-.smeta-breakdown-table tbody tr:hover { background: rgba(0,0,0,0.02); }
-.smeta-breakdown-table td:first-child {
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-/* set reasonable widths for numeric columns while letting name column take remaining space */
-.smeta-breakdown-table colgroup col:nth-child(2),
-.smeta-breakdown-table colgroup col:nth-child(3),
-.smeta-breakdown-table colgroup col:nth-child(4) {
-  width: 140px;
-}
+  .smeta-breakdown-table td, .smeta-breakdown-table th {
+    padding: 14px 12px;
+    border-bottom: 1px solid rgba(15,23,42,0.04);
+    vertical-align: middle;
+  }
+  .smeta-breakdown-table td:first-child {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
 
-.smeta-breakdown-table .negative { color: var(--danger); }
+  .smeta-breakdown-table tbody tr:hover { background: rgba(0,0,0,0.02); }
+  .smeta-breakdown-table td:first-child {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  /* set reasonable widths for numeric columns while letting name column take remaining space */
+  .smeta-breakdown-table colgroup col:nth-child(2),
+  .smeta-breakdown-table colgroup col:nth-child(3),
+  .smeta-breakdown-table colgroup col:nth-child(4) {
+    width: var(--smeta-col-unit);
+  }
+  .smeta-breakdown-table colgroup col:nth-child(3) {
+    width: var(--smeta-col-volume);
+  }
+  .smeta-breakdown-table colgroup col:nth-child(4) {
+    width: var(--smeta-col-amount);
+  }
+
+  .smeta-breakdown-table .negative { color: var(--danger); }
 
 /* Light zebra striping for rows to improve readability */
 .smeta-breakdown-table tbody tr:nth-child(odd) {
@@ -926,7 +940,15 @@
 .smeta-breakdown-table thead th { box-shadow: inset 0 -1px 0 rgba(15,23,42,0.02) }
 
 /* Soft transition for hover & opacity changes */
-.smeta-breakdown-table tbody tr, .smeta-breakdown-table td, .smeta-breakdown-table th { transition: background-color 140ms ease, color 140ms ease }
+  .smeta-breakdown-table tbody tr, .smeta-breakdown-table td, .smeta-breakdown-table th { transition: background-color 140ms ease, color 140ms ease }
+
+  .smeta-breakdown-table__row--interactive { cursor: pointer; }
+  .smeta-breakdown-table__total-label {
+    font-weight: 700;
+    text-align: right;
+    padding-right: var(--card-inner-gap);
+  }
+  .smeta-breakdown-table__total-value { font-weight: 700; }
 
 /* make cards share same row and wrap as needed */
 .smeta-cards__list { align-items: stretch }
@@ -995,7 +1017,7 @@
   --progress-color: var(--accent);
   background: linear-gradient(
     90deg,
-    color-mix(in srgb, var(--progress-color) 75%, #ffffff) 0%,
+      color-mix(in srgb, var(--progress-color) 75%, var(--surface-base)) 0%,
     var(--progress-color) 100%
   );
   box-shadow: 0 6px 12px color-mix(in srgb, var(--progress-color) 30%, transparent);
@@ -1030,8 +1052,8 @@
 /* Monthly dashboard */
 .dashboard { display: flex; flex-direction: column; gap: var(--section-gap) }
 .dashboard__content { min-height: 200px }
-.dashboard__state { font-size: var(--font-size-body-sm); padding: var(--gap-sm); color: #555 }
-.dashboard__state--error { color: #c00 }
+.dashboard__state { font-size: var(--font-size-body-sm); padding: var(--gap-sm); color: var(--text-subtle) }
+.dashboard__state--error { color: var(--danger) }
 .dashboard__grid { display: flex; flex-wrap: wrap; gap: var(--grid-gap) }
 
 /* Use the unified `--grid-gap` for both vertical and horizontal spacing
@@ -1058,10 +1080,10 @@
 .dashboard > .dashboard__content .dashboard__grid .panel + .panel {
   margin-top: 0 !important;
 }
-.dashboard-card { padding: var(--card-padding); border-radius: var(--radius-sm); border: 1px solid #e0e0e0; background: #fff; width: 320px }
+.dashboard-card { padding: var(--card-padding); border-radius: var(--radius-sm); border: 1px solid var(--border-neutral); background: var(--surface-base); width: 320px }
 .dashboard-card__title { margin: 0 0 var(--gap-md) 0; font-size: var(--font-size-h2); font-weight: 600 }
 .dashboard-card__row { display: flex; justify-content: space-between; padding: var(--gap-xs) 0 }
-.dashboard-card__label { color: #777 }
+.dashboard-card__label { color: var(--text-soft) }
 .dashboard-card__value { font-weight: 500 }
 
 /* No extra margins between the dashboard grid and smeta panel — the

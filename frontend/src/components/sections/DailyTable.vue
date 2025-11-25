@@ -7,12 +7,12 @@
     </div>
     <div class="panel-body">
       <div class="smeta-details-wrapper">
-        <table class="smeta-breakdown-table" style="width:100%">
+        <table class="smeta-breakdown-table smeta-breakdown-table--daily">
         <colgroup>
           <col />
-          <col style="width:110px" />
-          <col style="width:120px" />
-          <col style="width:140px" />
+          <col />
+          <col />
+          <col />
         </colgroup>
         <thead>
           <tr>
@@ -31,8 +31,8 @@
           </tr>
 
           <tr v-if="sortedRows && sortedRows.length" class="daily-total-row">
-            <td colspan="3" style="font-weight:700; text-align:right; padding-right:16px">Итого</td>
-            <td class="numeric" style="font-weight:700">{{ formatMoney(total) }}</td>
+            <td colspan="3" class="smeta-breakdown-table__total-label">Итого</td>
+            <td class="numeric smeta-breakdown-table__total-value">{{ formatMoney(total) }}</td>
           </tr>
         </tbody>
         </table>

@@ -424,15 +424,15 @@
   position: relative;
 }
 
-.work-mobile-sort-control select {
-  width: 100%;
-  padding: var(--gap-md) var(--gap-xl) var(--gap-md) var(--card-inner-gap);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-soft);
-  background: #fff;
-  font-weight: 600;
-  font-size: var(--font-size-body);
-  appearance: none;
+  .work-mobile-sort-control select {
+    width: 100%;
+    padding: var(--gap-md) var(--gap-xl) var(--gap-md) var(--card-inner-gap);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-soft);
+    background: var(--surface-base);
+    font-weight: 600;
+    font-size: var(--font-size-body);
+    appearance: none;
   color: var(--text-main);
   box-shadow: var(--shadow-soft);
 }

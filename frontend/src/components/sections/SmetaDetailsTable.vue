@@ -5,9 +5,9 @@
     <table v-if="!isMobile" class="smeta-breakdown-table">
         <colgroup>
           <col />
-          <col style="width:140px" />
-          <col style="width:140px" />
-          <col style="width:140px" />
+          <col />
+          <col />
+          <col />
         </colgroup>
         <thead>
           <tr>
@@ -36,7 +36,12 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, idx) in sortedItems" :key="item.title || item.description || item.work_name || idx" @click="$emit('select', item)" style="cursor:pointer">
+          <tr
+            v-for="(item, idx) in sortedItems"
+            :key="item.title || item.description || item.work_name || idx"
+            class="smeta-breakdown-table__row smeta-breakdown-table__row--interactive"
+            @click="$emit('select', item)"
+          >
             <td>
               <div class="smeta-title-wrapper" :data-id="idFor(item, idx)">
                 <div

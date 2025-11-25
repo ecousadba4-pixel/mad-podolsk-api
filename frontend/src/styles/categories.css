@@ -220,11 +220,11 @@
   width: 0;
   border-radius: inherit;
   --progress-color: var(--accent);
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--progress-color) 75%, #ffffff) 0%,
-    var(--progress-color) 100%
-  );
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--progress-color) 75%, var(--surface-base)) 0%,
+      var(--progress-color) 100%
+    );
   box-shadow: 0 6px 12px color-mix(in srgb, var(--progress-color) 30%, transparent);
   transition: width 0.35s ease;
 }

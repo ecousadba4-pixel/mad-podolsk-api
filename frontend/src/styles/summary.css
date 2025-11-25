@@ -140,8 +140,8 @@
 
 /* ensure the small 'i' hint uses blue tones and good contrast for the daily-average card */
 .summary-card.daily-average .summary-card-hint {
-  background: #2f6fed; /* primary blue */
-  color: #ffffff;
+  background: var(--accent); /* primary blue */
+  color: var(--text-inverse);
   box-shadow: 0 4px 10px rgba(47,111,237,0.12);
   font-weight: 700;
   font-size: 12px;
@@ -158,8 +158,8 @@
 }
 
 .summary-card.daily-average.current-month.summary-card-interactive:not(.is-disabled):hover .summary-card-hint {
-  background: color-mix(in srgb, #2f6fed 85%, #ffffff 15%);
-  color: #fff;
+  background: color-mix(in srgb, var(--accent) 85%, var(--surface-base) 15%);
+  color: var(--text-inverse);
 }
 
 .summary-label {
@@ -377,17 +377,17 @@
   position: relative;
 }
 
-.summary-progress-fill {
-  position: absolute;
-  inset: 0;
-  width: 0;
-  border-radius: inherit;
-  --progress-color: var(--accent);
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--progress-color) 75%, #ffffff) 0%,
-    var(--progress-color) 100%
-  );
+  .summary-progress-fill {
+    position: absolute;
+    inset: 0;
+    width: 0;
+    border-radius: inherit;
+    --progress-color: var(--accent);
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--progress-color) 75%, var(--surface-base)) 0%,
+      var(--progress-color) 100%
+    );
   box-shadow: 0 6px 12px color-mix(in srgb, var(--progress-color) 30%, transparent);
   transition: width 0.35s ease;
 }

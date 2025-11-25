@@ -139,9 +139,9 @@ header {
 }
 
 .view-toggle-btn.active {
-	background: var(--gradient-accent);
-	color: #fff;
-	box-shadow: var(--shadow-btn-airy);
+        background: var(--gradient-accent);
+        color: var(--text-inverse);
+        box-shadow: var(--shadow-btn-airy);
 }
 
 .view-toggle-btn:focus-visible {
@@ -534,9 +534,9 @@ input[type="date"] {
 }
 
 .view-tab.is-active {
-	background: var(--accent);
-	color: #fff;
-	box-shadow: var(--shadow-btn-primary);
+        background: var(--accent);
+        color: var(--text-inverse);
+        box-shadow: var(--shadow-btn-primary);
 }
 
 .view-tab:focus-visible {
@@ -649,16 +649,16 @@ input[type="date"] {
 }
 
 .btn {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--gap-md);
-	cursor: pointer;
-	background: var(--accent);
-	color: #fff;
-	box-shadow: var(--shadow-btn-primary);
-	white-space: nowrap;
-	font-weight: 600;
-	letter-spacing: 0.02em;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--gap-md);
+        cursor: pointer;
+        background: var(--accent);
+        color: var(--text-inverse);
+        box-shadow: var(--shadow-btn-primary);
+        white-space: nowrap;
+        font-weight: 600;
+        letter-spacing: 0.02em;
 }
 
 .btn svg {
@@ -675,10 +675,10 @@ input[type="date"] {
 }
 
 .btn-outline {
-	background: #f4f6ff;
-	color: var(--accent-strong);
-	border: 1px solid var(--accent-soft);
-	box-shadow: none;
+        background: var(--surface-highlight);
+        color: var(--accent-strong);
+        border: 1px solid var(--accent-soft);
+        box-shadow: none;
 }
 
 .btn-airy {
