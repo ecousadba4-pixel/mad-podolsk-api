@@ -37,46 +37,39 @@ def compute_plan_fact(month: str):
     """Вернуть план/факт по сметам и сводные суммы за месяц."""
     month_key = normalize_month(month)
 
-    plan_leto_row = db.query_one(
-        "SELECT COALESCE(SUM(planned_amount),0) AS sum FROM skpdi_plan_vs_fact_monthly WHERE to_char(month_start,'YYYY-MM')=%s AND smeta_code=%s",
-        (month_key, 'лето'),
-    )
-    plan_zima_row = db.query_one(
-        "SELECT COALESCE(SUM(planned_amount),0) AS sum FROM skpdi_plan_vs_fact_monthly WHERE to_char(month_start,'YYYY-MM')=%s AND smeta_code=%s",
-        (month_key, 'зима'),
-    )
-    plan_leto = int(plan_leto_row['sum'] or 0)
-    plan_zima = int(plan_zima_row['sum'] or 0)
-    plan_vnereglament = int(round((plan_leto + plan_zima) * 0.43))
-    plan_total = plan_leto + plan_zima + plan_vnereglament
-
-    fact_leto_row = db.query_one(
-        "SELECT COALESCE(SUM(fact_amount_done),0) AS sum FROM skpdi_plan_vs_fact_monthly WHERE to_char(month_start,'YYYY-MM')=%s AND smeta_code=%s",
-        (month_key, 'лето'),
-    )
-    fact_zima_row = db.query_one(
-        "SELECT COALESCE(SUM(fact_amount_done),0) AS sum FROM skpdi_plan_vs_fact_monthly WHERE to_char(month_start,'YYYY-MM')=%s AND smeta_code=%s",
-        (month_key, 'зима'),
-    )
-    fact_vn_row = db.query_one(
-        "SELECT COALESCE(SUM(fact_amount_done),0) AS sum FROM skpdi_plan_vs_fact_monthly WHERE to_char(month_start,'YYYY-MM')=%s AND smeta_code IN ('внерегл_ч_1','внерегл_ч_2')",
+    row = db.query_one(
+        """
+        SELECT month_key, plan_leto, plan_zima, plan_vnereglament, plan_total, fact_leto, fact_zima, fact_vnereglament, fact_total
+        FROM skpdi_plan_fact_monthly_backend
+        WHERE month_key = %s
+        """,
         (month_key,),
     )
-    fact_leto = int(fact_leto_row['sum'] or 0)
-    fact_zima = int(fact_zima_row['sum'] or 0)
-    fact_vnereglament = int(fact_vn_row['sum'] or 0)
-    fact_total = fact_leto + fact_zima + fact_vnereglament
+
+    # Если данных нет, вернём нули
+    if not row:
+        row = {
+            "month_key": month_key,
+            "plan_leto": 0,
+            "plan_zima": 0,
+            "plan_vnereglament": 0,
+            "plan_total": 0,
+            "fact_leto": 0,
+            "fact_zima": 0,
+            "fact_vnereglament": 0,
+            "fact_total": 0,
+        }
 
     return {
-        "month_key": month_key,
-        "plan_leto": plan_leto,
-        "plan_zima": plan_zima,
-        "plan_vnereglament": plan_vnereglament,
-        "plan_total": plan_total,
-        "fact_leto": fact_leto,
-        "fact_zima": fact_zima,
-        "fact_vnereglament": fact_vnereglament,
-        "fact_total": fact_total,
+        "month_key": row.get("month_key", month_key),
+        "plan_leto": int(row.get("plan_leto") or 0),
+        "plan_zima": int(row.get("plan_zima") or 0),
+        "plan_vnereglament": int(row.get("plan_vnereglament") or 0),
+        "plan_total": int(row.get("plan_total") or 0),
+        "fact_leto": int(row.get("fact_leto") or 0),
+        "fact_zima": int(row.get("fact_zima") or 0),
+        "fact_vnereglament": int(row.get("fact_vnereglament") or 0),
+        "fact_total": int(row.get("fact_total") or 0),
     }
 
 
