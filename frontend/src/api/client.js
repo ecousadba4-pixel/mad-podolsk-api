@@ -1,6 +1,12 @@
 // Простая обёртка над fetch с базовым URL и обработкой ошибок
 // В development можно переопределить базу через Vite: VITE_API_BASE
+//
+// Прод-домен бэкенда используется как значение по умолчанию, чтобы UI,
+// размещённый на podolsk.mad.moclean.ru, ходил сразу на рабочий API
+// mad-podolsk-karinausadba.amvera.io и не пытался слать запросы на свой
+// собственный origin.
 const DEFAULT_BASE = 'https://mad-podolsk-karinausadba.amvera.io'
+
 const BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE)
   ? import.meta.env.VITE_API_BASE
   : DEFAULT_BASE
