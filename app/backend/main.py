@@ -39,3 +39,14 @@ def shutdown_event():
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
+@app.get("/debug-routes")
+def debug_routes():
+    routes = []
+    for route in app.routes:
+        if hasattr(route, "path"):
+            routes.append({
+                "path": route.path,
+                "methods": list(route.methods) if hasattr(route, "methods") else [],
+            })
+    return {"routes": routes}
