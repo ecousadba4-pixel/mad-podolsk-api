@@ -84,7 +84,10 @@ if [ ! -d "$DIST_DIR" ]; then
 fi
 
 echo "=== Step 4: upload dist ==="
-ssh_opts=( -i "$SSH_KEY" -o BatchMode=yes -o StrictHostKeyChecking=no )
+ssh_opts=( -i "$SSH_KEY" -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null )
+
+# Ensure local SSH dir exists (Git Bash / Windows can fail creating it automatically)
+mkdir -p "$HOME/.ssh" >/dev/null 2>&1 || true
 ssh ${ssh_opts[*]} "$REMOTE_USER@$REMOTE_HOST" "mkdir -p '$REMOTE_PATH'" || true
 
 if command -v rsync >/dev/null 2>&1; then
