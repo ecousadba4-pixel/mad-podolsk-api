@@ -197,7 +197,7 @@ export const useDashboardStore = defineStore('dashboard', {
       } finally {
         this.dailyLoading = false
       }
-    }
+    },
 
     // Find nearest date (<= today) that has daily data, but only within the current calendar month.
     // This ensures the "По дням" секция показывает только даты текущего месяца.

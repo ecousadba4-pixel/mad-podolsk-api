@@ -499,6 +499,7 @@
   flex: 0 0 12px;
   /* no vertical padding so total height equals control token */
   padding: 0 var(--card-inner-gap);
+}
 .last-updated__text{
   display: flex;
   flex-direction: column;
@@ -536,7 +537,7 @@
   gap: var(--gap-md);
 }
 .month-selector.inline .month-selector__label { color: #444; font-weight: 500 }
-month-selector__label {
+.month-selector__label {
   font-size: var(--font-size-label);
   text-transform: uppercase;
   letter-spacing: 0.06em;
