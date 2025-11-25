@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia'
 
 const store = useDashboardStore()
 const { selectedMonth } = storeToRefs(store)
+const emit = defineEmits(['change'])
 
 const months = computed(() => {
   // генерация списка месяцев (6 месяцев назад + текущий)
@@ -20,9 +21,8 @@ const months = computed(() => {
 })
 
 function onChange(e) {
-  store.setSelectedMonth(e.target.value)
-  store.fetchMonthlySummary()
-  store.fetchSmetaCards()
+  // Inform parent about the change; parent/view should handle store updates
+  emit('change', e.target.value)
 }
 </script>
 

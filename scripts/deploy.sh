@@ -29,7 +29,10 @@ echo "=== Step 2: install dependencies (only in frontend folder) ==="
 if [ -d frontend ]; then
   pushd frontend >/dev/null
   if [ -f package-lock.json ]; then
-    npm ci
+    if ! npm ci; then
+      echo "npm ci failed — falling back to npm install"
+      npm install
+    fi
   else
     npm install
   fi
@@ -37,7 +40,10 @@ if [ -d frontend ]; then
 else
   echo "Warning: frontend folder not found, running install in repo root"
   if [ -f package-lock.json ]; then
-    npm ci
+    if ! npm ci; then
+      echo "npm ci failed — falling back to npm install"
+      npm install
+    fi
   else
     npm install
   fi

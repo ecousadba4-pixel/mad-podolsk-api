@@ -8,11 +8,12 @@ const store = useDashboardStore()
 // use storeToRefs to subscribe only to specific refs, reducing re-renders
 const { smetaCards, smetaCardsLoading, selectedSmeta } = storeToRefs(store)
 
+const emit = defineEmits(['select'])
 const cards = smetaCards
 
 function onCardClick(key) {
-  store.setSelectedSmeta(key)
-  store.fetchSmetaDetails(key)
+  // Notify parent to load details and update store; keeps this component presentational
+  emit('select', key)
 }
 
 function formatNumber(v){ if (v === null || v === undefined) return '-'; return Number(v).toLocaleString('ru-RU') }

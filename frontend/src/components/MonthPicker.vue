@@ -96,10 +96,8 @@ function toggle(){
 }
 
 function select(value){
+  // Emit selection; parent (header/view) should handle store updates
   emit('update:modelValue', value)
-  store.setSelectedMonth(value)
-  store.fetchMonthlySummary()
-  store.fetchSmetaCards()
   closePanel()
 }
 

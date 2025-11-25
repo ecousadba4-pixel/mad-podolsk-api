@@ -51,6 +51,12 @@ function onSelectDescription(item){
   store.setSelectedDescription(item.title || item.description)
   smetaDescVisible.value = true
 }
+
+// Handler for smeta card selection emitted by SmetaCardsSection
+function onSmetaSelect(key){
+  store.setSelectedSmeta(key)
+  store.fetchSmetaDetails(key)
+}
 </script>
 
 <template>
@@ -68,7 +74,7 @@ function onSelectDescription(item){
         <SummaryKpiSection :kpi="monthlySummary.kpi" @open-daily="openDailyRevenue" />
 
         <!-- Сметные карточки -->
-        <SmetaCardsSection />
+        <SmetaCardsSection @select="onSmetaSelect" />
 
         <!-- Детали сметы (появляются при выборе сметы) -->
         <section v-if="smetaDetailsLoading || (smetaDetails && smetaDetails.length)" class="panel smeta-panel smeta-details">
