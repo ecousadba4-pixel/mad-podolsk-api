@@ -6,16 +6,26 @@
 
 /* Accessibility helpers */
 .sr-only,
-.visually-hidden {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
+.visually-hidden,
+.u-sr-only {
+  position: absolute;
+  inset: auto;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@supports not (clip-path: inset(50%)) {
+  .sr-only,
+  .visually-hidden,
+  .u-sr-only {
+    clip: rect(0, 0, 0, 0);
+  }
 }
 
 /* Text helpers */
@@ -52,19 +62,6 @@
 /* Small button baseline (extend in components.css if needed) */
 .btn { display:inline-flex; align-items:center; justify-content:center; gap:var(--gap-xs); cursor:pointer; border:none; background:transparent; padding:0; }
 /* Утилиты: доступность, переходы, скелетоны */
-
-.sr-only,
-.u-sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
 
 .transition-lift,
 .u-transition-lift {

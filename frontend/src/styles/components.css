@@ -75,27 +75,23 @@
 .panel--full-bleed {
   /* Full-bleed centered in viewport while respecting .page horizontal padding */
   position: relative;
-  left: 50%;
-  right: 50%;
+  inset-inline: 50% auto;
+  translate: -50%;
   /* shift outward by half viewport minus page horizontal padding */
-  margin-left: calc(-50vw + var(--page-hpad, 0px));
-  margin-right: calc(-50vw + var(--page-hpad, 0px));
+  margin-inline: calc(-50vw + var(--page-hpad, 0px));
   /* make visible area equal to viewport minus page paddings */
-  width: calc(100vw - (var(--page-hpad, 0px) * 2));
+  inline-size: calc(100vw - (var(--page-hpad, 0px) * 2));
   box-sizing: border-box;
-  padding-left: var(--card-padding);
-  padding-right: var(--card-padding);
-  max-width: 100vw;
+  padding-inline: var(--card-padding);
+  max-inline-size: 100vw;
 }
 
 /* keep inner content of full-bleed panels aligned with page content */
 .panel--full-bleed > .panel-header,
 .panel--full-bleed > .panel-body {
   max-width: var(--page-max-width, 1180px);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--page-hpad, 0px);
-  padding-right: var(--page-hpad, 0px);
+  margin-inline: auto;
+  padding-inline: var(--page-hpad, 0px);
   box-sizing: border-box;
 }
 

@@ -1,7 +1,7 @@
 /* Global layout & base elements */
 
-* {
-	box-sizing: border-box;
+*, *::before, *::after {
+        box-sizing: border-box;
 }
 
 body {
@@ -15,15 +15,21 @@ body {
 
 /* Toasts (could be moved to a components file later) */
 .toast {
-	position: fixed;
-	bottom: 24px;
-	right: 24px;
-	background: var(--bg-card);
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--bg-card);
 	padding: var(--card-padding) var(--gap-xl);
 	border-radius: var(--radius-md);
 	box-shadow: var(--shadow-soft);
-	animation: slideIn 0.3s ease;
-	z-index: 1000;
+        animation: slideIn 0.3s ease;
+        z-index: 1000;
+}
+
+@media (prefers-reduced-motion: reduce) {
+        .toast {
+                animation: none;
+        }
 }
 
 .toast.success {
