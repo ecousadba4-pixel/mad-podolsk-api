@@ -65,7 +65,7 @@ export const useDashboardStore = defineStore('dashboard', {
         this.monthlySummary = res
         // try to fetch last loaded timestamp separately (backend may expose it)
         try{
-          const l = await api.getLastLoaded()
+          const l = await api.getLastLoaded(this.selectedMonth)
           this.loadedAt = l && l.loaded_at ? l.loaded_at : this.loadedAt
         }catch(_){ /* ignore */ }
         try { console.debug && console.debug('[store] fetchMonthlySummary:success', this.selectedMonth, res) } catch(e){}

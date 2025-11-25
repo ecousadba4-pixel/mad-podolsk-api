@@ -59,14 +59,19 @@ export async function getMonthlySummary(month) {
   }
 }
 
-export async function getLastLoaded() {
+export async function getLastLoaded(month) {
   try {
     return await request(`/api/dashboard/last-loaded`)
   } catch (err) {
-    // if not present, combined endpoint contains last_updated
+    // if not present, combined endpoint may contain last_updated
     if (err && (err.status === 404 || (err.message && err.message.includes('Not Found')))) {
-      const res = await request(`/api/dashboard`)
-      if (res && res.last_updated) return { loaded_at: res.last_updated }
+      // prefer to call combined endpoint with a month param to avoid 422 from servers
+      const m = month ? normalizeMonth(month) : undefined
+      const path = m ? `/api/dashboard?month=${encodeURIComponent(m)}` : `/api/dashboard`
+      try {
+        const res = await request(path)
+        if (res && res.last_updated) return { loaded_at: res.last_updated }
+      } catch (_){ /* ignore */ }
       return { loaded_at: null }
     }
     throw err
