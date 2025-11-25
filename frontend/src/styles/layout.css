@@ -46,13 +46,16 @@ body {
 }
 
 .page {
-	max-width: 1180px;
+	--page-hpad: clamp(12px, 3vw, 28px);
+	--page-max-width: 1180px;
+	max-width: var(--page-max-width);
 	margin: 0 auto;
-	padding: var(--card-padding) clamp(12px, 3vw, 28px) 48px;
+	padding: var(--card-padding) var(--page-hpad) 48px;
 }
 
 /* Page content wrapper used by App.vue */
-.page__content {
+.page__content,
+.page-content {
 	padding: var(--card-padding);
 	flex-grow: 1;
 }
@@ -831,5 +834,32 @@ input[type="date"] {
 		white-space: nowrap;
 		font-size: clamp(0.78rem, 3.6vw, 0.9rem);
 	}
+}
+
+/* Route transition / shell for smoother page switches */
+.router-shell {
+	position: relative;
+	width: 100%;
+}
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+	transition: opacity .18s ease, transform .18s ease;
+}
+
+.fade-slide-enter-from { opacity: 0; transform: translateY(6px); }
+.fade-slide-enter-to   { opacity: 1; transform: translateY(0); }
+.fade-slide-leave-from { opacity: 1; transform: translateY(0); }
+.fade-slide-leave-to   { opacity: 0; transform: translateY(-6px); }
+
+/* Ensure child takes full width during transition */
+.router-shell > * {
+	width: 100%;
+}
+
+/* Optional: hint to browser about upcoming transforms */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+	will-change: opacity, transform;
 }
 
