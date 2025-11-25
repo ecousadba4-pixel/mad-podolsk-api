@@ -596,7 +596,8 @@ month-selector__label {
   flex-direction: column;
   background: var(--bg-card);
   border-radius: var(--radius-lg);
-  padding: var(--card-padding);
+  /* чуть меньше внутренних отступов, чтобы сократить высоту карточки */
+  padding: calc(var(--card-padding) * 0.65);
   box-shadow: var(--shadow-card);
   border: 1px solid var(--border-soft);
   overflow: hidden;
@@ -608,15 +609,15 @@ month-selector__label {
   box-shadow: 0 8px 20px rgba(47,111,237,0.08);
 }
 /* accent removed: left vertical strip was removed per design */
-.smeta-card__body{ flex:1; display:flex; flex-direction:column; gap:var(--gap-sm); min-width:0 }
+.smeta-card__body{ flex:1; display:flex; flex-direction:column; gap:var(--gap-xs); min-width:0 }
 .smeta-card__head{ display:flex; justify-content:space-between; align-items:center }
-.smeta-card__title{ margin:0; font-size: var(--font-size-h2); font-weight:700; color:var(--text-main) }
-.smeta-card__meta-pill{ background: rgba(15,23,42,0.06); padding: var(--gap-xs) var(--card-inner-gap); border-radius:12px; font-size:var(--font-size-caption); color:var(--text-muted) }
+.smeta-card__title{ margin:0; /* чуть меньший заголовок внутри карточки */ font-size: var(--font-size-h3); font-weight:700; color:var(--text-main) }
+.smeta-card__meta-pill{ background: rgba(15,23,42,0.06); padding: 4px calc(var(--card-inner-gap) * 0.6); border-radius:10px; font-size:var(--font-size-caption); color:var(--text-muted) }
 
-.smeta-card__numbers{ display:flex; gap:var(--gap-lg); align-items:baseline; flex-wrap:nowrap; justify-content:space-between }
+.smeta-card__numbers{ display:flex; gap:var(--gap-md); align-items:baseline; flex-wrap:nowrap; justify-content:space-between }
 .smeta-card__col{ display:flex; flex-direction:column; min-width:0; flex:1; align-items:center }
 .smeta-card__label{ font-size: var(--font-size-label); color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em }
-.smeta-card__value{ font-size: var(--font-size-h2); font-weight:800; color:var(--text-main); margin-top:var(--gap-xs) }
+.smeta-card__value{ /* приведение размера значений к общему правилу */ font-size: var(--font-size-h3); font-weight:700; color:var(--text-main); margin-top:4px }
 .smeta-card__value.delta-negative{ color:var(--danger) }
 
 .smeta-card__progress{ display:flex; flex-direction:column; gap:var(--gap-sm); width:100% }
