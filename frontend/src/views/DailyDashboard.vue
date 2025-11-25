@@ -1,13 +1,9 @@
 <template>
   <main class="page">
     <section class="page-content">
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-        <button class="btn" @click="store.fetchDaily(store.selectedDate)">Загрузить дневную таблицу</button>
-        <div class="dashboard__small">Дата: <strong>{{ store.selectedDate }}</strong></div>
-      </div>
-
+      
       <div v-if="store.dailyLoading">Загрузка...</div>
-      <DailyTable v-else :rows="store.dailyRows" :total-amount="store.dailyTotal" />
+      <DailyTable v-else :rows="store.dailyRows" :total-amount="store.dailyTotal" :date="store.selectedDate" />
     </section>
   </main>
 </template>

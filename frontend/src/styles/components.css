@@ -498,7 +498,8 @@
   background: var(--success);
   flex: 0 0 12px;
   /* no vertical padding so total height equals control token */
-  padding: 0 var(--card-inner-gap);
+  padding: 0;
+  border-radius: 50%;
 }
 .last-updated__text{
   display: flex;
