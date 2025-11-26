@@ -34,7 +34,22 @@
 .card--interactive:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 
 /* Smeta / dashboard cards */
-.smeta-cards__list { display: grid; grid-template-columns: 1fr; gap: var(--grid-gap); align-items: start; }
+.smeta-cards__list { position: relative; display: grid; grid-template-columns: 1fr; gap: var(--grid-gap); align-items: start; }
+.smeta-cards__list.is-loading { opacity: 0.9; filter: saturate(0.9); transition: opacity 160ms ease; }
+.smeta-cards__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--surface-base) 80%, transparent);
+  border-radius: var(--radius-lg);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+}
 
 /* Desktop: show 3 cards per row where ample width is available */
 @media (min-width: 1000px) {

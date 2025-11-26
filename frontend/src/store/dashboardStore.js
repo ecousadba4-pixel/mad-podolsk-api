@@ -130,13 +130,14 @@ export const useDashboardStore = defineStore('dashboard', () => {
   })
 
   watch(smetaCardsQuery.data, (cards) => {
-    if (!selectedSmeta.value && cards && cards.length) {
-      selectedSmeta.value = cards[0].smeta_key
+    const list = cards || []
+    const hasSelected = list.some(c => c && c.smeta_key === selectedSmeta.value)
+    if (!hasSelected) {
+      selectedSmeta.value = list.length ? list[0].smeta_key : null
     }
   }, { immediate: true })
 
   watch(selectedMonth, () => {
-    selectedSmeta.value = null
     selectedDescription.value = null
     invalidateQueries(['smeta-details'])
   })

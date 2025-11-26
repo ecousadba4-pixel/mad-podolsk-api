@@ -9,7 +9,8 @@ const store = useDashboardStore()
 const { smetaCards, smetaCardsLoading, selectedSmeta } = storeToRefs(store)
 
 const emit = defineEmits(['select'])
-const cards = smetaCards
+const cards = computed(() => smetaCards.value || [])
+const isInitialLoading = computed(() => smetaCardsLoading.value && cards.value.length === 0)
 
 function onCardClick(key) {
   // Notify parent to load details and update store; keeps this component presentational
@@ -28,9 +29,9 @@ function formatNumber(v){ if (v === null || v === undefined) return '-'; return 
     </div>
 
     <div class="panel-body">
-      <div v-if="smetaCardsLoading">Загрузка карточек…</div>
+      <div v-if="isInitialLoading" class="dashboard__state">Загружаем карточки…</div>
 
-      <div v-else class="smeta-cards__list">
+      <div v-else class="smeta-cards__list" :class="{ 'is-loading': smetaCardsLoading }">
       <article v-for="c in cards" :key="c.smeta_key" :class="['smeta-card','smeta-card--large','card--interactive','p-md', { 'is-selected': selectedSmeta === c.smeta_key } ]" @click="onCardClick(c.smeta_key)">
         <div class="smeta-card__body">
           <header class="smeta-card__head">
@@ -64,6 +65,9 @@ function formatNumber(v){ if (v === null || v === undefined) return '-'; return 
           </div>
         </div>
       </article>
+        <div v-if="smetaCardsLoading" class="smeta-cards__overlay">
+          <span>Обновляем данные…</span>
+        </div>
         </div>
 
         <!-- Details are rendered as a separate block in the parent view -->
