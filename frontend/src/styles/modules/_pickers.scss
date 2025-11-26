@@ -28,7 +28,8 @@
 .month-picker__label,
 .month-select label,
 .month-selector__label,
-.day-select label {
+.day-select label,
+.day-picker__label {
   font-family: var(--font-din);
 }
 .month-select-control { position:relative; flex:1; min-width:146px }
@@ -36,6 +37,12 @@
 .month-select-control::after { content:""; position:absolute; top:50%; right:8px; width:8px; height:8px; border-right:2px solid var(--chevron-color); border-bottom:2px solid var(--chevron-color); transform:translateY(-50%) rotate(45deg); pointer-events:none; opacity:1 }
 
 select, input[type="date"] { border:none; background:transparent; font-size:var(--font-size-body); color:var(--text-main); outline:none; font-weight:600; font-family: var(--font-sans); }
+
+/* Ensure current value in pickers uses the sans font (month/day current value) */
+.month-picker__current,
+.day-picker__current {
+  font-family: var(--font-sans);
+}
 
 @media (max-width: 640px) {
   .day-picker__toggle,

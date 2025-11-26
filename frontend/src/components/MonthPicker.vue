@@ -173,7 +173,7 @@ onBeforeUnmount(()=>{
   document.removeEventListener('click', onClickOutside)
 })
 
-const label = 'Месяц'
+const label = 'МЕСЯЦ'
 const currentLabel = computed(()=>{
   const v = props.modelValue || selectedMonth.value
   if (!v) return ''
@@ -191,40 +191,8 @@ const currentLabel = computed(()=>{
   display: inline-block;
 }
 
-.month-picker__toggle {
-  width: auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--gap-sm);
-  padding: var(--picker-toggle-padding);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-md);
-  background: var(--bg-card);
-  box-shadow: var(--shadow-soft);
-  min-height: var(--control-height);
-  cursor: pointer;
-}
-
-.month-picker__label,
-.month-picker__current {
-  font-family: var(--font-sans);
-}
-
-.month-picker__label {
-  font-size: var(--font-size-label);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-soft);
-}
-
-.month-picker__current {
-  font-weight: 700;
-  font-size: var(--font-size-body);
-  color: var(--text-main);
-}
-
-.month-picker__arrow { color: var(--chevron-color); }
+/* Use centralized .picker-toggle and .month-picker__label/.month-picker__current
+   provided by shared styles in _pickers.scss and _buttons-pills.scss */
 
 .month-picker__panel {
   position: absolute;

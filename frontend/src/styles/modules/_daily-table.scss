@@ -1,96 +1,69 @@
 @layer components {
-  /* Styles extracted from _work.scss and _layout-grid.scss for the
-     Daily 'Данные по выручке' block so they live in a dedicated module. */
+  /* Minimal, robust styles for Daily table.
+     - use `.cell-inner` wrappers in template for reliable centering
+     - numeric columns use `.numeric` class
+     - name column keeps left alignment */
 
-  .daily-table.has-data {
-    border: 1px solid var(--border-soft);
-    border-radius: 20px;
-    overflow: hidden;
-    background: rgb(255 255 255 / 95%);
-    box-shadow: var(--shadow-soft);
+  .smeta-breakdown-table--daily {
+    background: transparent;
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
   }
 
-  .daily-table .work-row,
-  .daily-skeleton .work-row-skeleton {
-    grid-template-columns: minmax(112px, 140px) minmax(0, 3.9fr) minmax(62px, 0.52fr) minmax(78px, 0.65fr) minmax(116px, 1fr);
+  .smeta-breakdown-table--daily thead th,
+  .smeta-breakdown-table--daily tbody td,
+  .smeta-breakdown-table--daily tfoot td {
+    padding: var(--gap-sm) var(--gap-md);
+    vertical-align: middle;
+    line-height: 1.3;
   }
 
-  /* Center headers and data for numeric columns (unit / volume / amount)
-     so header and cell content sit on the same vertical axis */
-  /* Use a more specific selector and flex layout to ensure both header
-     and cell contents are centered on the same vertical axis and to
-     override other layout rules that may shift numeric cells. */
+  /* Numeric columns centered */
   .panel .smeta-breakdown-table--daily thead th.numeric,
   .panel .smeta-breakdown-table--daily tbody td.numeric,
   .panel .smeta-breakdown-table--daily tfoot td.numeric {
-    display: table-cell; /* keep natural table semantics */
-    text-align: center !important;
-    vertical-align: middle !important;
+    text-align: center;
   }
 
-  /* For extra robustness (some contexts use grid/flex for skeletons),
-     provide an inner centering helper for the cell contents. */
-  .panel .smeta-breakdown-table--daily tbody td.numeric > *,
-  .panel .smeta-breakdown-table--daily thead th.numeric > * {
+  /* Rely on .cell-inner wrapper for exact centering (flex-based) */
+  .panel .smeta-breakdown-table--daily th .cell-inner,
+  .panel .smeta-breakdown-table--daily td .cell-inner {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 
-  .daily-table .work-row-header { text-transform: uppercase; font-size: var(--font-size-label); letter-spacing: 0.08em; }
-  .daily-table .work-row-header div,
-  .daily-table .work-row div { text-align: left; }
-  .daily-table .work-row-header div:nth-child(n + 4),
-  .daily-table .work-row div:nth-child(n + 4) { text-align: right; }
-  .daily-table .work-row div { font-variant-numeric: tabular-nums; }
-  .daily-table .work-row strong { font-weight: 700; }
-
-  .daily-cell { display: flex; flex-direction: column; gap: var(--gap-xs); }
-  .daily-cell-label { display: none; font-size: var(--font-size-label); letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
-  .daily-cell-value { font-variant-numeric: tabular-nums; }
-  .daily-cell-total-amount { text-align: right; }
-  .daily-table .work-row-total { font-weight: 700; background: rgb(0 0 0 / 2%); }
-
-  .daily-table .work-row:last-child { border-bottom: 1px solid var(--border-soft); }
-
-  @media (max-width: 767px) {
-    .daily-table .work-row-header { display: none; }
-    .daily-table .work-row {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      grid-template-areas: "name name name" "unit volume amount";
-      row-gap: var(--gap-md);
-      align-items: flex-start;
-      padding: var(--card-frame-gap) var(--card-frame-gap) var(--gap-md);
-      border-bottom: 1px solid var(--border-soft);
-    }
-    .daily-table .work-row-last { border-bottom: none; }
-    .daily-table .daily-cell { min-width: 0; }
-    .daily-cell-label { display: block; margin-bottom: var(--gap-xs); }
-    .daily-table .daily-cell-smeta { display: none; }
-    .daily-table .daily-cell-name { grid-area: name; }
-    .daily-table .daily-cell-unit { grid-area: unit; }
-    .daily-table .daily-cell-volume { grid-area: volume; text-align: center; }
-    .daily-table .daily-cell-amount { grid-area: amount; text-align: right; }
-    .daily-table .daily-total-row {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      grid-template-areas: "total-label total-label total-amount";
-      align-items: center;
-      padding: var(--card-padding) var(--card-frame-gap);
-      gap: var(--gap-md);
-    }
-    .daily-total-row .daily-cell-total-label { grid-area: total-label; }
-    .daily-total-row .daily-cell-total-amount { grid-area: total-amount; text-align: right; }
-    .daily-total-row .daily-cell-total-gap { display: none; }
+  /* Name stays left-aligned inside the same wrapper */
+  .panel .smeta-breakdown-table--daily td .cell-inner--name {
+    justify-content: flex-start;
+    padding-left: 0.25rem;
   }
 
-  /* panel adjustments specific to daily full-bleed panels */
+  /* Tighter spacing for full-bleed daily panels to match other cards */
   .smeta-panel.panel--full-bleed {
     padding-top: calc(var(--card-padding) / 2);
   }
+
   .smeta-panel.panel--full-bleed > .panel-header {
     margin-top: calc(var(--card-inner-gap) / 2);
     margin-bottom: calc(var(--card-inner-gap) / 2);
+  }
+
+  /* mobile: stack cells simply */
+  @media (max-width: 767px) {
+    .smeta-breakdown-table--daily thead { display: none; }
+    .smeta-breakdown-table--daily table { table-layout: auto; }
+    .smeta-breakdown-table--daily tbody td { display: block; width: 100%; }
+    .smeta-breakdown-table--daily tbody tr { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--gap-sm); align-items: center; padding: var(--gap-sm) 0; }
+    .smeta-breakdown-table--daily tbody td.name { grid-column: 1 / -1; }
+    .smeta-breakdown-table--daily tbody td.numeric { text-align: center; }
   }
 
 }

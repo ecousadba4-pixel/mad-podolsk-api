@@ -17,13 +17,15 @@
 @use './modules/_cards.scss' as *;
 @use './modules/_summary.scss' as *;
 @use './modules/_work.scss' as *;
-@use './modules/_daily-table.scss' as *;
 @use './modules/_categories.scss' as *;
 
 /* Legacy CSS imports removed — styles migrated into `_modules` SCSS files. */
 
 /* Переопределения и «минимальная логика» на SCSS/CSS-переменных */
 @use './modules/_pickers.scss' as *;
+
+/* daily table styles loaded last to ensure overrides for numeric column alignment */
+@use './modules/_daily-table.scss' as *;
 
 /* Declare CSS layers after all `@use` rules so SASS module rules are valid.
    `@use` must come before any other stylesheet rules — keep @layer below. */

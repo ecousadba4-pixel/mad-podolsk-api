@@ -2,7 +2,7 @@
   <div class="last-updated items-center p-sm" v-if="display">
     <span class="last-updated__dot" aria-hidden="true"></span>
     <div class="last-updated__text">
-      <div class="last-updated__label text-label">ДАННЫЕ ОБНОВЛЕНЫ</div>
+      <div class="last-updated__label text-label">ОБНОВЛЕНИЕ</div>
       <div class="last-updated__time text-body">{{ formatted }}</div>
     </div>
   </div>
@@ -47,10 +47,10 @@ const formatted = computed(()=>{
 .last-updated {
   display: inline-flex;
   align-items: center;
-  gap: var(--gap-md);
+  gap: 10px; /* уменьшенный горизонтальный gap между точкой и текстом */
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
-  padding: var(--gap-sm) var(--card-inner-gap);
+  padding: 6px 10px; /* уменьшенные внутренние отступы для экономии ширины */
   border-radius: 12px;
   box-shadow: var(--shadow-soft);
   min-height: var(--control-height);
@@ -60,10 +60,10 @@ const formatted = computed(()=>{
 }
 
 .last-updated__dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   background: var(--success);
-  flex: 0 0 12px;
+  flex: 0 0 10px;
   padding: 0;
   border-radius: 50%;
 }
@@ -72,7 +72,7 @@ const formatted = computed(()=>{
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px; /* немного больше пространства для читаемости */
+  gap: 4px; /* уменьшенный вертикальный зазор */
   min-width: 0;
 }
 
@@ -81,14 +81,16 @@ const formatted = computed(()=>{
   text-transform: uppercase;
   letter-spacing: 0.04em;
   text-align: center;
-  white-space: nowrap; /* keep single line */
+  /* allow wrapping to up to 2 lines instead of aggressive single-line shrinking */
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
   line-height: 1.05;
   width: 100%;
   box-sizing: border-box;
-  /* Responsive but not aggressive shrink: clamp between sensible min and design size */
-  font-size: clamp(0.72rem, 1.2vw, var(--font-size-caption));
+  font-size: clamp(0.64rem, 1.0vw, var(--font-size-caption));
 }
 
 .last-updated__time {
@@ -101,7 +103,7 @@ const formatted = computed(()=>{
   line-height: 1.05;
   width: 100%;
   box-sizing: border-box;
-  font-size: clamp(0.86rem, 1.6vw, var(--font-size-body-sm));
+  font-size: clamp(0.78rem, 1.2vw, var(--font-size-body-sm));
 }
 
 @media (max-width: 640px) {

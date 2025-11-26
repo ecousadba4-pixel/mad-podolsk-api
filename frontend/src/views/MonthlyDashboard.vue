@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted, computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
+import { useIsMobile } from '../composables/useIsMobile.js'
 import { useDashboardStore } from '../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
 import SmetaCardsSection from '../components/sections/SmetaCardsSection.vue'
@@ -9,10 +10,11 @@ import ContractExecutionSection from '../components/sections/ContractExecutionSe
 import SummaryKpiSection from '../components/sections/SummaryKpiSection.vue'
 import DailyRevenueModal from '../components/modals/DailyRevenueModal.vue'
 import SmetaDescriptionDailyModal from '../components/modals/SmetaDescriptionDailyModal.vue'
-import { ref } from 'vue'
-
 const smetaSortKey = ref('plan')
 const smetaSortDir = ref(-1)
+
+// use composable for mobile detection
+const { isMobile } = useIsMobile()
 
 const store = useDashboardStore()
 const { monthlyLoading, monthlyError, monthlySummary, smetaDetails, smetaDetailsLoading, selectedMonth, selectedSmeta, selectedDescription, smetaCards } = storeToRefs(store)
@@ -98,7 +100,7 @@ function onSmetaSelect(key){
               <p class="panel-note">Детали по виду работы при нажатии</p>
             </div>
             <div class="panel-header-controls panel-controls">
-              <select class="smeta-sort-select" v-model="smetaSortKey" @change="smetaSortDir = -1">
+              <select v-if="isMobile" class="smeta-sort-select" v-model="smetaSortKey" @change="smetaSortDir = -1">
                 <option value="plan">План — по убыванию</option>
                 <option value="fact">Факт — по убыванию</option>
                 <option value="delta">Отклонение — по убыванию</option>
