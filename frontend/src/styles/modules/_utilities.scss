@@ -1,3 +1,4 @@
+@layer utilities {
 /* Consolidated utilities (migrated from utilities.css) */
 
 :root {
@@ -214,3 +215,4 @@
 .smeta-title-toggle .chev { transition: transform .18s ease, color .12s ease; font-size: 14px; }
 .smeta-title-toggle .chev.rotated { transform: rotate(180deg); color: #6b7280; }
 td .smeta-title-wrapper { align-items: center; }
+}

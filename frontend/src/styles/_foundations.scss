@@ -24,13 +24,15 @@ $bp-xl: 1024px;
   font-size: clamp(#{$min}, #{$preferred}, #{$max});
 }
 
-/* Set small helpers as custom properties on :root for usage later */
-:root {
-  --page-hpad: var(--page-hpad); /* kept for reference */
-}
+@layer foundations {
+  /* Set small helpers as custom properties on :root for usage later */
+  :root {
+    --page-hpad: var(--page-hpad); /* kept for reference */
+  }
 
-/* Mockup/demo token moved from mockup.css to foundations so it's available
-   when the mockup is intentionally used in demos. Remove later if not needed. */
-:root {
-  --mockup-bg: linear-gradient(120deg, #f8fbff 0%, #f4f8ff 32%, #f9f9ff 100%);
+  /* Mockup/demo token moved from mockup.css to foundations so it's available
+     when the mockup is intentionally used in demos. Remove later if not needed. */
+  :root {
+    --mockup-bg: linear-gradient(120deg, #f8fbff 0%, #f4f8ff 32%, #f9f9ff 100%);
+  }
 }

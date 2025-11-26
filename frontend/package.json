@@ -8,8 +8,8 @@
     "build": "vite build",
     "build:analyze": "ANALYZE=true vite build",
     "preview": "vite preview",
-    "lint:css": "stylelint \"src/**/*.css\"",
-    "lint:css:fix": "stylelint \"src/**/*.css\" --fix",
+    "lint:css": "stylelint \"src/**/*.{css,scss}\"",
+    "lint:css:fix": "stylelint \"src/**/*.{css,scss}\" --fix",
     "check:tokens": "node ./scripts/check-tokens.cjs"
   },
   "dependencies": {
@@ -28,8 +28,11 @@
     "sass": "^1.94.2",
     "sass-embedded": "^1.93.3",
     "stylelint": "^16.26.0",
+    "stylelint-config-standard-scss": "^13.1.0",
+    "stylelint-scss": "^6.7.0",
     "stylelint-config-standard": "^39.0.1",
     "stylelint-order": "^7.0.0",
+    "postcss-scss": "^4.0.9",
     "vite": "^7.2.4",
     "vite-plugin-compression": "^0.5.1",
     "vue-virtual-scroller": "^2.0.0-beta.3",

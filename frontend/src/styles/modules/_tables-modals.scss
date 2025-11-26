@@ -1,3 +1,4 @@
+@layer components {
 /* Таблицы и модальные таблицы: общие примитивы для `smeta-breakdown-table` и загрузочных обёрток */
 
 /* Обёртка деталей сметы — отвечает за показ skeleton/затемнения при загрузке */
@@ -269,3 +270,4 @@
 .smeta-breakdown-table thead { display: table-header-group; }
 .smeta-breakdown-table tbody { display: table-row-group; }
 .smeta-breakdown-table tfoot { display: table-footer-group; }
+}

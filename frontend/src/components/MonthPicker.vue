@@ -182,3 +182,116 @@ const currentLabel = computed(()=>{
 })
 </script>
 
+<style scoped lang="scss">
+.month-picker {
+  position: relative;
+  display: inline-block;
+}
+
+.month-picker__toggle {
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-sm);
+  padding: var(--picker-toggle-padding);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-soft);
+  min-height: var(--control-height);
+  cursor: pointer;
+}
+
+.month-picker__label,
+.month-picker__current {
+  font-family: var(--font-sans);
+}
+
+.month-picker__label {
+  font-size: var(--font-size-label);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-soft);
+}
+
+.month-picker__current {
+  font-weight: 700;
+  font-size: var(--font-size-body);
+  color: var(--text-main);
+}
+
+.month-picker__arrow { color: var(--chevron-color); }
+
+.month-picker__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 100%;
+  width: auto;
+  box-sizing: border-box;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  box-shadow: var(--shadow-card);
+  padding: 8px;
+  z-index: 600;
+}
+
+.month-picker__list {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.month-picker__item { margin: 0; }
+
+.month-picker__item button {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-size: var(--font-size-body);
+  font-family: var(--font-sans);
+}
+
+.month-picker__item button:hover,
+.month-picker__item button.is-focused { background: var(--surface-highlight); }
+
+.month-picker__item button.is-active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+
+.month-picker__item button:focus { outline: 2px solid color-mix(in srgb, var(--accent) 20%, transparent); outline-offset: 2px; }
+
+.month-picker__empty {
+  padding: 10px;
+  color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+  .month-picker__toggle {
+    width: 100%;
+    min-width: 0;
+    padding: 0 var(--gap-sm);
+    min-height: var(--control-height-mobile);
+    height: var(--control-height-mobile);
+    gap: var(--gap-sm);
+  }
+
+  .month-picker__label { font-size: var(--font-size-tiny); }
+  .month-picker__current { font-size: var(--font-size-body); }
+}
+</style>
+

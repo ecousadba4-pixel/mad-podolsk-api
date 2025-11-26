@@ -1,23 +1,24 @@
-/* Layout grid, containers and panel primitives extracted from layout.css */
+@layer components {
+  /* Layout grid, containers and panel primitives extracted from layout.css */
 
-/* Toasts (global) */
-.toast {
-  /* moved from `_overrides.scss` — keep toast offsets token-driven */
-  position: fixed;
-  bottom: var(--fab-offset);
-  right: var(--fab-offset);
-  background: var(--bg-card);
-  padding: var(--card-padding) var(--gap-xl);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-soft);
-  animation: slide-in 0.3s ease;
-  z-index: 1000;
-}
+  /* Toasts (global) */
+  .toast {
+    /* moved from `_overrides.scss` — keep toast offsets token-driven */
+    position: fixed;
+    bottom: var(--fab-offset);
+    right: var(--fab-offset);
+    background: var(--bg-card);
+    padding: var(--card-padding) var(--gap-xl);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    animation: slide-in 0.3s ease;
+    z-index: 1000;
+  }
 
-@media (prefers-reduced-motion: reduce) {
-  .toast { animation: none; }
-}
-.toast.success { border-left: 4px solid var(--success); }
+  @media (prefers-reduced-motion: reduce) {
+    .toast { animation: none; }
+  }
+  .toast.success { border-left: 4px solid var(--success); }
 .toast.error   { border-left: 4px solid var(--danger); }
 
 /* Panel primitive: generic surface for sections and panels used across views
@@ -459,4 +460,5 @@
 .view-toggle-btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
 }

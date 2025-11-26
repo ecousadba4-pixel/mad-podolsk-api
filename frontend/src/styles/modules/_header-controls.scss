@@ -1,3 +1,4 @@
+@layer components {
 /* Header and top-level controls (extracted from `components.css`) */
 
 .app-header {
@@ -185,44 +186,6 @@
 
 .app-header__month-input::-webkit-calendar-picker-indicator{ opacity: 0; }
 
-.last-updated {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--gap-md);
-  background: var(--bg-card);
-  border: 1px solid var(--border-soft);
-  padding: var(--gap-sm) var(--card-inner-gap);
-  border-radius: 12px;
-  box-shadow: var(--shadow-soft);
-
-  /* allow the badge to size to its content on desktop */
-  min-width: 0;
-  width: auto;
-  max-width: 100%;
-}
-
-.last-updated { min-height: var(--control-height); }
-
-.last-updated__dot{
-  width: 12px;
-  height: 12px;
-  background: var(--success);
-  flex: 0 0 12px;
-  padding: 0;
-  border-radius: 50%;
-}
-
-.last-updated__text{ display:flex; flex-direction:column; align-items:stretch }
-
-.last-updated__label{ font-size: var(--font-size-caption); color: var(--text-muted); text-transform:uppercase; letter-spacing:0.04em }
-
-.last-updated__time{ font-size: var(--font-size-body-sm); font-weight:600; color:var(--text-main) }
-
-
-
-.last-updated__label,
-.last-updated__time{ display:block; width:100%; box-sizing:border-box }
-
 .month-selector { display:inline-flex; flex-direction:column; font-size:var(--font-size-body-sm) }
 .month-selector.inline{ display:flex; align-items:center; gap:var(--gap-md) }
 .month-selector.inline .month-selector__label{ color:var(--text-label-strong); font-weight:500 }
@@ -236,7 +199,6 @@
   .app-header__mode-switch { height: 32px; min-height: 32px; padding: 2px; border-radius: 8px; box-sizing: border-box; }
   .app-header__mode-switch .mode-btn { height: 100%; min-height: 28px; padding: 4px 8px; }
   .app-header__month { flex: 1 1 50%; min-width: 0 }
-  .last-updated { flex: 1 1 50%; min-width: 0 }
 }
 
 @media (max-width: 640px) {
@@ -244,8 +206,8 @@
   .app-header__right { display: flex; flex-wrap: wrap; gap: var(--gap-md); align-items: center; }
   .app-header__mode-switch { flex: 1 1 100%; width: 100%; justify-content: flex-start; padding: 2px; min-height: var(--control-height-mobile); height: var(--control-height-mobile); border-radius: 8px; }
   .app-header__month { flex: 1 1 60%; min-width: 0; margin-right: var(--gap-md); }
-  .last-updated { flex: 1 1 40%; min-width: 0; justify-content: flex-end; }
   .app-header__right > * { min-height: var(--control-height-mobile); height: var(--control-height-mobile); }
   .app-header__left { flex: 1 1 100%; margin-bottom: var(--gap-sm); }
   .app-header__title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: var(--font-size-h2); }
+}
 }

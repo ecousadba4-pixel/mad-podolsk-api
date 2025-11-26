@@ -1,6 +1,7 @@
 /* Tokens — единый источник правды для CSS custom properties.
   Содержит CSS custom properties, используемые как исходная база.
 */
+@layer tokens {
 :root {
   --font-sans: "Manrope", system-ui, -apple-system, blinkmacsystemfont, "Segoe UI", sans-serif;
 
@@ -158,4 +159,106 @@
     --card-frame-gap: var(--card-frame-gap-desktop);
     --card-inner-gap: var(--card-inner-gap-desktop);
   }
+}
+
+/* Тёмная тема: используется при наличии класса/атрибута на :root
+   и включается автоматически через prefers-color-scheme. */
+[data-theme='dark'],
+.theme-dark {
+  color-scheme: dark;
+  --surface-base: #0f1625;
+  --surface-overlay: #101828ee;
+  --surface-highlight: #1b2435;
+  --surface-contrast: #e6ecff;
+  --bg: #0b1220;
+  --bg-card: #141c2e;
+  --bg-muted: #111827;
+  --border-soft: #26314a;
+  --border-neutral: #32405d;
+  --border-faint: rgb(230 236 255 / 6%);
+  --border-strong: #3d4f73;
+  --text-main: #e8edf8;
+  --text-inverse: #0b1220;
+  --text-label-strong: #cbd4e5;
+  --text-subtle: #c1c9dc;
+  --text-muted: #9ba7bf;
+  --text-soft: #7f8bac;
+  --text-faint: #6d7897;
+  --accent: #5c83ff;
+  --brand-accent: #7ca6ff;
+  --accent-strong: #8bb6ff;
+  --accent-soft: #1e2c45;
+  --danger: #ff7a70;
+  --success: #2bb38f;
+  --chevron-color: rgb(203 212 229 / 70%);
+  --gradient-page: linear-gradient(180deg, #0b1220 0%, #111a2c 60%, #0b1220 100%);
+  --gradient-skeleton: linear-gradient(90deg, var(--bg-muted) 25%, var(--bg-card) 50%, var(--bg-muted) 75%);
+  --gradient-btn-airy: linear-gradient(180deg, #182338 0%, #121c2c 100%);
+  --gradient-btn-airy-hover: linear-gradient(180deg, #1d2840 0%, #152033 100%);
+  --gradient-btn-airy-desktop: linear-gradient(180deg, #1a263f 0%, #131d31 100%);
+  --gradient-btn-airy-desktop-hover: linear-gradient(180deg, #1f2b45 0%, #172338 100%);
+  --shadow-btn-airy-hover: 0 12px 32px rgb(92 131 255 / 16%);
+  --shadow-btn-airy-active: 0 8px 22px rgb(92 131 255 / 14%);
+  --shadow-btn-airy-desktop: 0 6px 16px rgb(232 237 248 / 6%);
+  --shadow-btn-airy-desktop-hover: 0 8px 18px rgb(232 237 248 / 8%);
+  --shadow-btn-airy-desktop-active: 0 4px 12px rgb(232 237 248 / 6%);
+  --shadow-btn-primary: 0 10px 20px rgb(92 131 255 / 24%);
+  --shadow-btn-primary-active: 0 6px 12px rgb(92 131 255 / 18%);
+  --shadow-card: 0 12px 26px rgb(0 0 0 / 22%);
+  --shadow-soft: 0 8px 20px rgb(0 0 0 / 16%);
+  --shadow-strong: 0 14px 32px rgb(0 0 0 / 28%);
+  --shadow-category-active: 0 18px 28px rgb(92 131 255 / 24%);
+  --shadow-category-indicator: 0 6px 16px rgb(92 131 255 / 45%);
+  --shadow-summary-hover: 0 10px 24px rgb(92 131 255 / 26%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --surface-base: #0f1625;
+    --surface-overlay: #101828ee;
+    --surface-highlight: #1b2435;
+    --surface-contrast: #e6ecff;
+    --bg: #0b1220;
+    --bg-card: #141c2e;
+    --bg-muted: #111827;
+    --border-soft: #26314a;
+    --border-neutral: #32405d;
+    --border-faint: rgb(230 236 255 / 6%);
+    --border-strong: #3d4f73;
+    --text-main: #e8edf8;
+    --text-inverse: #0b1220;
+    --text-label-strong: #cbd4e5;
+    --text-subtle: #c1c9dc;
+    --text-muted: #9ba7bf;
+    --text-soft: #7f8bac;
+    --text-faint: #6d7897;
+    --accent: #5c83ff;
+    --brand-accent: #7ca6ff;
+    --accent-strong: #8bb6ff;
+    --accent-soft: #1e2c45;
+    --danger: #ff7a70;
+    --success: #2bb38f;
+    --chevron-color: rgb(203 212 229 / 70%);
+    --gradient-page: linear-gradient(180deg, #0b1220 0%, #111a2c 60%, #0b1220 100%);
+    --gradient-skeleton: linear-gradient(90deg, var(--bg-muted) 25%, var(--bg-card) 50%, var(--bg-muted) 75%);
+    --gradient-btn-airy: linear-gradient(180deg, #182338 0%, #121c2c 100%);
+    --gradient-btn-airy-hover: linear-gradient(180deg, #1d2840 0%, #152033 100%);
+    --gradient-btn-airy-desktop: linear-gradient(180deg, #1a263f 0%, #131d31 100%);
+    --gradient-btn-airy-desktop-hover: linear-gradient(180deg, #1f2b45 0%, #172338 100%);
+    --shadow-btn-airy-hover: 0 12px 32px rgb(92 131 255 / 16%);
+    --shadow-btn-airy-active: 0 8px 22px rgb(92 131 255 / 14%);
+    --shadow-btn-airy-desktop: 0 6px 16px rgb(232 237 248 / 6%);
+    --shadow-btn-airy-desktop-hover: 0 8px 18px rgb(232 237 248 / 8%);
+    --shadow-btn-airy-desktop-active: 0 4px 12px rgb(232 237 248 / 6%);
+    --shadow-btn-primary: 0 10px 20px rgb(92 131 255 / 24%);
+    --shadow-btn-primary-active: 0 6px 12px rgb(92 131 255 / 18%);
+    --shadow-card: 0 12px 26px rgb(0 0 0 / 22%);
+    --shadow-soft: 0 8px 20px rgb(0 0 0 / 16%);
+    --shadow-strong: 0 14px 32px rgb(0 0 0 / 28%);
+    --shadow-category-active: 0 18px 28px rgb(92 131 255 / 24%);
+    --shadow-category-indicator: 0 6px 16px rgb(92 131 255 / 45%);
+    --shadow-summary-hover: 0 10px 24px rgb(92 131 255 / 26%);
+  }
+}
 }
