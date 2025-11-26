@@ -1,3 +1,54 @@
+/* Таблицы и модальные таблицы: общие примитивы для `smeta-breakdown-table` и загрузочных обёрток */
+
+/* Обёртка деталей сметы — отвечает за показ skeleton/затемнения при загрузке */
+.smeta-details-wrapper { position: relative; }
+.smeta-details-wrapper.is-loading > * { opacity: 0.45; transition: opacity 180ms linear; }
+
+.overlay-skeleton { position: absolute; inset: var(--gap-md); z-index: 8; pointer-events: none; }
+.overlay-skeleton .table-skeleton { background: transparent; }
+
+/* Базовые, повторно используемые правила для таблицы разбивки сметы */
+.smeta-breakdown-table { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Make table respect container width and allow text to wrap instead of overflowing */
+.smeta-breakdown-table table {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  table-layout: fixed; /* distribute column widths and enable wrapping */
+}
+
+.smeta-breakdown-table :is(th, td) {
+  padding: var(--gap-sm) var(--gap-md);
+  white-space: normal; /* allow wrapping */
+  word-break: break-word; /* break long words/URLs */
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 1.35;
+}
+
+/* First column usually contains long descriptions — give it more space but cap it */
+.smeta-breakdown-table td:first-child,
+.smeta-breakdown-table th:first-child {
+  min-width: 160px;
+  max-width: 60%;
+  width: 60%;
+}
+
+/* Other numeric/value columns should remain compact */
+.smeta-breakdown-table :is(th, td):not(:first-child) {
+  width: auto;
+}
+
+/* Compact table tweaks used by both page and modal contexts */
+.smeta-breakdown-table thead th { text-align: center; }
+.smeta-breakdown-table tr:hover { background: rgb(0 0 0 / 2%); }
+.smeta-breakdown-table { margin-top: 1px; }
+
+/* Provide a hook for modal-specific overrides (modal.css keeps modal-scoped rules) */
+/* For modal-specific width adjustments and stacking behaviour, modal.css still contains
+   rules scoped with `.modal .smeta-breakdown-table` — they intentionally remain there. */
 /* Tables and modal-specific styles (combined from `modal.css` and `components.css` table rules) */
 
 /* Modal styles (copied from modal.css) */

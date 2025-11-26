@@ -74,6 +74,57 @@
 .contract-progress-fill { height:100%; width:var(--progress,0%); background:var(--accent); transition: width 0.35s ease, background-color 0.2s ease; border-radius:var(--radius-xxl); box-shadow:var(--shadow-card); }
 .contract-progress-fill.overflow { background: var(--success); }
 
+@media (width <= 640px) {
+  /* Mobile: contract execution labels/values adapt to stacked layout */
+  .contract-execution .panel-meta { display: flex; flex-direction: column; gap: calc(var(--gap-xs) * 0.6); }
+  .contract-execution .panel-meta-row { display: flex; gap: var(--gap-md); align-items: center }
+  .contract-execution .panel-meta-item { flex: 1 1 0; min-width: 0 }
+  .contract-execution .panel-meta-label { text-align: left }
+  .contract-execution .panel-meta-values .panel-meta-value { text-align: left }
+}
+
+/* Contract execution layout and meta (migrated from components.css) */
+.contract-execution { box-sizing: border-box; }
+
+.contract-execution .panel-meta-label {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.contract-execution .panel-meta-value {
+  font-size: var(--font-size-h3);
+  font-weight: 600;
+  color: var(--text-main);
+  margin-top: var(--gap-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+@media (width >= 768px) {
+  .contract-execution .panel-meta-value { font-size: var(--font-size-h2); }
+}
+
+.contract-execution .panel-title { font-size: var(--font-size-h2); font-weight: 600; }
+
+@media (width >= 769px) {
+  .contract-execution .panel-meta { display: block; }
+  .contract-execution .panel-meta-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; align-items: center; }
+  .contract-execution .panel-meta-row.panel-meta-labels .panel-meta-item,
+  .contract-execution .panel-meta-row.panel-meta-values .panel-meta-item { display: block; min-width: 0; justify-self: start; }
+  .contract-execution .panel-meta-label, .contract-execution .panel-meta-value { text-align: left; justify-self: start; }
+}
+
+.contract-execution__body { padding-top: var(--gap-sm); }
+
+.contract-progress-labels { display:flex; align-items:center; justify-content:space-between; font-size:var(--font-size-label); color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:var(--gap-xs); }
+.contract-progress-labels strong { font-size: var(--font-size-caption); color: var(--text-main); }
+
+
 @media (width >= 768px) {
   .contract-card-header { flex-direction:row; align-items:center; justify-content:space-between }
   .contract-card-values { gap: clamp(12px, 2vw, 18px); }
@@ -132,6 +183,45 @@
   gap: var(--gap-md);
   align-items: stretch;
   justify-content: flex-start;
+}
+
+/* Dashboard / smeta panel layout rules (migrated from components.css) */
+.dashboard__grid > .contract-execution { flex: 1 1 100%; width: 100%; }
+
+.dashboard__grid > .smeta-panel,
+.smeta-panel {
+  flex: 1 1 100%;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.smeta-panel { padding: calc(var(--card-padding) / 2) var(--card-padding) var(--card-padding) var(--card-padding); }
+
+.dashboard__grid > .smeta-panel.smeta-details {
+  flex: 1 1 100%;
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+@media (width <= 640px) {
+  .dashboard__grid > .smeta-panel,
+  .smeta-panel {
+    flex: 1 1 100%;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: var(--card-padding);
+    padding-right: var(--card-padding);
+  }
+
+  .smeta-card--large { width: 100%; }
 }
 
 /* Mockup / demo layout helpers (migrated from mockup.css) */
