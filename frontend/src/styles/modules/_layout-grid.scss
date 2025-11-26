@@ -197,11 +197,30 @@
 
 .page {
   --page-hpad: clamp(12px, 3vw, 28px);
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--page-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--page-hpad);
+  padding-right: var(--page-hpad);
+}
+
+/* Inner content grid: keep previous `.page` flex/grid behaviour but scoped
+   to `.page-content` so the page itself remains a centered container with
+   side background on wide screens. */
+.page-content {
+  display: flex;
   flex-wrap: wrap;
   gap: var(--card-frame-gap);
   align-items: stretch;
   justify-content: flex-start;
 }
+
+/* Ensure top-level children of `.page` keep vertical spacing similar to previous `gap` behaviour */
+.page > * { width: 100%; box-sizing: border-box; }
+.page > * + * { margin-top: var(--card-frame-gap); }
 
 /* Dashboard / smeta panel layout rules (migrated from components.css) */
 .dashboard__grid > .contract-execution { flex: 1 1 100%; width: 100%; }
