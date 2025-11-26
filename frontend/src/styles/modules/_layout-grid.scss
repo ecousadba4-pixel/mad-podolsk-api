@@ -195,11 +195,24 @@
   font-size: calc(var(--font-size-h3));
   margin: 0;
 }
-.contract-execution--compact .panel-meta { display: flex; align-items: center; justify-content: flex-end; gap: var(--gap-md); }
-.contract-execution--compact .panel-meta-row { display:flex; gap: var(--gap-md); align-items: center; }
+.contract-execution--compact .panel-meta {
+  display: block;
+}
+.contract-execution--compact .panel-meta-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: center;
+}
 .contract-execution--compact .panel-meta-item { min-width: 0; }
-.contract-execution--compact .panel-meta-label { display:none; }
-.contract-execution--compact .panel-meta-value { margin-top: 0; text-align: right; }
+.contract-execution--compact .panel-meta-label {
+  display: block;
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.contract-execution--compact .panel-meta-value { margin-top: 4px; text-align: right; }
 
 /* Make progress thinner */
 .contract-execution--compact .contract-progress__bar { height: 10px; border-radius: 999px; overflow: hidden; }
