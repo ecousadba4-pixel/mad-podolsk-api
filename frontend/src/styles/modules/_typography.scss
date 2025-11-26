@@ -1,15 +1,17 @@
 /* Typography & base reset moved out of large files */
 
-*, *::before, *::after {
-  box-sizing: border-box;
-}
+@layer foundations {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
 
-body {
-  margin: 0;
-  font-family: var(--font-sans);
-  background: var(--gradient-page);
-  color: var(--text-main);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizelegibility;
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    background: var(--gradient-page);
+    color: var(--text-main);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizelegibility;
+  }
 }
 

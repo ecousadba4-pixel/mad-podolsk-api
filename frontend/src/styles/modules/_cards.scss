@@ -1,3 +1,4 @@
+@layer components {
 /* Cards and panel surfaces — extracted from components.css */
 
 .card {
@@ -196,4 +197,5 @@
 
 @media (max-width: 767px) {
   .mockup-card .summary-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+}
 }

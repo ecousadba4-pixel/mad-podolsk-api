@@ -1,6 +1,8 @@
-/* Main style entry — явные слои: tokens -> foundations -> components -> overrides -> pages
+/* Main style entry — явные слои: tokens -> foundations -> components -> utilities -> overrides
    Этот файл импортируется единым импортом в `frontend/src/main.js`.
 */
+@layer tokens, foundations, components, utilities, overrides;
+
 /* Local font faces (Manrope) — place font files in `public/fonts/manrope/` */
 @use './_fonts.scss' as *;
 

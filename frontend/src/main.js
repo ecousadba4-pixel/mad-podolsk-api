@@ -6,10 +6,21 @@ import router from './router'
 // глобальные стили (объединены и структурированы в layers: tokens->foundations->components->overrides)
 import './styles/main.scss'
 
+// Синхронизация темы: если разработчик не зафиксировал data-theme,
+// привязываемся к системным настройкам.
+const root = document.documentElement
+const media = window.matchMedia('(prefers-color-scheme: dark)')
+const applyPreferredTheme = (event) => {
+  if (!root || root.dataset.theme) return
+  root.dataset.theme = event.matches ? 'dark' : 'light'
+}
+applyPreferredTheme(media)
+media.addEventListener('change', applyPreferredTheme)
+
 // Debug helpers: show runtime errors on the page to help diagnose blank screen
 function showRuntimeError(message){
-	try{
-		const id = '__runtime_error_overlay__'
+        try{
+                const id = '__runtime_error_overlay__'
 		let el = document.getElementById(id)
 		if (!el){
 			el = document.createElement('div')

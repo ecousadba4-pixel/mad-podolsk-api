@@ -1,3 +1,4 @@
+@layer components {
 /* Buttons, mode-switch and pill components consolidated
    Central source for small control appearance: pills, mode buttons, picker-toggle.
 */
@@ -118,4 +119,5 @@
   cursor: pointer;
   min-width: var(--picker-min-width);
   height: var(--control-height);
+}
 }

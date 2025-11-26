@@ -1,3 +1,4 @@
+@layer components {
 /* Work list and daily table styles (migrated from work.css) */
 
 .work-panel-header { align-items: stretch; }
@@ -144,4 +145,5 @@
   .daily-total-row .daily-cell-total-label { grid-area: total-label; }
   .daily-total-row .daily-cell-total-amount { grid-area: total-amount; text-align:right; }
   .daily-total-row .daily-cell-total-gap { display:none; }
+}
 }

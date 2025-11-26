@@ -6,53 +6,55 @@
    @font-face declarations (or replace with the variable font rule).
 */
 
-@font-face {
-  font-family: 'Manrope';
-  src: url('/fonts/manrope/Manrope-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
+@layer foundations {
+  @font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope/Manrope-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'Manrope';
-  src: url('/fonts/manrope/Manrope-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
+  @font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope/Manrope-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'Manrope';
-  src: url('/fonts/manrope/Manrope-Semibold.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
+  @font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope/Manrope-Semibold.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'Manrope';
-  src: url('/fonts/manrope/Manrope-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+  @font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope/Manrope-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
 
-/* Additional weights available in folder (Thin, ExtraBold) */
-@font-face {
-  font-family: 'Manrope';
-  src: url('/fonts/manrope/Manrope-Thin.woff2') format('woff2');
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
-}
+  /* Additional weights available in folder (Thin, ExtraBold) */
+  @font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope/Manrope-Thin.woff2') format('woff2');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'Manrope';
-  src: url('/fonts/manrope/Manrope-ExtraBold.woff2') format('woff2');
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
+  @font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope/Manrope-ExtraBold.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+  }
 }
 
 /* Optional: variable font example
