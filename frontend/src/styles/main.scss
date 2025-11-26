@@ -2,27 +2,27 @@
    Этот файл импортируется единым импортом в `frontend/src/main.js`.
 */
 /* Local font faces (Manrope) — place font files in `public/fonts/manrope/` */
-@import './_fonts.scss';
+@use './_fonts.scss' as *;
 
-@import './_tokens.scss';
-@import './_foundations.scss';
+@use './_tokens.scss' as *;
+@use './_foundations.scss' as *;
 
 /* Decomposed modules */
-@import './modules/_typography.scss';
-@import './modules/_layout-grid.scss';
-@import './modules/_utilities.scss';
-@import './modules/_header-controls.scss';
-@import './modules/_tables-modals.scss';
-@import './modules/_buttons-pills.scss';
-@import './modules/_cards.scss';
-@import './modules/_summary.scss';
-@import './modules/_work.scss';
-@import './modules/_categories.scss';
+@use './modules/_typography.scss' as *;
+@use './modules/_layout-grid.scss' as *;
+@use './modules/_utilities.scss' as *;
+@use './modules/_header-controls.scss' as *;
+@use './modules/_tables-modals.scss' as *;
+@use './modules/_buttons-pills.scss' as *;
+@use './modules/_cards.scss' as *;
+@use './modules/_summary.scss' as *;
+@use './modules/_work.scss' as *;
+@use './modules/_categories.scss' as *;
 
 /* Legacy CSS imports removed — styles migrated into `_modules` SCSS files. */
 
 /* Переопределения и «минимальная логика» на SCSS/CSS-переменных */
-@import './modules/_pickers.scss';
+@use './modules/_pickers.scss' as *;
 
 /* Debug helpers (temporary) */
 /* removed: debug spacing import (cleanup after verification) */
