@@ -48,6 +48,13 @@
   text-transform: none;
 }
 
+/* Ensure all dashboard panel title groups align to a common left axis
+   This makes titles start at the same horizontal position across different
+   panels/cards regardless of internal controls or variations in header layout. */
+.dashboard .panel-title-group {
+  padding-left: var(--card-inner-gap);
+}
+
 /* Add consistent vertical gap between panel header/title and panel content
    Use card-inner-gap so the spacing matches internal card padding. */
 .panel > .panel-header { margin-top: var(--card-inner-gap); margin-bottom: var(--card-inner-gap); }
