@@ -101,7 +101,7 @@ const selectedMonth = computed({
 /* Minimal header used for step-by-step rebuild and width debugging */
 
 .new-app-header { padding-left: 0; padding-right: 0; }
-.app-header__inner { max-width: min(var(--page-max-width), 100%); margin-left: auto; margin-right: auto; padding-left: var(--page-hpad); padding-right: var(--page-hpad); box-sizing: border-box; }
+.app-header__inner { max-width: min(var(--page-max-width), 100%); margin-left: auto; margin-right: auto; padding-left: calc(var(--page-hpad) + var(--card-padding)); padding-right: calc(var(--page-hpad) + var(--card-padding)); box-sizing: border-box; }
 .new-header-row { display:flex; align-items:center; }
 .app-header__title { margin: 0; }
 
