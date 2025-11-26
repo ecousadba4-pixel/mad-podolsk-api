@@ -2,7 +2,7 @@
   <section class="panel smeta-panel panel--full-bleed">
       <div class="panel-header row-between">
       <div class="panel-title-group">
-        <h3 class="panel-title text-h3">Данные по выручке за {{ displayDate }}</h3>
+        <h3 class="panel-title text-h3">Данные по выручке</h3>
       </div>
     </div>
     <div class="panel-body">
@@ -26,7 +26,7 @@
             :items="sortedRows"
             item-tag="tr"
             wrapper-tag="tbody"
-            :item-size="48"
+            :item-size="72" <!-- increase row height to accommodate wrapped descriptions -->
             key-field="id"
             class="virtual-scroller"
           >
