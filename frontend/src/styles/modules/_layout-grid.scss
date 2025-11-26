@@ -2,6 +2,7 @@
 
 /* Toasts (global) */
 .toast {
+  /* moved from `_overrides.scss` — keep toast offsets token-driven */
   position: fixed;
   bottom: var(--fab-offset);
   right: var(--fab-offset);
@@ -172,6 +173,7 @@
   }
 
   to {
+    /* moved from `_overrides.scss` */
     transform: translateX(0);
     opacity: 1;
   }

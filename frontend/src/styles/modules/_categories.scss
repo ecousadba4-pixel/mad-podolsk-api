@@ -6,7 +6,17 @@
 
 .transition-lift-border, .category-card, .summary-card-interactive { transition: var(--transition-lift), var(--transition-border); }
 
-.category-card { position: relative; padding-bottom: clamp(var(--gap-sm), 1.2vw, 16px); display:flex; flex-direction:column; gap:var(--gap-xs); width:100%; contain:layout style paint; min-height: var(--category-card-min-height); }
+.category-card {
+	/* moved from `_overrides.scss` — keep min-height token-driven */
+	position: relative;
+	padding-bottom: clamp(var(--gap-sm), 1.2vw, 16px);
+	display:flex;
+	flex-direction:column;
+	gap:var(--gap-xs);
+	width:100%;
+	contain:layout style paint;
+	min-height: var(--category-card-min-height);
+}
 .category-card::before { content:""; position:absolute; top: clamp(var(--gap-sm), 1.4vw, 16px); bottom: clamp(var(--gap-sm), 1.4vw, 16px); left: -1px; width: var(--gap-xs); border-radius: var(--radius-xxl); background: transparent; transition: background-color 0.2s ease, box-shadow 0.2s ease; pointer-events: none; }
 .category-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-soft); }
 .category-card.active { border-color: var(--brand-accent); box-shadow: var(--shadow-category-active); }

@@ -50,7 +50,23 @@
 .summary-card-interactive { overflow: hidden; }
 .summary-card-interactive:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 
-.summary-card-hint { position: absolute; right: var(--gap-md); bottom: var(--gap-sm); width: var(--hint-size); height: var(--hint-size); display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; background: var(--accent-soft); color: var(--accent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent); pointer-events: none; transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease; }
+.summary-card-hint {
+  /* moved from `_overrides.scss` — small token-driven sizing for the hint badge */
+  position: absolute;
+  right: var(--gap-md);
+  bottom: var(--gap-sm);
+  width: var(--hint-size);
+  height: var(--hint-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
+  pointer-events: none;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
 
 .summary-card.daily-average .summary-card-hint { background: var(--accent); color: var(--text-inverse); box-shadow: 0 4px 10px rgb(47 111 237 / 12%); font-weight: 700; font-size: 12px; }
 .summary-card-hint[hidden] { display: none; }
