@@ -1,8 +1,8 @@
 <template>
   <section class="panel smeta-panel panel--full-bleed">
-    <div class="panel-header">
+      <div class="panel-header row-between">
       <div class="panel-title-group">
-        <h3 class="panel-title">Данные по выручке за {{ displayDate }}</h3>
+        <h3 class="panel-title text-h3">Данные по выручке за {{ displayDate }}</h3>
       </div>
     </div>
     <div class="panel-body">

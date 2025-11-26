@@ -2,7 +2,7 @@
   <div class="month-picker" ref="root">
     <button
       type="button"
-      class="month-picker__toggle control"
+      class="month-picker__toggle control picker-toggle"
       @click="toggle()"
       @keydown.prevent.stop="onToggleKeydown"
       :aria-expanded="String(open)"

@@ -67,8 +67,8 @@ const selectedMonth = computed({
 <template>
   <header class="app-header p-md">
     <div class="app-header__left">
-      <h1 class="app-header__title">СКПДИ · МАД · Подольск</h1>
-      <p class="app-header__subtitle">Работы в статусе «Рассмотрено»</p>
+      <h1 class="app-header__title text-h1">СКПДИ · МАД · Подольск</h1>
+      <p class="app-header__subtitle text-body-sm">Работы в статусе «Рассмотрено»</p>
     </div>
 
     <div class="app-header__right items-center">

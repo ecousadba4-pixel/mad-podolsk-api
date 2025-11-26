@@ -46,7 +46,7 @@
               <div class="smeta-title-wrapper" :data-id="idFor(item, idx)">
                 <div
                   :ref="el => registerTitleRef(el, idFor(item, idx))"
-                  class="smeta-title-text"
+                  class="truncate-2"
                   :class="{ 'is-expanded': isExpanded(idFor(item, idx)) }"
                 >
                   {{ item.title || item.description || item.work_name }}
@@ -76,7 +76,7 @@
           <div class="smeta-title-wrapper" :data-id="idFor(item, idx)">
             <div
               :ref="el => registerTitleRef(el, idFor(item, idx))"
-              class="smeta-title-text"
+              class="truncate-2"
               :class="{ 'is-expanded': isExpanded(idFor(item, idx)) }"
             >
               {{ item.title || item.description || item.work_name }}

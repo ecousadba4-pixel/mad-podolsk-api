@@ -1,7 +1,7 @@
 <template>
     <div v-if="visible" class="modal-backdrop visible" @click.self="$emit('close')">
     <div class="modal p-md" role="dialog" aria-modal="true">
-      <header class="modal-header items-center">
+      <header class="modal-header items-center row-between">
         <h3 class="modal-title text-h2">Выручка по дням</h3>
         <button class="modal-close control-sm" @click="$emit('close')">✕</button>
       </header>

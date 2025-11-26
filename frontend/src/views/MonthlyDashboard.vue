@@ -86,7 +86,7 @@ function onSmetaSelect(key){
               </div>
               <h3 class="panel-title">{{ selectedSmetaLabel }}</h3>
             </div>
-            <div class="panel-header-controls">
+            <div class="panel-header-controls panel-controls">
               <select class="smeta-sort-select" v-model="smetaSortKey" @change="smetaSortDir = -1">
                 <option value="plan">План — по убыванию</option>
                 <option value="fact">Факт — по убыванию</option>

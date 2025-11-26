@@ -21,9 +21,9 @@ function formatNumber(v){ if (v === null || v === undefined) return '-'; return 
 
 <template>
   <section class="panel smeta-panel">
-    <div class="panel-header">
+    <div class="panel-header row-between">
       <div class="panel-title-group">
-        <h3 class="panel-title">Работы в разрезе смет</h3>
+        <h3 class="panel-title text-h3">Работы в разрезе смет</h3>
       </div>
     </div>
 
@@ -34,20 +34,20 @@ function formatNumber(v){ if (v === null || v === undefined) return '-'; return 
       <article v-for="c in cards" :key="c.smeta_key" :class="['smeta-card','smeta-card--large','card--interactive','p-md', { 'is-selected': selectedSmeta === c.smeta_key } ]" @click="onCardClick(c.smeta_key)">
         <div class="smeta-card__body">
           <header class="smeta-card__head">
-            <h3 class="smeta-card__title text-body">{{ c.label }}</h3>
+            <h3 class="smeta-card__title text-h3">{{ c.label }}</h3>
             <div class="smeta-card__meta-pill" v-if="c.count">{{ c.count }} работ</div>
           </header>
 
           <div class="smeta-card__numbers">
-            <div class="smeta-card__col">
+            <div class="smeta-card__col card-col">
               <div class="smeta-card__label text-label">ПЛАН</div>
               <div class="smeta-card__value text-body">{{ formatNumber(c.plan) }}</div>
             </div>
-            <div class="smeta-card__col">
+            <div class="smeta-card__col card-col">
               <div class="smeta-card__label text-label">ФАКТ</div>
               <div class="smeta-card__value text-body">{{ formatNumber(c.fact) }}</div>
             </div>
-            <div class="smeta-card__col">
+            <div class="smeta-card__col card-col">
               <div class="smeta-card__label text-label">ОТКЛОНЕНИЕ</div>
               <div class="smeta-card__value text-body" :class="{'delta-negative': c.delta < 0}">{{ formatNumber(c.delta) }}</div>
             </div>

@@ -60,6 +60,54 @@
 .control { height: var(--control-height); min-height: var(--control-height); }
 .control-sm { height: var(--control-height-sm); min-height: var(--control-height-sm); }
 
+/* Picker toggle baseline: used by month/day picker controls across components */
+.picker-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  min-width: 160px;
+  height: var(--control-height);
+}
+
+/* Row helpers */
+.row-center { display:flex; align-items:center; gap: var(--gap-sm); }
+.row-between { display:flex; align-items:center; justify-content:space-between; gap: var(--gap-sm); }
+
+/* Column helpers */
+.col-center { display:flex; flex-direction:column; align-items:center; gap: var(--gap-sm); }
+
+/* Panel controls helper (small left margin to separate from title) */
+.panel-controls { display:flex; align-items:center; margin-left:8px; gap: var(--gap-sm); }
+
+/* Card column helper: compact column used inside cards */
+.card-col { display:flex; flex-direction:column; min-width:0; flex:1; align-items:center; gap: var(--gap-xs); }
+
+/* Axis padding utilities (helpers for px/py) */
+.px-sm { padding-left: var(--gap-sm) !important; padding-right: var(--gap-sm) !important; }
+.py-sm { padding-top: var(--gap-sm) !important; padding-bottom: var(--gap-sm) !important; }
+
+@media (max-width: 640px) {
+  /* on narrow screens, card columns should left-align content for readability */
+  .card-col { align-items: flex-start; }
+}
+
+/* Compact variant for small screens */
+@media (max-width: 640px) {
+  .picker-toggle {
+    width: 100%;
+    min-width: 0;
+    padding: 0 8px;
+    min-height: 32px;
+    height: 32px;
+    gap: 8px;
+  }
+}
+
 /* Typography helpers (map to tokens) */
 .text-h1 { font-size: var(--font-size-h1); }
 .text-h2 { font-size: var(--font-size-h2); }
@@ -76,6 +124,12 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Allow disabling clamp when a component toggles expanded state */
+.truncate-2.is-expanded {
+  -webkit-line-clamp: unset;
+  display: block;
 }
 
 /* Accessibility helpers */

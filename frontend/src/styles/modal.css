@@ -46,12 +46,9 @@
 }
 
 .modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--gap-md);
-  /* strongly reduce bottom margin to bring table very close to header */
-  margin-bottom: 2px;
+  /* layout (display / alignment / gap) is provided by utility classes (e.g. .row-between)
+     to avoid duplication; keep spacing-only rules here */
+  margin-bottom: 2px; /* strongly reduce bottom margin to bring table very close to header */
   padding-top: 0; /* ensure header sits at top */
 }
 
