@@ -1,5 +1,8 @@
 <template>
-  <section class="panel contract-execution contract-execution--compact p-md">
+  <section
+    class="panel contract-execution contract-execution--compact p-md"
+    :class="{ 'is-mobile': isMobile }"
+  >
     <div class="panel-header row-between">
       <div class="panel-title-group">
         <h3 class="panel-title">Исполнение контракта</h3>
@@ -31,6 +34,8 @@
 <script setup>
 const props = defineProps({ contract: { type: Object, default: () => ({}) } })
 
+const { isMobile } = useIsMobile()
+
 function formatMoney(v){
   if (v === null || v === undefined) return '-'
   const n = Number(v)
@@ -50,5 +55,6 @@ const progressPercent = computed(()=>{
 })
 
 import { computed } from 'vue'
+import { useIsMobile } from '../../composables/useIsMobile.js'
 </script>
 
