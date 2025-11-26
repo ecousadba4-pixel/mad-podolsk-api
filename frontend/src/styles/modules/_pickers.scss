@@ -28,6 +28,44 @@
 
 select, input[type="date"] { border:none; background:transparent; font-size:var(--font-size-body); color:var(--text-main); outline:none; font-weight:600 }
 
+/* MonthPicker custom panel styles */
+.month-picker { position: relative; display: inline-block; }
+.month-picker__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0; /* align panel to left edge of toggle */
+  right: auto;
+  min-width: 100%; /* ensure panel is at least as wide as the toggle */
+  width: auto;
+  box-sizing: border-box;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  box-shadow: var(--shadow-card);
+  padding: 8px;
+  z-index: 600;
+}
+.month-picker__list { list-style: none; margin: 0; padding: 6px; display: flex; flex-direction: column; gap: 8px; }
+.month-picker__item { margin: 0; }
+.month-picker__item button {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-size: var(--font-size-body);
+}
+.month-picker__item button:hover,
+.month-picker__item button.is-focused { background: var(--surface-highlight); }
+.month-picker__item button.is-active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-strong); font-weight: 700; }
+
+/* ensure accessibility focus outline */
+.month-picker__item button:focus { outline: 2px solid color-mix(in srgb, var(--accent) 20%, transparent); outline-offset: 2px; }
+
 @media (max-width: 640px) {
   .month-picker__toggle, .day-picker__toggle, .picker__toggle { width:100%; min-width:0; padding:0 var(--gap-sm); min-height:var(--control-height-mobile); height:var(--control-height-mobile); gap:var(--gap-sm) }
   .month-picker__label, .day-picker__label { font-size:0.64rem }
