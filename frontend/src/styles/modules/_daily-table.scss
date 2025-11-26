@@ -51,6 +51,18 @@
     padding-top: calc(var(--card-padding) / 2);
   }
 
+  /* Make full-bleed panels span the entire available page content width
+     by compensating the page horizontal padding. This aligns the panel
+     edges with the green page background edges (the available area). */
+  .page > .panel.panel--full-bleed,
+  .panel.panel--full-bleed.page-content-panel {
+    width: calc(100% + (var(--page-hpad) * 2));
+    max-width: none;
+    margin-left: calc(var(--page-hpad) * -1);
+    margin-right: calc(var(--page-hpad) * -1);
+    box-sizing: border-box;
+  }
+
   .smeta-panel.panel--full-bleed > .panel-header {
     margin-top: calc(var(--card-inner-gap) / 2);
     margin-bottom: calc(var(--card-inner-gap) / 2);

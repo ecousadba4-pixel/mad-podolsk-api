@@ -119,5 +119,16 @@
   .work-row-money, .work-row-delta { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--gap-sm); text-align:center; }
   .work-row-label { display:block; width:100%; text-align:center; }
   /* daily-table specific styles moved to `_daily-table.scss` */
+
+  /* Reduce vertical gap between panel header and body for smeta details on mobile
+     Override the default `.panel > .panel-header` spacing which is applied globally
+     in `_layout-grid.scss`. Make it tighter to match the mobile design. */
+  .smeta-panel.smeta-details > .panel-header { margin-top: 6px; margin-bottom: 6px; }
+
+    /* Ensure header controls sit above mobile items (which may expand)
+      so the select remains clickable. Also reset mobile items z-index. */
+    .smeta-panel.smeta-details > .panel-header { position: relative; z-index: 30; }
+    .smeta-details-mobile .smeta-mobile-item { position: relative; z-index: 0; }
+    .smeta-panel.smeta-details .panel-header-controls { z-index: 40; pointer-events: auto; }
 }
 }

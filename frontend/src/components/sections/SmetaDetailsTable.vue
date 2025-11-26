@@ -285,8 +285,13 @@ watch(sortedItems, () => { checkClamped() })
 }
 
 /* Zebra only for the work-name cell (desktop) */
-.smeta-breakdown-table tbody tr:nth-child(odd) td:first-child {
-  background-color: rgba(0,0,0,0.05);
+.smeta-breakdown-table tbody tr:nth-child(odd) {
+  background-color: rgba(0,0,0,0.03);
+}
+
+/* Ensure numeric cells keep their white background for better readability (override) */
+.smeta-breakdown-table tbody tr td.numeric {
+  background: transparent;
 }
 
 /* Zebra only for the title block inside mobile item */

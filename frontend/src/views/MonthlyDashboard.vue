@@ -23,14 +23,22 @@ const { monthlyLoading, monthlyError, monthlySummary, smetaDetails, smetaDetails
 
 const selectedSmetaLabel = computed(() => {
   const key = selectedSmeta.value
-  if (!key) return 'Расшифровка работ по смете'
+  if (!key) return ''
   const found = (smetaCards.value || []).find(s => s.smeta_key === key)
   const name = found ? found.label : key
-  return `Расшифровка работ по смете «${name}»`
+  return name
+})
+
+const selectedSmetaDesktopTitle = computed(() => {
+  const name = selectedSmetaLabel.value
+  return name ? `Расшифровка работ по смете «${name}»` : 'Расшифровка работ по смете'
 })
 
 const dailyRevenueModal = useModal(false)
 const smetaDescModal = useModal(false)
+
+// collapsed state for mobile smeta list (toggle from header chevron)
+const isSmetaCollapsed = ref(false)
 
 const isDailyModalOpen = computed(() => dailyRevenueModal.isOpen.value)
 const isSmetaDescOpen = computed(() => smetaDescModal.isOpen.value)
@@ -77,22 +85,11 @@ function onSmetaSelect(key){
                   <section v-if="smetaDetailsLoading || (smetaDetails && smetaDetails.length)" class="panel smeta-panel smeta-details">
                     <div class="panel-header">
                       <div class="panel-title-group">
-                        <div class="panel-title-mobile">
-                          <div class="panel-title-mobile-label">РАБОТЫ ПО СМЕТЕ</div>
-                          <div class="panel-title-mobile-value">{{ selectedSmetaLabel.replace('Расшифровка работ по смете', '') }}</div>
-                        </div>
-                        <h3 class="panel-title">{{ selectedSmetaLabel }}</h3>
+                        <h3 class="panel-title">{{ selectedSmetaDesktopTitle }}</h3>
                         <p class="panel-note">Детали по виду работы при нажатии</p>
                       </div>
-                      <div class="panel-header-controls panel-controls">
-                        <select v-if="isMobile" class="smeta-sort-select" v-model="smetaSortKey" @change="smetaSortDir = -1">
-                          <option value="plan">План — по убыванию</option>
-                          <option value="fact">Факт — по убыванию</option>
-                          <option value="delta">Отклонение — по убыванию</option>
-                        </select>
-                      </div>
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body" v-show="!isSmetaCollapsed">
                       <div class="smeta-details-wrapper" :class="{ 'is-loading': smetaDetailsLoading }">
                         <SmetaDetailsTable :items="smetaDetails" :sort-key="smetaSortKey" :sort-dir="smetaSortDir" @sort-changed="(p)=>{ smetaSortKey = p.key; smetaSortDir = p.dir }" @select="(item)=> onSelectDescription(item)" />
                         <TableSkeleton v-if="smetaDetailsLoading" class="overlay-skeleton" />

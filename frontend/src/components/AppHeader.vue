@@ -1,6 +1,6 @@
 <script setup>
 import { useIsMobile } from '../composables/useIsMobile.js'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDashboardStore } from '../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
@@ -9,6 +9,17 @@ import MonthPicker from './MonthPicker.vue'
 import DayPicker from './DayPicker.vue'
 
 const { isMobile } = useIsMobile()
+const innerRef = ref(null)
+
+
+onMounted(async () => {
+  await nextTick()
+  // No debug guides in production: overlays removed.
+})
+
+onUnmounted(() => {
+  // nothing to cleanup for header overlays
+})
 
 const router = useRouter()
 const route = useRoute()
@@ -53,7 +64,7 @@ const selectedMonth = computed({
 
 <template>
   <header class="app-header new-app-header">
-    <div class="app-header__inner">
+    <div class="app-header__inner" ref="innerRef">
       <div class="new-header-row new-header-row--title">
         <div>
           <h1 class="app-header__title">СКПДИ · МАД · Подольск</h1>
@@ -202,3 +213,8 @@ const selectedMonth = computed({
 }
 </style>
      `.app-header__inner` and `--page-hpad`. -->
+
+/* Temporary debug vertical guide lines showing AppHeader inner edges
+   Extend full viewport height; remove after alignment verified. */
+/* Removed pseudo-element approach — using JS-driven fixed overlays instead for
+   reliable positioning across scoped CSS and layout constraints. */

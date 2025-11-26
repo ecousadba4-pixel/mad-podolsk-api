@@ -152,6 +152,13 @@
     overflow: visible;
     text-overflow: clip;
   }
+
+  /* Ensure contract execution panel title aligns with other dashboard blocks
+     on small screens by using the standard inner gap token. */
+  .dashboard .contract-execution .panel-title-group {
+    padding-left: var(--card-inner-gap);
+    padding-right: 0;
+  }
 }
 
 /* Contract execution layout and meta (migrated from components.css) */
@@ -193,6 +200,7 @@
   line-height: 1.12;
   letter-spacing: -0.02em;
   color: var(--text-main);
+  text-align: left;
 }
 
 /* Ensure any contract-card specific title variant uses the same DIN family */
@@ -296,6 +304,15 @@
 
   .contract-execution--compact.is-mobile .panel-meta-values .panel-meta-value {
     text-align: left;
+  }
+
+  /* Ensure the title group sits at the left edge of the header grid/column
+     so the H3 aligns with other dashboard titles on small screens. */
+  .contract-execution--compact.is-mobile .panel-title-group,
+  .dashboard .contract-execution .panel-title-group {
+    justify-self: start;
+    align-items: flex-start;
+    width: 100%;
   }
 }
 

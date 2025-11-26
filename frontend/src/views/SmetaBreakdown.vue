@@ -1,18 +1,12 @@
 <template>
   <section class="panel smeta-panel smeta-details smeta-breakdown">
-    <div class="panel-header">
+    <div class="panel-header row-between">
       <div class="panel-title-group">
-        <h2 class="panel-title">Расшифровка работ по смете — {{ smetaLabel }}</h2>
-        <p class="panel-note">Детали по виду работы при нажатии</p>
-        <div class="panel-title-mobile">
-          <div class="panel-title-mobile-label">РАБОТЫ ПО СМЕТЕ</div>
-          <div class="panel-title-mobile-value">{{ smetaLabel }}</div>
-        </div>
-        <p class="panel-subtitle">{{ selectedMonth }}</p>
+        <h3 class="panel-title text-h3">{{ smetaLabel }}</h3>
       </div>
     </div>
 
-    <div class="panel-body">
+      <div class="panel-body">
       <div v-if="loading" class="skeleton">Загрузка...</div>
 
       <table v-else class="smeta-breakdown-table">
@@ -25,7 +19,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="row in filteredRows" :key="row.id" @click="openByDescription(row)">
+          <tr v-for="row in sortedRows" :key="row.id" @click="openByDescription(row)">
             <td>{{ row.title || row.description }}</td>
             <td class="numeric">{{ formatMoney(row.plan) }}</td>
             <td class="numeric">{{ formatMoney(row.fact) }}</td>
@@ -65,6 +59,7 @@ onMounted(async () => {
   // set selected smeta in store for other components and fetch details
   store.setSelectedSmeta(smetaKey.value)
   await store.fetchSmetaDetails(smetaKey.value)
+  console.log('[SmetaBreakdown] mounted, smetaKey=', smetaKey.value)
 })
 
 const loading = computed(() => smetaDetailsLoading.value)
@@ -107,6 +102,43 @@ const smetaLabel = computed(() => {
   return map[key] || (smetaCards.value.find(c => c.smeta_key === key)?.label) || key
 })
 
+import { ref } from 'vue'
+import { useIsMobile } from '../composables/useIsMobile.js'
+
+// Sorting state for the table — used by mobile sort control and desktop headers if needed
+const sortKeyRef = ref('plan')
+const sortDirRef = ref(-1)
+
+function valueForRow(r, key){
+  if (key === 'delta') return (Number(r.fact || 0) - Number(r.plan || 0))
+  return Number(r[key] || 0)
+}
+
+function onSortChange(e){
+  // keep only metric name in control; default to descending
+  sortDirRef.value = -1
+}
+
+const sortKey = sortKeyRef
+const sortDir = sortDirRef
+
+// sorted rows used in table
+const sortedRows = computed(() => {
+  const arr = (filteredRows.value || []).slice()
+  arr.sort((a,b)=>{
+    const va = valueForRow(a, sortKey.value)
+    const vb = valueForRow(b, sortKey.value)
+    const diff = va - vb
+    if (diff === 0) return 0
+    return sortDir.value * Math.sign(diff)
+  })
+  return arr
+})
+
+const { isMobile } = useIsMobile()
+
+// header uses simple panel-title markup; no local component registration required
+
 function formatMoney(v){
   if (v === null || v === undefined) return '-'
   const n = Number(v)
@@ -121,4 +153,39 @@ function openByDescription(row){
   router.push({ path: '/daily' })
 }
 </script>
+
+<style scoped>
+/* Header layout (applies for compact and mobile views) --------------------------------- */
+/* Show the two-line mobile title block and hide the long H2 title to enforce consistent layout */
+.panel-title-mobile,
+.panel-header-controls {
+  font-family: var(--font-sans);
+}
+
+.panel-title-mobile { display: block; }
+.panel-title { display: none; }
+
+.panel-title-mobile-left { display:flex; flex-direction:column; gap:4px; }
+.panel-title-mobile-label { font-size: var(--font-size-label); text-transform:uppercase; color:var(--text-muted); }
+.panel-title-mobile-value { font-size: clamp(1rem, 4vw, 1.2rem); line-height:1.2; font-weight:600; color:var(--text-primary); }
+
+/* Ensure mobile sort control uses DayPicker-style spacing */
+.panel-header-controls .month-select { display:flex; flex-direction:column; gap:4px; }
+.panel-header-controls .work-mobile-sort-control select { font-family: var(--font-sans); }
+
+/* Force header grid for smeta details so changes are visible at all widths */
+.work-panel-header {
+  display: grid;
+  grid-template-columns: 1fr minmax(140px, 36%);
+  gap: 12px 18px;
+  align-items: center;
+  padding: 8px 12px;
+}
+
+/* Small screens: stack if needed */
+@media (max-width: 520px) {
+  .work-panel-header { grid-template-columns: 1fr; }
+  .panel-header-controls { justify-self: start; }
+}
+</style>
 
