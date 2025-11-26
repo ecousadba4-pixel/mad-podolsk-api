@@ -93,10 +93,16 @@
 .contract-progress__bar,
 .smeta-progress__bar {
   width: 100%;
+  height: var(--progress-height);
   background: var(--bg-muted);
   border-radius: 999px;
   border: 1px solid var(--border-soft);
   overflow: hidden;
+}
+
+/* Contract card uses a taller progress bar visually — override only for contract */
+.contract-progress__bar {
+  height: calc(var(--progress-height) * 3);
 }
 
 .progress__fill,
@@ -179,7 +185,7 @@
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 60%);
 }
 
-.mockup-card header { margin-bottom: var(--gap-md); }
+.mockup-card header { margin-bottom: 0; }
 
 .mockup-card .summary-grid { margin-top: var(--gap-xs); }
 

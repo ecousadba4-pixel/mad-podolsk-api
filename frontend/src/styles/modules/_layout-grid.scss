@@ -32,6 +32,14 @@
   box-sizing: border-box;
 }
 
+/* Remove visual separator line that may appear between panel header and body
+   Some templates insert small borders or hr elements; normalize by removing
+   top/bottom borders between header and body to keep panels visually clean. */
+.panel .panel-header { border-bottom: none; }
+.panel hr { display: none; }
+.panel > .panel-header + * { border-top: none; }
+.contract-execution__body { border-top: none; }
+
 /* Smeta panel (specific tweaks used in dashboard views) */
 .smeta-panel {
   /* keep default panel appearance but allow smeta-specific padding rules
@@ -51,8 +59,16 @@
   padding: var(--card-padding);
   display: grid;
   gap: var(--gap-md);
-  margin-bottom: var(--section-gap);
+  margin-bottom: 0; /* delegate vertical spacing to container gap */
   min-height: var(--control-height);
+}
+
+/* Dashboard grid should control spacing between top-level panels/cards */
+.dashboard__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--card-frame-gap);
+  align-items: flex-start;
 }
 
 .contract-card-header { display:flex; flex-direction:column; gap:var(--gap-sm); }
@@ -133,8 +149,8 @@
 
 /* Page header and view switch */
 .page-header {
-  display:flex; flex-direction:column; gap:var(--gap-lg); margin-bottom: var(--grid-gap);
-  padding: clamp(var(--gap-md), 2vw, var(--gap-lg)) 0;
+  display:flex; flex-direction:column; gap:var(--card-frame-gap); margin-bottom: var(--grid-gap);
+  padding: clamp(var(--gap-md), 2vw, var(--card-frame-gap)) 0;
 }
 .page-header-left { display:flex; flex-direction:column; gap:var(--gap-md) }
 .page-header-right { display:flex; flex-direction:column; gap:var(--gap-md); align-items:stretch }
@@ -182,7 +198,7 @@
 .page {
   --page-hpad: clamp(12px, 3vw, 28px);
   flex-wrap: wrap;
-  gap: var(--gap-md);
+  gap: var(--card-frame-gap);
   align-items: stretch;
   justify-content: flex-start;
 }
@@ -245,7 +261,7 @@
   padding: clamp(16px, 4vw, 42px) clamp(16px, 4vw, 48px) clamp(32px, 5vw, 64px);
   display: flex;
   flex-direction: column;
-  gap: var(--gap-xl);
+  gap: var(--card-frame-gap);
 }
 
 .mockup-top { display: flex; flex-direction: column; gap: var(--gap-sm); }
@@ -270,7 +286,7 @@
 
 .mockup-lead { margin: var(--gap-xs) 0 0; color: var(--text-muted); max-width: 960px; line-height: 1.6; }
 
-.mockup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: clamp(16px, 2vw, var(--gap-xl)); }
+.mockup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: clamp(16px, 2vw, var(--card-frame-gap)); }
 
 .panel-subtitle { color: var(--text-muted); margin-top: var(--gap-xs); }
 
