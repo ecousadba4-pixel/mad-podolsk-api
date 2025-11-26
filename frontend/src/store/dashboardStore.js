@@ -1,275 +1,253 @@
-// frontend/src/store/dashboardStore.js
+import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
+import { useQuery, useInvalidateQueries } from '../composables/useQueryClient.js'
+import { getAvailableDates, getAvailableMonths, getBySmeta, getDaily, getLastLoaded, getMonthlySummary, getSmetaDetails } from '../api/dashboard.js'
 
-export const useDashboardStore = defineStore('dashboard', {
-  state: () => ({
-    // фильтры / режимы
-    mode: 'monthly', // 'monthly' | 'daily'
-    selectedMonth: new Date().toISOString().slice(0, 7), // YYYY-MM
-    selectedDate: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
-    selectedSmeta: null, // 'leto' | 'zima' | 'vnereglement'
-    selectedDescription: null,
+function fallbackMonths() {
+  const list = []
+  const now = new Date()
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    list.push(d.toISOString().slice(0, 7))
+  }
+  return list
+}
 
-    // monthly summary
-    monthlySummary: null,
-    monthlyLoading: false,
-    monthlyError: null,
-    // months available for picker (array of YYYY-MM strings)
-    availableMonths: [],
-    // last loaded timestamp from DB
-    loadedAt: null,
+export const useDashboardStore = defineStore('dashboard', () => {
+  const mode = ref('monthly')
+  const selectedMonth = ref(new Date().toISOString().slice(0, 7))
+  const selectedDate = ref(new Date().toISOString().slice(0, 10))
+  const selectedSmeta = ref(null)
+  const selectedDescription = ref(null)
 
-    // by-smeta cards
-    smetaCards: [],
-    smetaCardsLoading: false,
+  const invalidateQueries = useInvalidateQueries()
 
-    // details for selected smeta
-    smetaDetails: [],
-    smetaDetailsLoading: false,
-
-    // daily data
-    dailyRows: [],
-    dailyTotal: 0,
-    dailyLoading: false
-  }),
-
-  actions: {
-    setMode(m) {
-      this.mode = m
-    },
-
-    setSelectedMonth(month) {
-      this.selectedMonth = month
-    },
-
-    setSelectedDate(date) {
-      this.selectedDate = date
-    },
-
-    setSelectedSmeta(smetaKey) {
-      this.selectedSmeta = smetaKey
-    },
-
-    setSelectedDescription(desc) {
-      this.selectedDescription = desc
-    },
-
-    async fetchMonthlySummary() {
-      // Debug: log start to verify the action is called at runtime
-      try { console.debug && console.debug('[store] fetchMonthlySummary:start', this.selectedMonth) } catch(e){}
-      this.monthlyLoading = true
-      this.monthlyError = null
-      try {
-        const api = await import('../api/dashboard.js')
-        const res = await api.getMonthlySummary(this.selectedMonth)
-        this.monthlySummary = res
-        // try to fetch last loaded timestamp separately (backend may expose it)
-        try{
-          const l = await api.getLastLoaded(this.selectedMonth)
-          this.loadedAt = l && l.loaded_at ? l.loaded_at : this.loadedAt
-        }catch(_){ /* ignore */ }
-        try { console.debug && console.debug('[store] fetchMonthlySummary:success', this.selectedMonth, res) } catch(e){}
-      } catch (err) {
-        try { console.error && console.error('[store] fetchMonthlySummary:error', err) } catch(e){}
-        this.monthlyError = err?.message || 'Не удалось загрузить summary'
-      } finally {
-        this.monthlyLoading = false
-        try { console.debug && console.debug('[store] fetchMonthlySummary:finished') } catch(e){}
+  const availableMonthsQuery = useQuery({
+    queryKey: ['available-months'],
+    queryFn: async () => {
+      const res = await getAvailableMonths()
+      if (!res) return fallbackMonths()
+      if (Array.isArray(res)) {
+        const mapped = res.map(r => {
+          if (!r) return null
+          if (typeof r === 'string') return r.slice(0, 7)
+          if (r.month) return String(r.month).slice(0, 7)
+          if (r.value) return String(r.value).slice(0, 7)
+          const s = JSON.stringify(r)
+          const m = s.match(/\d{4}-\d{2}/)
+          return m ? m[0] : null
+        }).filter(Boolean)
+        return mapped
       }
+      return []
     },
+    staleTime: 60 * 60 * 1000
+  })
 
-    async fetchAvailableMonths(){
-      try{
-        const api = await import('../api/dashboard.js')
-        const res = await api.getAvailableMonths()
-        // res may be null, array of strings, or array of objects
-        if (!res) {
-          // fallback: generate recent 6 months
-          const list = []
-          const now = new Date()
-          for (let i = 5; i >= 0; i--) {
-            const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-            list.push(d.toISOString().slice(0,7))
-          }
-          this.availableMonths = list
-          return
+  const monthlySummaryQuery = useQuery({
+    queryKey: () => ['monthly-summary', selectedMonth.value],
+    queryFn: () => getMonthlySummary(selectedMonth.value),
+    enabled: computed(() => Boolean(selectedMonth.value)),
+    staleTime: 5 * 60 * 1000
+  })
+
+  const lastLoadedQuery = useQuery({
+    queryKey: () => ['last-loaded', selectedMonth.value],
+    queryFn: () => getLastLoaded(selectedMonth.value),
+    enabled: computed(() => Boolean(selectedMonth.value)),
+    staleTime: 60 * 1000
+  })
+
+  const smetaCardsQuery = useQuery({
+    queryKey: () => ['smeta-cards', selectedMonth.value],
+    queryFn: async () => {
+      const res = await getBySmeta(selectedMonth.value)
+      const raw = (res && res.cards) || []
+      const mapped = raw.map(c => {
+        const plan = Number(c.plan) || 0
+        const fact = Number(c.fact) || 0
+        const pct = plan ? Math.round((fact / plan) * 100) : 0
+        const delta = Number(c.delta ?? (fact - plan))
+        return { ...c, delta, progressPercent: c.progressPercent ?? pct }
+      })
+      mapped.sort((a, b) => (Number(b.fact) || 0) - (Number(a.fact) || 0))
+      return mapped
+    },
+    enabled: computed(() => Boolean(selectedMonth.value)),
+    staleTime: 3 * 60 * 1000,
+    refetchOnWindowFocus: true
+  })
+
+  const smetaDetailsQuery = useQuery({
+    queryKey: () => ['smeta-details', selectedMonth.value, selectedSmeta.value],
+    queryFn: async () => {
+      const res = await getSmetaDetails(selectedMonth.value, selectedSmeta.value)
+      const raw = (res && res.rows) || []
+      return raw.map(r => {
+        const title = r.title || r.description || r.work_name || r.name || ''
+        const plan = Number(r.plan ?? r.planned_amount ?? r.planned ?? r.planned_amount_month ?? 0)
+        const fact = Number(r.fact ?? r.fact_amount ?? r.fact_amount_done ?? r.fact_amount_month ?? 0)
+        const delta = Number(r.delta ?? (fact - plan))
+        const progressPercent = r.progressPercent ?? (plan ? Math.round((fact / plan) * 100) : 0)
+        return { ...r, title, plan, fact, delta, progressPercent }
+      })
+    },
+    enabled: computed(() => Boolean(selectedSmeta.value) && Boolean(selectedMonth.value)),
+    staleTime: 2 * 60 * 1000
+  })
+
+  const availableDatesQuery = useQuery({
+    queryKey: () => ['available-dates', selectedMonth.value],
+    queryFn: () => getAvailableDates(selectedMonth.value),
+    enabled: computed(() => Boolean(selectedMonth.value)),
+    staleTime: 60 * 1000
+  })
+
+  const dailyQuery = useQuery({
+    queryKey: () => ['daily', selectedDate.value],
+    queryFn: async () => {
+      const res = await getDaily(selectedDate.value)
+      const rawRows = (res && res.rows) || []
+      const dateValue = res?.date || selectedDate.value
+      const rows = rawRows.map(r => {
+        const unit = r.unit || ''
+        const volumeNumber = Number(r.volume || 0)
+        const amount = Number(r.amount || 0)
+        return {
+          date: dateValue,
+          name: r.description || r.name || r.work_name || '',
+          unit,
+          volume: `${volumeNumber}${unit ? ` (${unit})` : ''}`,
+          amount
         }
-        if (Array.isArray(res)){
-          // If objects, try to extract `month` or `value` fields
-          const mapped = res.map(r => {
-            if (!r) return null
-            if (typeof r === 'string') return r.slice(0,7)
-            if (r.month) return String(r.month).slice(0,7)
-            if (r.value) return String(r.value).slice(0,7)
-            // try to stringify and extract YYYY-MM
-            const s = JSON.stringify(r)
-            const m = s.match(/\d{4}-\d{2}/)
-            return m ? m[0] : null
-          }).filter(Boolean)
-          this.availableMonths = mapped
-        } else {
-          this.availableMonths = []
-        }
-      } catch (err){
-        this.availableMonths = []
-      }
+      })
+      const totalFromApi = res?.total?.amount
+      const total = Number(totalFromApi !== undefined ? totalFromApi : rows.reduce((s, r) => s + (Number(r.amount) || 0), 0))
+      return { rows, total, date: dateValue }
     },
+    enabled: computed(() => Boolean(selectedDate.value)),
+    staleTime: 2 * 60 * 1000
+  })
 
-    async fetchSmetaCards() {
-      this.smetaCardsLoading = true
-      try {
-        const api = await import('../api/dashboard.js')
-        const res = await api.getBySmeta(this.selectedMonth)
-        const raw = (res && res.cards) || []
-        // ensure progressPercent exists and is computed as fact/plan*100 (rounded)
-        const mapped = raw.map(c => {
-          const plan = Number(c.plan) || 0
-          const fact = Number(c.fact) || 0
-          const pct = plan ? Math.round((fact / plan) * 100) : 0
-          return { ...c, progressPercent: c.progressPercent ?? pct }
-        })
-
-        // sort by fact descending so the largest fact appears first
-        mapped.sort((a, b) => (Number(b.fact) || 0) - (Number(a.fact) || 0))
-        this.smetaCards = mapped
-
-        // if no smeta selected yet, pick the first (largest fact) and load its details
-        if (!this.selectedSmeta && this.smetaCards.length) {
-          const firstKey = this.smetaCards[0].smeta_key
-          this.setSelectedSmeta(firstKey)
-          // fire and forget details load (await to ensure UI has details if needed)
-          await this.fetchSmetaDetails(firstKey)
-        }
-      } catch (err) {
-        this.smetaCards = []
-      } finally {
-        this.smetaCardsLoading = false
-      }
-    },
-
-    setLoadedAt(ts){
-      this.loadedAt = ts
-    },
-
-    async fetchSmetaDetails(smetaKey) {
-      this.smetaDetailsLoading = true
-      try {
-        const api = await import('../api/dashboard.js')
-        const res = await api.getSmetaDetails(this.selectedMonth, smetaKey)
-        const raw = (res && res.rows) || []
-        // Normalize row shape so UI always has title/plan/fact/delta
-        const norm = raw.map(r => {
-          const title = r.title || r.description || r.work_name || r.name || r.label || ''
-          const plan = Number(r.plan ?? r.planned_amount ?? r.planned ?? r.planned_amount_month ?? 0)
-          const fact = Number(r.fact ?? r.fact_amount ?? r.fact_amount_done ?? r.fact_amount_month ?? 0)
-          const delta = Number(r.delta ?? (fact - plan))
-          const progressPercent = r.progressPercent ?? (plan ? Math.round((fact / plan) * 100) : 0)
-          return { ...r, title, plan, fact, delta, progressPercent }
-        })
-        this.smetaDetails = norm
-      } catch (err) {
-        this.smetaDetails = []
-      } finally {
-        this.smetaDetailsLoading = false
-      }
-    },
-
-    async fetchDaily(date) {
-      this.dailyLoading = true
-      try {
-        const api = await import('../api/dashboard.js')
-        const res = await api.getDaily(date)
-        const rawRows = (res && res.rows) || []
-        const dateValue = res?.date || date
-        this.dailyRows = rawRows.map(r => {
-          const unit = r.unit || ''
-          const volumeNumber = Number(r.volume || 0)
-          const amount = Number(r.amount || 0)
-          return {
-            date: dateValue,
-            name: r.description || r.name || r.work_name || '',
-            unit,
-            volume: `${volumeNumber}${unit ? ` (${unit})` : ''}`,
-            amount
-          }
-        })
-        const totalFromApi = res?.total?.amount
-        this.dailyTotal = Number(totalFromApi !== undefined ? totalFromApi : this.dailyRows.reduce((s, r) => s + (Number(r.amount) || 0), 0))
-      } catch (err) {
-        this.dailyRows = []
-        this.dailyTotal = 0
-      } finally {
-        this.dailyLoading = false
-      }
-    },
-
-    // Find nearest date (<= today) that has daily data, but only within the current calendar month.
-    // This ensures the "По дням" секция показывает только даты текущего месяца.
-    async findNearestDateWithData() {
-      const today = new Date()
-      // start of current calendar month
-      const start = new Date(today.getFullYear(), today.getMonth(), 1)
-
-      // First, try to get list of available dates for the selected month in one call
-      try {
-        const api = await import('../api/dashboard.js')
-        const available = await api.getAvailableDates(this.selectedMonth)
-        if (available && available.length) {
-          // keep only dates within current calendar month and <= today
-          const startIso = start.toISOString().slice(0,10)
-          const todayIso = today.toISOString().slice(0,10)
-          const candidates = available
-            .map(d => String(d).slice(0,10))
-            .filter(d => d >= startIso && d <= todayIso)
-            .sort()
-          if (candidates.length) {
-            const nearest = candidates[candidates.length - 1]
-            this.setSelectedDate(nearest)
-            // preload rows using existing fetchDaily so normalization is consistent
-            await this.fetchDaily(nearest)
-            return nearest
-          }
-        }
-      } catch (err) {
-        // If backend doesn't support bulk dates or an error happened, fall back to per-day probing
-      }
-
-      // Fallback: iterate days backwards and probe with getDaily (original behavior)
-      for (let d = new Date(today); d >= start; d.setDate(d.getDate() - 1)) {
-        const iso = d.toISOString().slice(0, 10)
-        try {
-          const res = await (await import('../api/dashboard.js')).getDaily(iso)
-          const rows = (res && res.rows) || []
-          if (rows.length) {
-            this.setSelectedDate(iso)
-            // preload rows so UI doesn't flash empty
-            this.dailyRows = rows.map(r => {
-              const unit = r.unit || ''
-              const volumeNumber = Number(r.volume || 0)
-              const amount = Number(r.amount || 0)
-              return {
-                date: res.date || iso,
-                name: r.description || r.name || r.work_name || '',
-                unit,
-                volume: `${volumeNumber}${unit ? ` (${unit})` : ''}`,
-                amount
-              }
-            })
-            const totalFromApi = res?.total?.amount
-            this.dailyTotal = Number(totalFromApi !== undefined ? totalFromApi : this.dailyRows.reduce((s, r) => s + (Number(r.amount) || 0), 0))
-            return iso
-          }
-        } catch (err) {
-          // ignore and continue searching within month
-        }
-      }
-
-      // fallback: set today and load (still UI will be limited to current month)
-      const td = new Date().toISOString().slice(0,10)
-      this.setSelectedDate(td)
-      await this.fetchDaily(td)
-      return td
+  watch(smetaCardsQuery.data, (cards) => {
+    if (!selectedSmeta.value && cards && cards.length) {
+      selectedSmeta.value = cards[0].smeta_key
     }
+  }, { immediate: true })
+
+  watch(selectedMonth, () => {
+    selectedSmeta.value = null
+    selectedDescription.value = null
+    invalidateQueries(['smeta-details'])
+  })
+
+  const monthlySummary = computed(() => monthlySummaryQuery.data.value)
+  const monthlyLoading = computed(() => monthlySummaryQuery.isLoading.value || monthlySummaryQuery.isFetching.value)
+  const monthlyError = computed(() => monthlySummaryQuery.error.value ? (monthlySummaryQuery.error.value.message || 'Не удалось загрузить summary') : null)
+
+  const availableMonths = computed(() => availableMonthsQuery.data.value || [])
+  const smetaCards = computed(() => smetaCardsQuery.data.value || [])
+  const smetaCardsLoading = computed(() => smetaCardsQuery.isLoading.value || smetaCardsQuery.isFetching.value)
+
+  const smetaDetails = computed(() => smetaDetailsQuery.data.value || [])
+  const smetaDetailsLoading = computed(() => smetaDetailsQuery.isLoading.value || smetaDetailsQuery.isFetching.value)
+
+  const loadedAt = computed(() => {
+    const fromLastLoaded = lastLoadedQuery.data.value && lastLoadedQuery.data.value.loaded_at
+    const fromSummary = monthlySummary.value || {}
+    return fromLastLoaded || fromSummary.loaded_at || fromSummary.last_updated || fromSummary.updated_at || null
+  })
+
+  const dailyRows = computed(() => (dailyQuery.data.value && dailyQuery.data.value.rows) || [])
+  const dailyTotal = computed(() => (dailyQuery.data.value && dailyQuery.data.value.total) || 0)
+  const dailyLoading = computed(() => dailyQuery.isLoading.value || dailyQuery.isFetching.value)
+
+  async function findNearestDateWithData() {
+    const today = new Date()
+    const start = new Date(today.getFullYear(), today.getMonth(), 1)
+    let available = availableDatesQuery.data.value
+    if (!available || !available.length) {
+      try { await availableDatesQuery.refetch() } catch (_) { /* ignore */ }
+      available = availableDatesQuery.data.value
+    }
+    if (available && available.length) {
+      const startIso = start.toISOString().slice(0, 10)
+      const todayIso = today.toISOString().slice(0, 10)
+      const candidates = available
+        .map(d => String(d).slice(0, 10))
+        .filter(d => d >= startIso && d <= todayIso)
+        .sort()
+      if (candidates.length) {
+        const nearest = candidates[candidates.length - 1]
+        selectedDate.value = nearest
+        await dailyQuery.refetch()
+        return nearest
+      }
+    }
+
+    for (let d = new Date(today); d >= start; d.setDate(d.getDate() - 1)) {
+      const iso = d.toISOString().slice(0, 10)
+      try {
+        const res = await getDaily(iso)
+        const rows = (res && res.rows) || []
+        if (rows.length) {
+          selectedDate.value = iso
+          await dailyQuery.refetch()
+          return iso
+        }
+      } catch (_) {
+        /* continue */
+      }
+    }
+
+    const td = new Date().toISOString().slice(0, 10)
+    selectedDate.value = td
+    await dailyQuery.refetch()
+    return td
+  }
+
+  function setMode(m) { mode.value = m }
+  function setSelectedMonth(month) { if (month) selectedMonth.value = month }
+  function setSelectedDate(date) { if (date) selectedDate.value = date }
+  function setSelectedSmeta(key) { selectedSmeta.value = key }
+  function setSelectedDescription(desc) { selectedDescription.value = desc }
+  function setLoadedAt(ts) { if (ts) invalidateQueries(['last-loaded']); return ts }
+
+  return {
+    mode,
+    selectedMonth,
+    selectedDate,
+    selectedSmeta,
+    selectedDescription,
+    availableMonths,
+    monthlySummary,
+    monthlyLoading,
+    monthlyError,
+    loadedAt,
+    smetaCards,
+    smetaCardsLoading,
+    smetaDetails,
+    smetaDetailsLoading,
+    dailyRows,
+    dailyTotal,
+    dailyLoading,
+    setMode,
+    setSelectedMonth,
+    setSelectedDate,
+    setSelectedSmeta,
+    setSelectedDescription,
+    setLoadedAt,
+    findNearestDateWithData,
+    fetchMonthlySummary: () => monthlySummaryQuery.refetch(),
+    fetchSmetaCards: () => smetaCardsQuery.refetch(),
+    fetchSmetaDetails: (key) => {
+      if (key) selectedSmeta.value = key
+      return smetaDetailsQuery.refetch()
+    },
+    fetchDaily: (date) => {
+      if (date) selectedDate.value = date
+      return dailyQuery.refetch()
+    },
+    fetchAvailableMonths: () => availableMonthsQuery.refetch()
   }
 })
-

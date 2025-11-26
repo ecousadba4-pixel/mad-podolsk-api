@@ -39,21 +39,29 @@
 <script setup>
 import { computed, watch } from 'vue'
 import { useIsMobile } from '../../composables/useIsMobile.js'
-import { useAsyncData } from '../../composables/useAsyncData.js'
+import { useQuery } from '../../composables/useQueryClient.js'
 
 const props = defineProps({ visible: Boolean, month: String })
 const emit = defineEmits(['close'])
 
 const { isMobile } = useIsMobile()
 
-const { data: rows, loading, error, execute } = useAsyncData(async () => {
-  if (!props.month) return []
-  const api = await import('../../api/dashboard.js')
-  const res = await api.getMonthlyDailyRevenue(props.month)
-  return res.rows || []
-}, { initialValue: [] })
+const dailyRevenueQuery = useQuery({
+  queryKey: () => ['monthly-daily-revenue', props.month],
+  queryFn: async () => {
+    if (!props.month) return []
+    const api = await import('../../api/dashboard.js')
+    const res = await api.getMonthlyDailyRevenue(props.month)
+    return res.rows || []
+  },
+  enabled: computed(() => Boolean(props.visible && props.month)),
+  staleTime: 2 * 60 * 1000,
+  refetchOnWindowFocus: false
+})
 
-const rowsList = computed(() => rows.value || [])
+const rowsList = computed(() => dailyRevenueQuery.data.value || [])
+const loading = computed(() => dailyRevenueQuery.isLoading.value || dailyRevenueQuery.isFetching.value)
+const error = computed(() => dailyRevenueQuery.error.value ? (dailyRevenueQuery.error.value.message || 'Ошибка загрузки') : null)
 
 function formatDate(d){
   if (!d) return '-'
@@ -64,8 +72,8 @@ function formatDate(d){
   return `${parts[2]}.${parts[1]}.${parts[0]}`
 }
 
-watch(()=>props.visible, v=>{ if (v) execute().catch(()=>{}) })
-watch(()=>props.month, (v)=>{ if (props.visible && v) execute().catch(()=>{}) })
+watch(()=>props.visible, v=>{ if (v) dailyRevenueQuery.refetch() })
+watch(()=>props.month, (v)=>{ if (props.visible && v) dailyRevenueQuery.refetch() })
 
 function formatMoney(v){ if (v === null || v === undefined) return '-'; return Number(v).toLocaleString('ru-RU') }
 </script>

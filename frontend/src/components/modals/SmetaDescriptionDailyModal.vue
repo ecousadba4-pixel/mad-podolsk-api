@@ -37,27 +37,34 @@
 <script setup>
 import { computed, watch } from 'vue'
 import { useIsMobile } from '../../composables/useIsMobile.js'
-import { useAsyncData } from '../../composables/useAsyncData.js'
+import { useQuery } from '../../composables/useQueryClient.js'
 
 const props = defineProps({ visible: Boolean, month: String, smeta_key: String, description: String })
 const emit = defineEmits(['close'])
 
 const { isMobile } = useIsMobile()
 
-const { data: rows, loading, execute } = useAsyncData(async () => {
-  if (!props.month || !props.smeta_key || !props.description) return []
-  try {
-    const api = await import('../../api/dashboard.js')
-    const res = await api.getSmetaDescriptionDaily(props.month, props.smeta_key, props.description)
-    return res.rows || []
-  } catch (err) {
-    const api2 = await import('../../api/dashboard.js')
-    const r = await api2.getSmetaDetails(props.month, props.smeta_key)
-    return (r && r.rows) || []
-  }
-}, { initialValue: [] })
+const smetaDescriptionQuery = useQuery({
+  queryKey: () => ['smeta-description-daily', props.month, props.smeta_key, props.description],
+  queryFn: async () => {
+    if (!props.month || !props.smeta_key || !props.description) return []
+    try {
+      const api = await import('../../api/dashboard.js')
+      const res = await api.getSmetaDescriptionDaily(props.month, props.smeta_key, props.description)
+      return res.rows || []
+    } catch (err) {
+      const api2 = await import('../../api/dashboard.js')
+      const r = await api2.getSmetaDetails(props.month, props.smeta_key)
+      return (r && r.rows) || []
+    }
+  },
+  enabled: computed(() => Boolean(props.visible && props.month && props.smeta_key && props.description)),
+  staleTime: 2 * 60 * 1000,
+  refetchOnWindowFocus: false
+})
 
-const rowsList = computed(() => rows.value || [])
+const rowsList = computed(() => smetaDescriptionQuery.data.value || [])
+const loading = computed(() => smetaDescriptionQuery.isLoading.value || smetaDescriptionQuery.isFetching.value)
 
 function formatDate(d){
   if (!d) return '-'
@@ -67,9 +74,9 @@ function formatDate(d){
   return `${parts[2]}.${parts[1]}.${parts[0]}`
 }
 
-watch(()=>props.visible, v=>{ if (v) execute().catch(()=>{}) })
+watch(()=>props.visible, v=>{ if (v) smetaDescriptionQuery.refetch() })
 watch(() => [props.month, props.smeta_key, props.description], () => {
-  if (props.visible) execute().catch(()=>{})
+  if (props.visible) smetaDescriptionQuery.refetch()
 })
 
 function formatMoney(v){

@@ -29,23 +29,6 @@ const selectedSmetaLabel = computed(() => {
   return `Расшифровка работ по смете «${name}»`
 })
 
-async function loadMonthlyData(){
-  // загрузим основные данные для текущего месяца только если их ещё нет
-  // или они относятся к другому месяцу, и если в данный момент не идёт загрузка
-  try {
-    const loadedMonth = monthlySummary.value && (monthlySummary.value.month ? String(monthlySummary.value.month).slice(0,7) : null)
-    const needLoad = !monthlySummary.value || loadedMonth !== selectedMonth.value
-    if (needLoad && !monthlyLoading.value) {
-      await Promise.all([store.fetchMonthlySummary(), store.fetchSmetaCards()])
-    }
-  } catch (e) {
-    // на случай, если структура monthlySummary отличается — безопасно попытаться загрузить
-    if (!monthlyLoading.value) await Promise.all([store.fetchMonthlySummary(), store.fetchSmetaCards()])
-  }
-}
-
-await loadMonthlyData()
-
 const dailyRevenueModal = useModal(false)
 const smetaDescModal = useModal(false)
 
@@ -58,11 +41,6 @@ const openSmetaDescription = () => smetaDescModal.open()
 const closeSmetaDescription = () => smetaDescModal.close()
 
 // открыть попап расшифровки при выборе description
-function refreshMonthData() {
-  store.fetchMonthlySummary()
-  store.fetchSmetaCards()
-}
-
 function onSelectDescription(item){
   store.setSelectedDescription(item.title || item.description)
   openSmetaDescription()

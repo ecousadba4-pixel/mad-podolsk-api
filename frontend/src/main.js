@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import { usePreferredTheme } from './composables/usePreferredTheme.js'
+import { installQueryClient } from './composables/useQueryClient.js'
 
 // глобальные стили (объединены и структурированы в layers: tokens->foundations->components->overrides)
 import './styles/main.scss'
@@ -47,5 +48,11 @@ const app = createApp(App)
 const pinia = createPinia()
 app.use(pinia)
 app.use(router)
+installQueryClient(app, {
+  staleTime: 5 * 60 * 1000,
+  retry: 2,
+  retryDelay: (attempt) => 600 * (attempt + 1),
+  refetchOnWindowFocus: true
+})
 
 app.mount('#app')
