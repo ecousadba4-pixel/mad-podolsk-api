@@ -1,4 +1,3 @@
-@layer components {
 /* Таблицы и модальные таблицы: общие примитивы для `smeta-breakdown-table` и загрузочных обёрток */
 
 /* Обёртка деталей сметы — отвечает за показ skeleton/затемнения при загрузке */
@@ -174,7 +173,6 @@
 }
 
 .smeta-breakdown-table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; background: transparent; font-size: var(--font-size-body); }
-.smeta-breakdown-table--daily { --smeta-col-unit: 110px; --smeta-col-volume: 120px; --smeta-col-amount: 140px; }
 .smeta-breakdown-table thead th { text-align: left; font-size: var(--font-size-label); color: var(--text-muted); text-transform: uppercase; padding: 12px; vertical-align: middle; background: color-mix(in srgb, var(--accent) 8%, var(--surface-base) 92%); font-weight: 700; }
 .smeta-breakdown-table td, .smeta-breakdown-table th { padding: var(--gap-sm) var(--gap-md); border-bottom: 1px solid rgb(15 23 42 / 4%); vertical-align: middle; }
 .smeta-breakdown-table td:first-child { word-break: break-word; overflow-wrap: anywhere; }
@@ -192,28 +190,7 @@
 .smeta-breakdown-table__total-label { font-weight: 700; text-align: right; padding-right: var(--card-inner-gap); }
 .smeta-breakdown-table__total-value { font-weight: 700; }
 
-/* --- Page-specific overrides for the daily (non-modal) breakdown table ---
-   Ensure tables rendered on the page (not inside `.modal`) use fixed layout,
-   show their thead/tfoot normally and keep wrapping behavior appropriate for page.
-*/
-.panel .smeta-breakdown-table--daily table {
-  table-layout: fixed; /* prefer fixed layout on page tables for consistent columns */
-}
-.panel .smeta-breakdown-table--daily thead { display: table-header-group; }
-.panel .smeta-breakdown-table--daily tbody { display: table-row-group; }
-.panel .smeta-breakdown-table--daily tfoot { display: table-footer-group; }
-.panel .smeta-breakdown-table--daily thead th { white-space: normal; text-align: left; font-weight: 700; }
-.panel .smeta-breakdown-table--daily thead th.numeric { text-align: center; }
-.panel .smeta-breakdown-table--daily tbody td.numeric,
-.panel .smeta-breakdown-table--daily tfoot td.numeric { text-align: center; }
-.panel .smeta-breakdown-table--daily :is(thead th, tbody td, tfoot td) { padding: var(--gap-sm) var(--gap-md); }
-
-/* Ensure column widths declared in colgroup are respected on page tables */
-.panel .smeta-breakdown-table--daily colgroup col:nth-child(2),
-.panel .smeta-breakdown-table--daily colgroup col:nth-child(3),
-.panel .smeta-breakdown-table--daily colgroup col:nth-child(4) { width: var(--smeta-col-unit); }
-.panel .smeta-breakdown-table--daily colgroup col:nth-child(3) { width: var(--smeta-col-volume); }
-.panel .smeta-breakdown-table--daily colgroup col:nth-child(4) { width: var(--smeta-col-amount); }
+/* Page-specific overrides for daily view have been moved to `_daily-table.scss` */
 
 /* Sorting highlight: visually indicate which column header is currently sorted (desktop only) */
 .smeta-breakdown-table.sorted-by-plan thead th:nth-child(2),
@@ -228,36 +205,14 @@
 .smeta-breakdown-table thead th.sortable.sorted { color: var(--accent); }
 .smeta-breakdown-table .sort-indicator .active { color: var(--accent); font-weight:700; }
 
-/* Numeric header alignment: ensure headers with `.numeric` align with numeric cell values */
+/* Generic numeric header alignment for smeta-breakdown-table (can be overridden by
+   table-specific modules like `_daily-table.scss`). */
 .smeta-breakdown-table thead th.numeric {
   text-align: right;
 }
 
-/* If header contains inline sort indicator, keep it visually attached to the right */
 .smeta-breakdown-table thead th.numeric .sort-indicator { margin-left: 6px; }
 
-/* Override numeric utility for this table: center numeric headers and values so
-   `План`, `Факт` и `Отклонение` align consistently under their headers. */
-.smeta-breakdown-table thead th.numeric,
-.smeta-breakdown-table tbody td.numeric,
-.smeta-breakdown-table tfoot td.numeric {
-  text-align: center;
-}
-
-/* Enforce column alignment by index to avoid accidental overrides from other rules.
-   - first column: left-aligned (descriptions)
-   - other columns: centered (units, volume, amount)
-   Also enable tabular numbers for numeric columns to keep digits vertically aligned. */
-.smeta-breakdown-table thead th:first-child,
-.smeta-breakdown-table tbody td:first-child,
-.smeta-breakdown-table tfoot td:first-child {
-  text-align: left;
-}
-.smeta-breakdown-table thead th:nth-child(n+2),
-.smeta-breakdown-table tbody td:nth-child(n+2),
-.smeta-breakdown-table tfoot td:nth-child(n+2) {
-  text-align: center;
-}
 .smeta-breakdown-table td.numeric,
 .smeta-breakdown-table th.numeric {
   font-variant-numeric: tabular-nums;
@@ -266,8 +221,10 @@
   font-feature-settings: "tnum" 1;
 }
 
+/* Full-bleed panel exceptions for table visuals should be handled per-table
+  in dedicated modules (e.g. `_daily-table.scss`). */
+
 /* Ensure thead remains visually aligned with tbody when using virtual scroller (tbody wrapper) */
 .smeta-breakdown-table thead { display: table-header-group; }
 .smeta-breakdown-table tbody { display: table-row-group; }
 .smeta-breakdown-table tfoot { display: table-footer-group; }
-}
