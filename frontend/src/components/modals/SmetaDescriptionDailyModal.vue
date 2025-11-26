@@ -17,12 +17,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="r in rows" :key="r.date">
+            <tr v-for="r in rowsList" :key="r.date">
               <td class="modal-row-date">{{ formatDate(r.date) }}</td>
               <td class="numeric">{{ r.volume }} <span class="modal-value-unit">{{ r.unit }}</span></td>
               <td class="numeric modal-row-value">{{ formatMoney(r.amount) }}</td>
             </tr>
-            <tr v-if="rows.length === 0">
+            <tr v-if="rowsList.length === 0">
               <td colspan="3" class="muted">Нет данных за выбранный период</td>
             </tr>
           </tbody>
@@ -33,16 +33,29 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useIsMobile } from '../../composables/useIsMobile.js'
+import { useAsyncData } from '../../composables/useAsyncData.js'
 
 const props = defineProps({ visible: Boolean, month: String, smeta_key: String, description: String })
 const emit = defineEmits(['close'])
 
 const { isMobile } = useIsMobile()
 
-const rows = ref([])
-const loading = ref(false)
+const { data: rows, loading, execute } = useAsyncData(async () => {
+  if (!props.month || !props.smeta_key || !props.description) return []
+  try {
+    const api = await import('../../api/dashboard.js')
+    const res = await api.getSmetaDescriptionDaily(props.month, props.smeta_key, props.description)
+    return res.rows || []
+  } catch (err) {
+    const api2 = await import('../../api/dashboard.js')
+    const r = await api2.getSmetaDetails(props.month, props.smeta_key)
+    return (r && r.rows) || []
+  }
+}, { initialValue: [] })
+
+const rowsList = computed(() => rows.value || [])
 
 function formatDate(d){
   if (!d) return '-'
@@ -52,22 +65,15 @@ function formatDate(d){
   return `${parts[2]}.${parts[1]}.${parts[0]}`
 }
 
-async function load(){
-  if (!props.month || !props.smeta_key || !props.description) return
-  loading.value = true
-  try{
-    const api = await import('../../api/dashboard.js')
-    const res = await api.getSmetaDescriptionDaily(props.month, props.smeta_key, props.description)
-    rows.value = res.rows || []
-  }catch(err){
-    // fallback via api helper (use getSmetaDetails then transform) — but keep simple
-    const api2 = await import('../../api/dashboard.js')
-    const r = await api2.getSmetaDetails(props.month, props.smeta_key)
-    rows.value = (r && r.rows) || []
-  }finally{ loading.value = false }
+watch(()=>props.visible, v=>{ if (v) execute().catch(()=>{}) })
+watch(() => [props.month, props.smeta_key, props.description], () => {
+  if (props.visible) execute().catch(()=>{})
+})
+
+function formatMoney(v){
+  if (v === null || v === undefined) return '-'
+  const n = Number(v)
+  if (Number.isNaN(n)) return '-'
+  return n.toLocaleString('ru-RU', { maximumFractionDigits: 0, minimumFractionDigits: 0 })
 }
-
-watch(()=>props.visible, v=>{ if (v) load() })
-
-function formatMoney(v){ if (v === null || v === undefined) return '-'; const n = Number(v); if (Number.isNaN(n)) return '-'; return n.toLocaleString('ru-RU', { maximumFractionDigits: 0, minimumFractionDigits: 0 }) }
 </script>

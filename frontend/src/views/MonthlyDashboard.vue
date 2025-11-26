@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
 import { useIsMobile } from '../composables/useIsMobile.js'
+import { useModal } from '../composables/useModal.js'
 import { useDashboardStore } from '../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
 import SmetaCardsSection from '../components/sections/SmetaCardsSection.vue'
@@ -42,16 +43,16 @@ onMounted(async () => {
   }
 })
 
-const dailyRevenueVisible = ref(false)
-const smetaDescVisible = ref(false)
+const dailyRevenueModal = useModal(false)
+const smetaDescModal = useModal(false)
 
 function openDailyRevenue(){
-  dailyRevenueVisible.value = true
+  dailyRevenueModal.open()
 }
 
 // открыть попап расшифровки при выборе description
 function openSmetaDescription(){
-  smetaDescVisible.value = true
+  smetaDescModal.open()
 }
 
 function refreshMonthData() {
@@ -61,7 +62,7 @@ function refreshMonthData() {
 
 function onSelectDescription(item){
   store.setSelectedDescription(item.title || item.description)
-  smetaDescVisible.value = true
+  smetaDescModal.open()
 }
 
 // Handler for smeta card selection emitted by SmetaCardsSection
@@ -118,8 +119,8 @@ function onSmetaSelect(key){
         <!-- Дневная таблица теперь показывается в отдельном режиме "По дням" -->
 
         <!-- Модальные окна -->
-        <DailyRevenueModal :visible="dailyRevenueVisible" :month="selectedMonth" @close="dailyRevenueVisible = false" />
-        <SmetaDescriptionDailyModal :visible="smetaDescVisible" :month="selectedMonth" :smeta_key="selectedSmeta" :description="selectedDescription" @close="smetaDescVisible = false" />
+        <DailyRevenueModal :visible="dailyRevenueModal.isOpen" :month="selectedMonth" @close="dailyRevenueModal.close()" />
+        <SmetaDescriptionDailyModal :visible="smetaDescModal.isOpen" :month="selectedMonth" :smeta_key="selectedSmeta" :description="selectedDescription" @close="smetaDescModal.close()" />
       </div>
 
       <div v-else class="dashboard__state">Данные ещё не загружены.</div>

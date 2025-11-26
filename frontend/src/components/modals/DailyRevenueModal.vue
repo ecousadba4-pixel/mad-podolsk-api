@@ -21,11 +21,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="r in rows" :key="r.date">
+            <tr v-for="r in rowsList" :key="r.date">
               <td class="modal-row-date">{{ formatDate(r.date) }}</td>
               <td class="numeric modal-row-value">{{ formatMoney(r.amount) }}</td>
             </tr>
-            <tr v-if="rows.length === 0">
+            <tr v-if="rowsList.length === 0">
               <td colspan="2" class="muted">Нет данных за выбранный месяц</td>
             </tr>
           </tbody>
@@ -35,17 +35,23 @@
   </div>
 </template>
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useIsMobile } from '../../composables/useIsMobile.js'
+import { useAsyncData } from '../../composables/useAsyncData.js'
 
 const props = defineProps({ visible: Boolean, month: String })
 const emit = defineEmits(['close'])
 
 const { isMobile } = useIsMobile()
 
-const rows = ref([])
-const loading = ref(false)
-const error = ref(null)
+const { data: rows, loading, error, execute } = useAsyncData(async () => {
+  if (!props.month) return []
+  const api = await import('../../api/dashboard.js')
+  const res = await api.getMonthlyDailyRevenue(props.month)
+  return res.rows || []
+}, { initialValue: [] })
+
+const rowsList = computed(() => rows.value || [])
 
 function formatDate(d){
   if (!d) return '-'
@@ -56,22 +62,8 @@ function formatDate(d){
   return `${parts[2]}.${parts[1]}.${parts[0]}`
 }
 
-async function load(){
-  if (!props.month) return
-  loading.value = true
-  error.value = null
-  try{
-    const api = await import('../../api/dashboard.js')
-    const res = await api.getMonthlyDailyRevenue(props.month)
-    rows.value = res.rows || []
-  } catch (err) {
-    console.error('Failed to load monthly daily revenue', err)
-    error.value = err && err.message ? String(err.message) : 'Ошибка при загрузке данных'
-    rows.value = []
-  } finally{ loading.value = false }
-}
-
-watch(()=>props.visible, v=>{ if (v) load() })
+watch(()=>props.visible, v=>{ if (v) execute().catch(()=>{}) })
+watch(()=>props.month, (v)=>{ if (props.visible && v) execute().catch(()=>{}) })
 
 function formatMoney(v){ if (v === null || v === undefined) return '-'; return Number(v).toLocaleString('ru-RU') }
 </script>

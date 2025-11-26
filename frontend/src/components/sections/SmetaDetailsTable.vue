@@ -138,17 +138,13 @@ const props = defineProps({
   sortKey: { type: String, default: 'plan' },
   sortDir: { type: Number, default: -1 }
 })
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select', 'sort-changed'])
 
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { useIsMobile } from '../../composables/useIsMobile.js'
+import { useSort } from '../../composables/useSort.js'
 
-// detect mobile via simple media query (reactive)
-const isMobile = ref(false)
-if (typeof window !== 'undefined'){
-  const mq = window.matchMedia('(max-width: 640px)')
-  isMobile.value = mq.matches
-  mq.addEventListener && mq.addEventListener('change', e => { isMobile.value = e.matches })
-}
+const { isMobile } = useIsMobile()
 
 function formatMoney(v){
   if (v === null || v === undefined) return '-'
@@ -158,38 +154,32 @@ function formatMoney(v){
 }
 
 // Sorting state: default by plan desc — can be overridden by parent via props
-const sortKey = ref(props.sortKey || 'plan')
-const sortDir = ref(typeof props.sortDir === 'number' ? props.sortDir : -1) // -1 desc, 1 asc
-
-// sync props -> internal
-watch(() => props.sortKey, (v) => { if (v) sortKey.value = v })
-watch(() => props.sortDir, (v) => { if (typeof v === 'number') sortDir.value = v })
-
-function toggleSort(key){
-  if (sortKey.value === key){
-    sortDir.value = -sortDir.value
-  } else {
-    sortKey.value = key
-    // default direction: desc
-    sortDir.value = -1
-  }
-  // notify parent about sort change
-  emit('sort-changed', { key: sortKey.value, dir: sortDir.value })
+const compareRows = (a, b, key, dir) => {
+  const value = (item) => key === 'delta'
+    ? (Number(item.fact || 0) - Number(item.plan || 0))
+    : Number(item[key] || 0)
+  const diff = value(a) - value(b)
+  if (diff === 0) return 0
+  return dir * Math.sign(diff)
 }
 
-const sortedItems = computed(() => {
-  const arr = (props.items || []).slice()
-  const k = sortKey.value
-  const dir = sortDir.value
-  arr.sort((a, b) => {
-    const va = k === 'delta' ? (Number(a.fact || 0) - Number(a.plan || 0)) : Number(a[k] || 0)
-    const vb = k === 'delta' ? (Number(b.fact || 0) - Number(b.plan || 0)) : Number(b[k] || 0)
-    const diff = va - vb
-    if (diff === 0) return 0
-    return dir * Math.sign(diff)
-  })
-  return arr
-})
+const { sortKey, sortDir, sortedItems, setSort, toggleSort: toggleSortKey } = useSort(
+  () => props.items,
+  {
+    initialKey: props.sortKey || 'plan',
+    initialDir: typeof props.sortDir === 'number' ? props.sortDir : -1,
+    compare: compareRows
+  }
+)
+
+// sync props -> internal
+watch(() => props.sortKey, (v) => { if (v) setSort(v) })
+watch(() => props.sortDir, (v) => { if (typeof v === 'number') setSort(sortKey.value, v) })
+
+function toggleSort(key){
+  const next = toggleSortKey(key)
+  emit('sort-changed', next)
+}
 
 // Totals for Plan / Fact / Delta
 const totalsPlan = computed(() => {
@@ -201,9 +191,6 @@ const totalsFact = computed(() => {
 const totalsDelta = computed(() => {
   return totalsFact.value - totalsPlan.value
 })
-
-// --- Expansion / clamp measurement logic ---
-import { onMounted, onBeforeUnmount, nextTick } from 'vue'
 
 const expanded = ref(new Set())
 const clamped = ref({})
