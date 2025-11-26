@@ -1,5 +1,7 @@
 from calendar import monthrange
 from datetime import datetime
+from threading import RLock
+from time import monotonic
 from typing import List, Optional, Sequence
 
 from fastapi import HTTPException
@@ -12,6 +14,34 @@ SMETA_LABELS = {
     "zima": "Зима",
     "vnereglement": "Внерегламент",
 }
+
+_SENTINEL = object()
+
+
+class _TTLCache:
+    def __init__(self, ttl_seconds: int):
+        self.ttl_seconds = ttl_seconds
+        self._value = _SENTINEL
+        self._expires_at = 0.0
+        self._lock = RLock()
+
+    def get_or_set(self, factory):
+        now = monotonic()
+        with self._lock:
+            if self._value is not _SENTINEL and now < self._expires_at:
+                return self._value
+            self._value = factory()
+            self._expires_at = now + self.ttl_seconds
+            return self._value
+
+    def invalidate(self):
+        with self._lock:
+            self._value = _SENTINEL
+            self._expires_at = 0.0
+
+
+_MONTHS_CACHE = _TTLCache(ttl_seconds=300)
+_LAST_LOADED_CACHE = _TTLCache(ttl_seconds=60)
 
 
 def smeta_key_to_codes(smeta_key: str) -> Sequence[str]:
@@ -37,32 +67,35 @@ def normalize_month(month: str) -> str:
 
 
 def fetch_available_months(limit: Optional[int] = None) -> List[str]:
-    months_set = set()
-    sources = [
-        dashboard_repo.get_months_from_plan_vs_fact_monthly,
-        dashboard_repo.get_months_from_plan_fact_backend,
-        dashboard_repo.get_months_from_fact_with_money,
-    ]
+    def _load_months():
+        months_set = set()
+        sources = [
+            dashboard_repo.get_months_from_plan_vs_fact_monthly,
+            dashboard_repo.get_months_from_plan_fact_backend,
+            dashboard_repo.get_months_from_fact_with_money,
+        ]
 
-    for source in sources:
-        try:
-            rows = source()
-        except Exception:
-            continue
-
-        for r in rows:
-            raw_month = r.get("month") or r.get("month_key") or r.get("month_start")
-            if not raw_month:
-                continue
+        for source in sources:
             try:
-                normalized = normalize_month(str(raw_month))
-            except HTTPException:
+                rows = source()
+            except Exception:
                 continue
-            months_set.add(normalized)
 
-    months = sorted(months_set, reverse=True)
+            for r in rows:
+                raw_month = r.get("month") or r.get("month_key") or r.get("month_start")
+                if not raw_month:
+                    continue
+                try:
+                    normalized = normalize_month(str(raw_month))
+                except HTTPException:
+                    continue
+                months_set.add(normalized)
+
+        return sorted(months_set, reverse=True)
+
+    months = _MONTHS_CACHE.get_or_set(_load_months)
     if limit is not None:
-        months = months[:limit]
+        return months[:limit]
     return months
 
 
@@ -70,9 +103,9 @@ def validate_month(month: str):
     normalize_month(month)
 
 
-def compute_plan_fact(month: str):
+def compute_plan_fact(month: str, plan_fact_row: Optional[dict] = None):
     month_key = normalize_month(month)
-    row = dashboard_repo.get_plan_fact_month(month_key)
+    row = plan_fact_row or dashboard_repo.get_plan_fact_month(month_key)
 
     if not row:
         row = {
@@ -124,9 +157,11 @@ def compute_plan_fact(month: str):
     }
 
 
-def compute_contract_amount():
-    contract_row = dashboard_repo.get_contract_amount_sum()
-    return int(contract_row["sum"] or 0) if contract_row else 0
+def compute_contract_amount(contract_row: Optional[dict] = None):
+    row = contract_row or dashboard_repo.get_contract_amount_sum()
+    if not row:
+        return 0
+    return int((row.get("sum") or row.get("contract_amount") or 0))
 
 
 def compute_avg_daily_revenue(month_key: str, fact_total: int):
@@ -140,13 +175,15 @@ def compute_avg_daily_revenue(month_key: str, fact_total: int):
     return int(fact_total / denom) if denom else 0
 
 
-def build_monthly_summary(month_key: str):
-    plan_fact = compute_plan_fact(month_key)
-    summa_contract = compute_contract_amount()
+def build_monthly_summary(month_key: str, bundle: Optional[dict] = None):
+    plan_fact = compute_plan_fact(month_key, plan_fact_row=bundle)
+    summa_contract = compute_contract_amount(bundle)
     # For the contract card, use total executed amount across all available months
     # (do not filter by the selected month). This provides a cumulative 'Выполнено' value.
-    total_fact_row = dashboard_repo.get_total_fact_amount()
-    total_fact_all_months = int(total_fact_row["sum"] or 0) if total_fact_row else 0
+    total_fact_all_months = int(bundle.get("fact_total_all_months") or 0) if bundle else 0
+    if not total_fact_all_months and not bundle:
+        total_fact_row = dashboard_repo.get_total_fact_amount()
+        total_fact_all_months = int(total_fact_row["sum"] or 0) if total_fact_row else 0
     contract_planfact_pct = float(total_fact_all_months / summa_contract) if summa_contract else None
     avg_daily_revenue = compute_avg_daily_revenue(month_key, plan_fact["fact_total"])
 
@@ -167,8 +204,8 @@ def build_monthly_summary(month_key: str):
     }
 
 
-def build_monthly_by_smeta(month: str):
-    plan_fact = compute_plan_fact(month)
+def build_monthly_by_smeta(month: str, plan_fact: Optional[dict] = None):
+    plan_fact = plan_fact or compute_plan_fact(month)
     cards = []
     plan_keys = {
         "leto": ("plan_leto", "fact_leto"),
@@ -202,11 +239,13 @@ def build_combined_dashboard(month: Optional[str]):
         "daily_revenue": None,
     }
     items: List[dict] = []
+    cards: List[dict] = []
     available_months = fetch_available_months(limit=24)
 
     if month_key:
-        plan_fact = compute_plan_fact(month_key)
-        contract_amount = compute_contract_amount()
+        bundle = dashboard_repo.get_month_summary_bundle(month_key)
+        plan_fact = compute_plan_fact(month_key, plan_fact_row=bundle)
+        contract_amount = compute_contract_amount(bundle)
         contract_completion_pct = (float(plan_fact["fact_total"]) / contract_amount) if contract_amount else None
         avg_daily_revenue = compute_avg_daily_revenue(month_key, plan_fact["fact_total"])
 
@@ -226,11 +265,11 @@ def build_combined_dashboard(month: Optional[str]):
         items = dashboard_repo.get_monthly_items(month_key)
         # build cards for the three smeta categories (leto, zima, vnereglement)
         try:
-            cards = build_monthly_by_smeta(month_key)["cards"]
+            cards = build_monthly_by_smeta(month_key, plan_fact)["cards"]
         except Exception:
             cards = []
 
-    last_updated_row = dashboard_repo.get_last_loaded_row()
+    last_updated_row = _LAST_LOADED_CACHE.get_or_set(dashboard_repo.get_last_loaded_row)
     last_updated = None
     if last_updated_row:
         loaded = last_updated_row.get("loaded_at")
@@ -317,7 +356,7 @@ def build_daily(date_value: str):
 
 
 def build_last_loaded():
-    row = dashboard_repo.get_last_loaded_row()
+    row = _LAST_LOADED_CACHE.get_or_set(dashboard_repo.get_last_loaded_row)
     if not row:
         return {"loaded_at": None}
     loaded = row.get("loaded_at")
