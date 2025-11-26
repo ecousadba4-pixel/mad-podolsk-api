@@ -10,11 +10,14 @@
   box-sizing: border-box;
   width: 100%;
   max-width: 100vw;
-  /* keep vertical padding but use container's horizontal padding to align content
-     with the page grid — remove horizontal padding so header children line up
-     with `.page`'s inner padding */
+  /* keep vertical padding but reset any utility horizontal padding (e.g. `p-md`) 
+    so header alignment is driven by `.app-header__inner`. Also compute an
+    inner horizontal pad that matches panel content (page padding + panel padding)
+    so header children visually align with panel internals. */
   padding-top: var(--card-padding);
   padding-bottom: var(--card-padding);
+  padding-left: 0; /* override utility classes that may add horizontal padding */
+  padding-right: 0;
 
   /* unify horizontal spacing between header blocks */
   --header-gap: var(--gap-lg);
@@ -30,8 +33,14 @@
   max-width: min(var(--page-max-width), 100%);
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--page-hpad);
-  padding-right: var(--page-hpad);
+  /* Align header children with panel internal content by default.
+     `.page` has `padding-left/right: var(--page-hpad)` and panels use
+     `padding: var(--card-padding)`. This ensures the visible content axis
+     of header matches panel content. If you want header to align with
+     the page edge instead, change `--header-inner-hpad` to `var(--page-hpad)`. */
+  --header-inner-hpad: calc(var(--page-hpad) + var(--card-padding));
+  padding-left: var(--header-inner-hpad);
+  padding-right: var(--header-inner-hpad);
   box-sizing: border-box;
   display: flex;
   align-items: center;

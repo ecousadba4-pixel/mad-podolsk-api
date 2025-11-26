@@ -1,4 +1,5 @@
 <script setup>
+// Temporary: use new header component for iterative rebuild and testing
 import AppHeader from './components/AppHeader.vue'
 import { useDashboardStore } from './store/dashboardStore.js'
 import { ref, nextTick } from 'vue'

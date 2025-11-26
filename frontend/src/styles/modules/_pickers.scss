@@ -44,6 +44,58 @@ select, input[type="date"] { border:none; background:transparent; font-size:var(
   font-family: var(--font-sans);
 }
 
+/* Center label + current vertically inside picker toggle */
+.month-picker__info,
+.day-picker__info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* Day picker: make the info area fill the toggle so the date is centered
+   relative to the whole control; place chevron absolutely to the right. */
+.day-picker__toggle { position: relative; padding-right: 56px; }
+.day-picker__toggle .day-picker__info { width: 100%; justify-content: center; align-items: center; flex: none; }
+.day-picker__toggle .day-picker__arrow { position: absolute; right: 2px; top: 50%; transform: translateY(-50%); margin-left: 0; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; pointer-events: auto; }
+
+.day-picker__toggle .day-picker__arrow svg { width: 18px; height: 18px; }
+
+/* Mirror same behavior for month picker: center month label and make chevron touch target larger */
+.month-picker__toggle { position: relative; padding-right: 56px; }
+.month-picker__toggle .month-picker__info { width: 100%; justify-content: center; align-items: center; flex: none; }
+.month-picker__toggle .month-picker__arrow { position: absolute; right: 2px; top: 50%; transform: translateY(-50%); margin-left: 0; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; pointer-events: auto; }
+.month-picker__toggle .month-picker__arrow svg { width: 18px; height: 18px; }
+
+/* Hover / active / focus styles for chevron area to make it clearly interactive */
+.day-picker__toggle .day-picker__arrow,
+.month-picker__toggle .month-picker__arrow {
+  border-radius: 10px;
+  transition: background-color .12s ease, transform .08s ease, box-shadow .12s ease;
+}
+
+.day-picker__toggle .day-picker__arrow:hover,
+.month-picker__toggle .month-picker__arrow:hover {
+  background: var(--surface-highlight);
+}
+
+.day-picker__toggle .day-picker__arrow:active,
+.month-picker__toggle .month-picker__arrow:active {
+  transform: translateY(-50%) scale(.98);
+  background: color-mix(in srgb, var(--surface-highlight) 70%, transparent);
+}
+
+.day-picker__toggle .day-picker__arrow:focus-visible,
+.month-picker__toggle .month-picker__arrow:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  outline-offset: 2px;
+}
+.month-picker__current,
+.day-picker__current { display: block; }
+
 @media (max-width: 640px) {
   .day-picker__toggle,
   .picker__toggle {
@@ -56,6 +108,27 @@ select, input[type="date"] { border:none; background:transparent; font-size:var(
   }
   .day-picker__label { font-size: var(--font-size-tiny); }
   .day-picker__current { font-size: var(--font-size-body); }
+}
+
+/* Style chevrons inside pickers (SVG fallback) for better visibility */
+.month-picker__arrow,
+.day-picker__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--chevron-color);
+  width: 36px;
+  height: 36px;
+  margin-left: 6px;
+}
+.month-picker__arrow svg,
+.day-picker__arrow svg { width: 18px; height: 18px; }
+
+@media (max-width: 640px) {
+  .month-picker__arrow,
+  .day-picker__arrow { width: 44px; height: 44px; }
+  .month-picker__arrow svg,
+  .day-picker__arrow svg { width: 20px; height: 20px; }
 }
 
 .month-selector__select { font-family: var(--font-sans); }

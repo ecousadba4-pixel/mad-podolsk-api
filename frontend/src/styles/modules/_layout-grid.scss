@@ -249,8 +249,8 @@
 }
 .contract-execution--compact .panel-meta-value { margin-top: 2px; text-align: right; }
 
-/* Make progress thinner */
-.contract-execution--compact .contract-progress__bar { height: 6px; border-radius: 999px; overflow: hidden; }
+/* Make progress match standard progress height used elsewhere (smeta cards) */
+.contract-execution--compact .contract-progress__bar { height: var(--progress-height); border-radius: 999px; overflow: hidden; }
 .contract-execution--compact .contract-progress__fill { height: 100%; display: block; }
 
 /* reduce header spacing for compact card */

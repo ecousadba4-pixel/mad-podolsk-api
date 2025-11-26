@@ -6,9 +6,14 @@
       @click="openNative()"
       :aria-label="`Выбор даты, текущая: ${currentLabel}`"
     >
-      <span class="day-picker__label">ДАТА</span>
-      <span class="day-picker__current">{{ currentLabel }}</span>
-      <span class="day-picker__arrow">▾</span>
+        <div class="day-picker__info">
+          <span class="day-picker__current">{{ currentLabel }}</span>
+        </div>
+        <span class="day-picker__arrow" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+            <path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
     </button>
 
     <!-- native date input opened programmatically -->

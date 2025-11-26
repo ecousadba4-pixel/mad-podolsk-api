@@ -105,8 +105,9 @@ const selectedMonth = computed({
 .new-header-row { display:flex; align-items:center; }
 .app-header__title { margin: 0; }
 
-/* Debug outlines removed for final version */
-.app-header__title { padding: 6px 0; }
+/* debug outlines to visually compare widths with panels; remove later */
+.new-app-header { outline: 2px dashed rgba(46, 204, 113, 0.25); }
+.app-header__title { outline: 1px dotted rgba(47,111,237,0.12); padding: 6px 0; }
 
 /* Mobile: make title occupy full available width so boundaries are obvious */
 @media (max-width: 640px) {
@@ -160,4 +161,3 @@ const selectedMonth = computed({
   }
 }
 </style>
-     `.app-header__inner` and `--page-hpad`. -->
