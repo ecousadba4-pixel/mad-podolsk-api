@@ -25,6 +25,7 @@ function goToMonthly() {
     router.push({ path: '/' })
     store.setMode('monthly')
     store.fetchMonthlySummary()
+    store.fetchSmetaCards()
   }
 }
 
@@ -65,7 +66,11 @@ const selectedMonth = computed({
   set: (value) => {
     if (!value) return
     store.setSelectedMonth(value)
+    // Сбросить выбор сметы, чтобы избежать рассинхронизации после смены месяца
+    store.setSelectedSmeta(null)
+    // Перезагрузить данные для новых карточек и KPI
     store.fetchMonthlySummary()
+    store.fetchSmetaCards()
   }
 })
 </script>
