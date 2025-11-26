@@ -23,7 +23,7 @@
   max-height: calc(100vh - var(--modal-viewport-offset));
 }
 
-@media (width <= 480px) {
+@media (max-width: 480px) {
   .modal { border-radius: var(--modal-mobile-border-radius); padding: var(--modal-mobile-padding); }
   .modal-backdrop { padding: var(--gap-sm); }
   .modal-close { top: var(--modal-close-offset, var(--gap-sm)); right: var(--modal-close-offset, var(--gap-sm)); }

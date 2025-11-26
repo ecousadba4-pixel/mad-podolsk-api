@@ -28,7 +28,7 @@
 
 select, input[type="date"] { border:none; background:transparent; font-size:var(--font-size-body); color:var(--text-main); outline:none; font-weight:600 }
 
-@media (width <= 640px) {
+@media (max-width: 640px) {
   .month-picker__toggle, .day-picker__toggle, .picker__toggle { width:100%; min-width:0; padding:0 var(--gap-sm); min-height:var(--control-height-mobile); height:var(--control-height-mobile); gap:var(--gap-sm) }
   .month-picker__label, .day-picker__label { font-size:0.64rem }
   .month-picker__current, .day-picker__current { font-size:0.95rem }

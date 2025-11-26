@@ -74,7 +74,7 @@
 .contract-progress-fill { height:100%; width:var(--progress,0%); background:var(--accent); transition: width 0.35s ease, background-color 0.2s ease; border-radius:var(--radius-xxl); box-shadow:var(--shadow-card); }
 .contract-progress-fill.overflow { background: var(--success); }
 
-@media (width <= 640px) {
+@media (max-width: 640px) {
   /* Mobile: contract execution labels/values adapt to stacked layout */
   .contract-execution .panel-meta { display: flex; flex-direction: column; gap: calc(var(--gap-xs) * 0.6); }
   .contract-execution .panel-meta-row { display: flex; gap: var(--gap-md); align-items: center }
@@ -105,13 +105,13 @@
   font-feature-settings: "tnum" 1;
 }
 
-@media (width >= 768px) {
+@media (min-width: 768px) {
   .contract-execution .panel-meta-value { font-size: var(--font-size-h2); }
 }
 
 .contract-execution .panel-title { font-size: var(--font-size-h2); font-weight: 600; }
 
-@media (width >= 769px) {
+@media (min-width: 769px) {
   .contract-execution .panel-meta { display: block; }
   .contract-execution .panel-meta-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; align-items: center; }
   .contract-execution .panel-meta-row.panel-meta-labels .panel-meta-item,
@@ -125,7 +125,7 @@
 .contract-progress-labels strong { font-size: var(--font-size-caption); color: var(--text-main); }
 
 
-@media (width >= 768px) {
+@media (min-width: 768px) {
   .contract-card-header { flex-direction:row; align-items:center; justify-content:space-between }
   .contract-card-values { gap: clamp(12px, 2vw, 18px); }
 }
@@ -143,13 +143,13 @@
 .view-tab { background:transparent; border:none; padding:var(--gap-xs) var(--gap-md); font-size:var(--font-size-label); font-weight:600; letter-spacing:0.02em; border-radius:var(--radius-sm); cursor:pointer; color:var(--text-muted); display:flex; flex-direction:column; align-items:center; justify-content:center; min-width:64px }
 .view-tab.is-active { background:var(--accent); color:var(--text-inverse); box-shadow:var(--shadow-btn-primary) }
 
-@media (width >= 880px) {
+@media (min-width: 880px) {
   .page-header { flex-direction:row; justify-content:space-between; align-items:flex-end }
   .page-header-right { flex-direction:row; gap:var(--gap-lg); align-items:stretch }
   .page-header-left { flex:1 1 auto }
 }
 
-@media (width <= 879px) {
+@media (max-width: 879px) {
   .view-switch { width:100%; min-height:54px }
   .view-tab { flex:1 1 0; text-align:center }
 }
@@ -208,7 +208,7 @@
   margin-right: 0;
 }
 
-@media (width <= 640px) {
+@media (max-width: 640px) {
   .dashboard__grid > .smeta-panel,
   .smeta-panel {
     flex: 1 1 100%;

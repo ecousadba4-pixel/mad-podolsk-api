@@ -91,11 +91,11 @@
 .px-sm { padding-left: var(--gap-sm); padding-right: var(--gap-sm); }
 .py-sm { padding-top: var(--gap-sm); padding-bottom: var(--gap-sm); }
 
-@media (width <= 640px) {
+@media (max-width: 640px) {
   .card-col { align-items: flex-start; }
 }
 
-@media (width <= 640px) {
+@media (max-width: 640px) {
   .picker-toggle {
     width: 100%;
     min-width: 0;

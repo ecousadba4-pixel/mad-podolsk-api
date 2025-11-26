@@ -12,7 +12,7 @@
 
 .summary-cards { margin-bottom: var(--section-gap); align-items: stretch; grid-auto-rows: 1fr; }
 
-@media (width >= 1024px) {
+@media (min-width: 1024px) {
   .summary-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
@@ -20,7 +20,7 @@
 
 .dashboard__grid > .summary-grid { flex: 1 1 100%; width: 100%; box-sizing: border-box; }
 
-@media (width <= 640px) {
+@media (max-width: 640px) {
   .summary-card, .summary-card-skeleton { padding: var(--card-padding); min-height: auto; }
   .summary-label, .summary-sub { font-size: var(--font-size-tiny); white-space: normal; overflow: visible; text-overflow: clip; }
   .summary-label { min-height: 2.1em; line-height: 1.15; display: flex; align-items: flex-start; }
@@ -59,22 +59,22 @@
 
 .summary-label { font-size: var(--summary-label-fs, var(--font-size-h2)); font-weight: 700; color: var(--text-main); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0; word-break: break-word; width: 100%; text-align: left; padding-left: var(--card-inner-gap); }
 
-@media (width >= 768px) { .summary-label { font-size: var(--summary-label-fs, var(--font-size-h2)); } }
-@media (width >= 1200px) { .summary-label { font-size: var(--font-size-h1); } }
+@media (min-width: 768px) { .summary-label { font-size: var(--summary-label-fs, var(--font-size-h2)); } }
+@media (min-width: 1200px) { .summary-label { font-size: var(--font-size-h1); } }
 
 .summary-value { text-align: left; padding-left: var(--card-inner-indent); }
 .summary-value { font-size: var(--font-size-h3); font-weight: 600; word-break: break-word; width: 100%; text-align: left; padding-left: var(--card-inner-indent); margin-top: var(--gap-md); }
 
 .summary-card-interactive .summary-value { font-size: var(--font-size-h3); font-weight: 600; line-height: 1.15; font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; color: var(--text-main); }
-@media (width >= 768px) { .summary-card-interactive .summary-value { font-size: var(--font-size-h2); } }
-@media (width <= 640px) { .summary-value, .summary-card-interactive .summary-value { font-size: var(--font-size-body); margin-top: var(--gap-sm); } }
+@media (min-width: 768px) { .summary-card-interactive .summary-value { font-size: var(--font-size-h2); } }
+@media (max-width: 640px) { .summary-value, .summary-card-interactive .summary-value { font-size: var(--font-size-body); margin-top: var(--gap-sm); } }
 
 .summary-sub { font-size: var(--font-size-label); color: var(--text-muted); }
-@media (width >= 768px) { .summary-sub { font-size: var(--font-size-caption); } }
+@media (min-width: 768px) { .summary-sub { font-size: var(--font-size-caption); } }
 
 .summary-note { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .summary-note-line { display: inline; }
-@media (width <= 640px) { .summary-note { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.2; text-align: left; } .summary-note-line { display: block; } }
+@media (max-width: 640px) { .summary-note { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.2; text-align: left; } .summary-note-line { display: block; } }
 
 .summary-value.positive { color: var(--success); }
 .summary-value.negative { color: var(--danger); }

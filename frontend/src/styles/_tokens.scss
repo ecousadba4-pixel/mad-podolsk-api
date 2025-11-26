@@ -48,15 +48,15 @@
   --radius-sm: 8px;
   --radius-xxl: 999px;
 
-  /* Unified spacing between card frames */
-  --card-frame-gap-mobile: 14px;
-  --card-frame-gap-desktop: 22px;
+  /* Unified spacing between card frames — harmonized for symmetric gutters */
+  --card-frame-gap-mobile: 16px;
+  --card-frame-gap-desktop: 24px;
   --card-frame-gap: var(--card-frame-gap-mobile);
   --section-gap: var(--card-frame-gap);
 
   /* Unified inner gap between card border and internal labels/pills */
-  --card-inner-gap-mobile: 12px;
-  --card-inner-gap-desktop: 18px;
+  --card-inner-gap-mobile: 14px;
+  --card-inner-gap-desktop: 20px;
   --card-inner-gap: var(--card-inner-gap-mobile);
 
   /* value indent inside card (usually a bit larger) */
@@ -102,7 +102,7 @@
   --transition-fade: opacity 0.2s ease;
   --transition-border: border-color 0.2s ease, background-color 0.2s ease;
   --grid-gap: var(--card-frame-gap);
-  --card-padding: clamp(12px, 1.8vw, 18px);
+  --card-padding: clamp(14px, 1.8vw, 20px);
 
   /* Page layout tokens */
   --page-max-width: 1180px;
@@ -148,7 +148,7 @@
   --modal-col-third-max: 160px;
 }
 
-@media (width >= 1024px) {
+@media (min-width: 1024px) {
   :root {
     --card-frame-gap: var(--card-frame-gap-desktop);
     --card-inner-gap: var(--card-inner-gap-desktop);

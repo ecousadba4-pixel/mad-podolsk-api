@@ -206,7 +206,7 @@
 .month-selector__select{ padding:var(--gap-sm) var(--gap-md); border-radius:6px }
 
 /* Compact header adjustments (migrated from components.css) */
-@media (width <= 900px) {
+@media (max-width: 900px) {
   .app-header__right > * { height: 32px; min-height: 32px; }
   .app-header__mode-switch { height: 32px; min-height: 32px; padding: 2px; border-radius: 8px; box-sizing: border-box; }
   .app-header__mode-switch .mode-btn { height: 100%; min-height: 28px; padding: 4px 8px; }
@@ -214,7 +214,7 @@
   .last-updated { flex: 1 1 50%; min-width: 0 }
 }
 
-@media (width <= 640px) {
+@media (max-width: 640px) {
   .app-header { align-items: stretch; padding: var(--card-padding); }
   .app-header__right { display: flex; flex-wrap: wrap; gap: var(--gap-md); align-items: center; }
   .app-header__mode-switch { flex: 1 1 100%; width: 100%; justify-content: flex-start; padding: 2px; min-height: var(--control-height-mobile); height: var(--control-height-mobile); border-radius: 8px; }

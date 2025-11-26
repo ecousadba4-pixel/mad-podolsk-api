@@ -208,7 +208,7 @@
 }
 
 /* On small screens keep modal full-width and more compact spacing */
-@media (width <= 640px) {
+@media (max-width: 640px) {
   .modal { width: 100%; padding: var(--gap-md); }
 
   .modal .smeta-breakdown-table th,
@@ -216,7 +216,7 @@
 }
 
 /* Very small screens: make modal full-bleed and more touch-friendly */
-@media (width <= 480px) {
+@media (max-width: 480px) {
   .modal-backdrop { padding: 8px; }
 
   .modal {
@@ -307,7 +307,7 @@
   font-size: var(--font-size-body);
 }
 
-@media (width <= 767px) {
+@media (max-width: 767px) {
   .modal-list {
     row-gap: var(--gap-xs);
     padding: 2px 0;
