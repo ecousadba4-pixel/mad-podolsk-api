@@ -22,11 +22,19 @@
 .month-info { display:flex; align-items:center; gap:var(--gap-md); flex-wrap:nowrap }
 .month-select { display:flex; align-items:center; gap:var(--gap-sm); padding:var(--gap-sm) 14px; background:var(--bg-card); border-radius:var(--radius-md); border:1px solid var(--border-soft); box-shadow:var(--shadow-card); min-height:var(--control-height); position:relative }
 .month-select label { font-size:var(--font-size-caption); color:var(--text-muted) }
+
+/* Ensure month/day picker labels use centralized font tokens */
+.month-picker__label,
+.month-select label,
+.month-selector__label,
+.day-select label {
+  font-family: var(--font-din);
+}
 .month-select-control { position:relative; flex:1; min-width:146px }
 .month-select-control select { width:100%; appearance:none; padding-right:26px }
 .month-select-control::after { content:""; position:absolute; top:50%; right:8px; width:8px; height:8px; border-right:2px solid var(--chevron-color); border-bottom:2px solid var(--chevron-color); transform:translateY(-50%) rotate(45deg); pointer-events:none; opacity:1 }
 
-select, input[type="date"] { border:none; background:transparent; font-size:var(--font-size-body); color:var(--text-main); outline:none; font-weight:600 }
+select, input[type="date"] { border:none; background:transparent; font-size:var(--font-size-body); color:var(--text-main); outline:none; font-weight:600; font-family: var(--font-sans); }
 
 /* MonthPicker custom panel styles */
 .month-picker { position: relative; display: inline-block; }
@@ -58,6 +66,7 @@ select, input[type="date"] { border:none; background:transparent; font-size:var(
   text-align: left;
   cursor: pointer;
   font-size: var(--font-size-body);
+  font-family: var(--font-sans);
 }
 .month-picker__item button:hover,
 .month-picker__item button.is-focused { background: var(--surface-highlight); }
@@ -71,3 +80,11 @@ select, input[type="date"] { border:none; background:transparent; font-size:var(
   .month-picker__label, .day-picker__label { font-size:0.64rem }
   .month-picker__current, .day-picker__current { font-size:0.95rem }
 }
+
+/* Ensure month current label and selector use centralized font tokens */
+.month-picker__current { font-family: var(--font-sans); }
+.month-selector__select { font-family: var(--font-sans); }
+.month-select-control select { font-family: var(--font-sans); }
+
+/* Fallback for native option rendering */
+select option { font-family: var(--font-sans); }

@@ -95,6 +95,7 @@ function onSmetaSelect(key){
                 <div class="panel-title-mobile-value">{{ selectedSmetaLabel.replace('Расшифровка работ по смете', '') }}</div>
               </div>
               <h3 class="panel-title">{{ selectedSmetaLabel }}</h3>
+              <p class="panel-note">Детали по виду работы при нажатии</p>
             </div>
             <div class="panel-header-controls panel-controls">
               <select class="smeta-sort-select" v-model="smetaSortKey" @change="smetaSortDir = -1">

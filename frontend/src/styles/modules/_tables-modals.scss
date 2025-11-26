@@ -132,10 +132,11 @@
   text-align: left;
 }
 .modal .smeta-breakdown-table thead th:nth-child(2),
-.modal .smeta-breakdown-table tbody td:nth-child(2) {
+.modal .smeta-breakdown-table tbody td:nth-child(2),
+.modal .smeta-breakdown-table tfoot td:nth-child(2) {
   text-align: center;
 }
-.modal .smeta-breakdown-table :is(thead th, tbody td) {
+.modal .smeta-breakdown-table :is(thead th, tbody td, tfoot td) {
   padding: calc(var(--gap-xs) * 1.25) var(--gap-md);
 }
 
@@ -214,6 +215,7 @@
 /* Override numeric utility for this table: center numeric headers and values so
    `План`, `Факт` и `Отклонение` align consistently under their headers. */
 .smeta-breakdown-table thead th.numeric,
-.smeta-breakdown-table tbody td.numeric {
+.smeta-breakdown-table tbody td.numeric,
+.smeta-breakdown-table tfoot td.numeric {
   text-align: center;
 }

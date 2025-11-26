@@ -6,7 +6,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--card-padding);
+  /* keep vertical padding but use container's horizontal padding to align content
+     with the page grid — remove horizontal padding so header children line up
+     with `.page`'s inner padding */
+  padding-top: var(--card-padding);
+  padding-bottom: var(--card-padding);
 
   /* unify horizontal spacing between header blocks */
   --header-gap: var(--gap-lg);
@@ -38,6 +42,9 @@
   align-items: center;
   gap: var(--header-gap);
 }
+
+/* Ensure header title does not wrap unexpectedly */
+.app-header__title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .app-header__right > * {
   display: inline-flex;
@@ -191,9 +198,11 @@
 
 .last-updated__text{ display:flex; flex-direction:column; align-items:stretch }
 
-.last-updated__label{ font-size: var(--font-size-label); color: var(--text-muted); text-transform:uppercase; letter-spacing:0.06em }
+.last-updated__label{ font-size: var(--font-size-caption); color: var(--text-muted); text-transform:uppercase; letter-spacing:0.04em }
 
-.last-updated__time{ font-size: var(--font-size-body); font-weight:700; color:var(--text-main) }
+.last-updated__time{ font-size: var(--font-size-body-sm); font-weight:600; color:var(--text-main) }
+
+
 
 .last-updated__label,
 .last-updated__time{ display:block; width:100%; box-sizing:border-box }

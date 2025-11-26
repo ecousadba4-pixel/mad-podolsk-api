@@ -50,7 +50,7 @@
 
 /* Add consistent vertical gap between panel header/title and panel content
    Use card-inner-gap so the spacing matches internal card padding. */
-.panel > .panel-header { margin-bottom: var(--card-inner-gap); }
+.panel > .panel-header { margin-top: var(--card-inner-gap); margin-bottom: var(--card-inner-gap); }
 .panel .panel-header h3.panel-title,
 .panel h3.panel-title { margin-bottom: calc(var(--card-inner-gap) / 2); }
 
@@ -99,7 +99,7 @@
   align-items: flex-start;
 }
 
-.contract-card-header { display:flex; flex-direction:column; gap:var(--gap-sm); }
+.contract-card-header { display:flex; flex-direction:column; gap:var(--contract-meta-gap); }
 .contract-card-title { font-weight:700; font-size:var(--font-size-h3); display:flex; align-items:baseline; gap:var(--gap-xs); }
 .contract-card-values { display:flex; gap:var(--gap-sm); font-size:var(--font-size-numeric); flex-wrap:nowrap }
 .contract-card-values > div { flex:1 1 0; min-width:0 }
@@ -180,6 +180,36 @@
 }
 
 .contract-execution__body { padding-top: var(--gap-sm); }
+
+/* Compact horizontal variant: reduce height and lay out meta horizontally */
+.contract-execution--compact {
+  padding: calc(var(--gap-sm) * 1.5) var(--card-padding);
+}
+.contract-execution--compact .panel-header {
+  display: grid;
+  grid-template-columns: 1fr minmax(220px, 360px);
+  align-items: center;
+  gap: var(--gap-md);
+}
+.contract-execution--compact .panel-title {
+  font-size: calc(var(--font-size-h3));
+  margin: 0;
+}
+.contract-execution--compact .panel-meta { display: flex; align-items: center; justify-content: flex-end; gap: var(--gap-md); }
+.contract-execution--compact .panel-meta-row { display:flex; gap: var(--gap-md); align-items: center; }
+.contract-execution--compact .panel-meta-item { min-width: 0; }
+.contract-execution--compact .panel-meta-label { display:none; }
+.contract-execution--compact .panel-meta-value { margin-top: 0; text-align: right; }
+
+/* Make progress thinner */
+.contract-execution--compact .contract-progress__bar { height: 10px; border-radius: 999px; overflow: hidden; }
+.contract-execution--compact .contract-progress__fill { height: 100%; display: block; }
+
+@media (max-width: 640px) {
+  .contract-execution--compact .panel-header { grid-template-columns: 1fr; }
+  .contract-execution--compact .panel-meta { justify-content: flex-start; }
+  .contract-execution--compact .panel-meta-label { display:block; }
+}
 
 .contract-progress-labels { display:flex; align-items:center; justify-content:space-between; font-size:var(--font-size-label); color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:var(--gap-xs); }
 .contract-progress-labels strong { font-size: var(--font-size-caption); color: var(--text-main); }
@@ -351,6 +381,15 @@
 .mockup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: clamp(16px, 2vw, var(--card-frame-gap)); }
 
 .panel-subtitle { color: var(--text-muted); margin-top: var(--gap-xs); }
+.panel-note {
+  display: block;
+  color: var(--text-muted);
+  margin-top: calc(var(--gap-xs) / 2);
+  margin-bottom: calc(var(--gap-xs) / 2);
+  font-size: var(--font-size-body-sm);
+  line-height: 1.25;
+  font-weight: 500;
+}
 
 .view-toggle {
   display: inline-flex;

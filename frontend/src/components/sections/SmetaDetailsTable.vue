@@ -67,6 +67,14 @@
             <td :class="{'negative': (Number(item.fact || 0) - Number(item.plan || 0)) < 0}" class="numeric">{{ formatMoney(Number(item.fact || 0) - Number(item.plan || 0)) }}</td>
           </tr>
         </tbody>
+        <tfoot>
+          <tr class="smeta-breakdown-table__totals">
+            <td><strong>Итого</strong></td>
+            <td class="numeric"><strong>{{ formatMoney(totalsPlan) }}</strong></td>
+            <td class="numeric"><strong>{{ formatMoney(totalsFact) }}</strong></td>
+            <td :class="{'negative': totalsDelta < 0}" class="numeric"><strong>{{ formatMoney(totalsDelta) }}</strong></td>
+          </tr>
+        </tfoot>
       </table>
     
     <!-- Mobile stacked view: three rows per item -->
@@ -92,7 +100,7 @@
             </button>
           </div>
         </div>
-          <div class="smeta-mobile-row smeta-mobile-row-labels text-label">
+        <div class="smeta-mobile-row smeta-mobile-row-labels text-label">
           <div class="lbl">План</div>
           <div class="lbl">Факт</div>
           <div class="lbl">Отклонение</div>
@@ -101,6 +109,23 @@
           <div class="val text-body">{{ formatMoney(item.plan) }}</div>
           <div class="val text-body">{{ formatMoney(item.fact) }}</div>
           <div class="val text-body" :class="{'negative': (Number(item.fact || 0) - Number(item.plan || 0)) < 0}">{{ formatMoney(Number(item.fact || 0) - Number(item.plan || 0)) }}</div>
+        </div>
+      </div>
+
+      <!-- Mobile totals (single block after list) -->
+      <div class="smeta-mobile-totals p-sm">
+        <div class="smeta-mobile-row smeta-mobile-row-labels text-label">
+          <div class="lbl">Итого</div>
+        </div>
+        <div class="smeta-mobile-row smeta-mobile-row-labels text-label">
+          <div class="lbl">План</div>
+          <div class="lbl">Факт</div>
+          <div class="lbl">Отклонение</div>
+        </div>
+        <div class="smeta-mobile-row smeta-mobile-row-values">
+          <div class="val text-body">{{ formatMoney(totalsPlan) }}</div>
+          <div class="val text-body">{{ formatMoney(totalsFact) }}</div>
+          <div class="val text-body" :class="{'negative': totalsDelta < 0}">{{ formatMoney(totalsDelta) }}</div>
         </div>
       </div>
     </div>
@@ -164,6 +189,17 @@ const sortedItems = computed(() => {
     return dir * Math.sign(diff)
   })
   return arr
+})
+
+// Totals for Plan / Fact / Delta
+const totalsPlan = computed(() => {
+  return (props.items || []).reduce((s, it) => s + Number(it.plan || 0), 0)
+})
+const totalsFact = computed(() => {
+  return (props.items || []).reduce((s, it) => s + Number(it.fact || 0), 0)
+})
+const totalsDelta = computed(() => {
+  return totalsFact.value - totalsPlan.value
 })
 
 // --- Expansion / clamp measurement logic ---

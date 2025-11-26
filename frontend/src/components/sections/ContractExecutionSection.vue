@@ -1,5 +1,5 @@
 <template>
-  <section class="panel contract-execution p-md">
+  <section class="panel contract-execution contract-execution--compact p-md">
     <div class="panel-header row-between">
       <div class="panel-title-group">
         <h3 class="panel-title">Исполнение контракта</h3>

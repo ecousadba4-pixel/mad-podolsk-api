@@ -73,7 +73,15 @@
 
 .summary-card-interactive:not(.is-disabled):hover .summary-card-hint { background: color-mix(in srgb, var(--accent) 8%, var(--accent-soft)); color: color-mix(in srgb, var(--accent-strong) 80%, var(--accent)); transform: translateY(-1px); }
 
-.summary-label { font-size: var(--summary-label-fs, var(--font-size-h2)); font-weight: 700; color: var(--text-main); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0; word-break: break-word; width: 100%; text-align: left; padding-left: var(--card-inner-gap); }
+.summary-label { font-size: var(--summary-label-fs, var(--font-size-h2)); font-weight: 700; color: var(--text-main); text-transform: uppercase; white-space: normal; overflow: visible; text-overflow: clip; letter-spacing: 0; word-break: break-word; width: 100%; text-align: left; padding-left: var(--card-inner-gap); }
+
+/* For the daily-average card we don't allow wrapping — keep label on one line
+   and let the JS adjust font-size to fit the available width. */
+.summary-card.daily-average .summary-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
 
 @media (min-width: 768px) { .summary-label { font-size: var(--summary-label-fs, var(--font-size-h2)); } }
 @media (min-width: 1200px) { .summary-label { font-size: var(--font-size-h1); } }

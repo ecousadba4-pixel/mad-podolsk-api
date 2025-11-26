@@ -71,7 +71,7 @@
 .smeta-card__value{ font-size: var(--font-size-body); font-weight:700; color:var(--text-main); margin-top:4px }
 .smeta-card__value.delta-negative{ color:var(--danger) }
 
-.smeta-card__progress{ display:flex; flex-direction:column; gap:var(--gap-xs); width:100%; padding-inline: var(--card-inner-gap); box-sizing: border-box; }
+.smeta-card__progress{ display:flex; flex-direction:column; gap:var(--gap-xs); width:100%; padding-inline: 0; box-sizing: border-box; align-items: stretch; }
 .smeta-card__progress-label{ font-size:11px; color:var(--text-muted); text-transform:uppercase }
 .smeta-progress__wrap{ display:flex; align-items:center; gap:var(--gap-md) }
 
@@ -103,6 +103,11 @@
 /* Contract card uses a taller progress bar visually — override only for contract */
 .contract-progress__bar {
   height: calc(var(--progress-height) * 3);
+}
+
+/* Restrict smeta card progress bar width so it visually lines up with numeric values */
+.smeta-card__progress .smeta-progress__bar {
+  width: 100%;
 }
 
 .progress__fill,

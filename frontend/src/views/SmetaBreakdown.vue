@@ -3,6 +3,7 @@
     <div class="panel-header">
       <div class="panel-title-group">
         <h2 class="panel-title">Расшифровка работ по смете — {{ smetaLabel }}</h2>
+        <p class="panel-note">Детали по виду работы при нажатии</p>
         <div class="panel-title-mobile">
           <div class="panel-title-mobile-label">РАБОТЫ ПО СМЕТЕ</div>
           <div class="panel-title-mobile-value">{{ smetaLabel }}</div>
@@ -34,6 +35,14 @@
             <td colspan="4" class="muted">Нет данных для выбранной сметы</td>
           </tr>
         </tbody>
+        <tfoot v-if="filteredRows.length > 0">
+          <tr class="smeta-breakdown-table__totals">
+            <td>Итого</td>
+            <td class="numeric">{{ formatMoney(totals.plan) }}</td>
+            <td class="numeric">{{ formatMoney(totals.fact) }}</td>
+            <td :class="{'negative': totals.delta < 0}" class="numeric">{{ formatMoney(totals.delta) }}</td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </section>
@@ -80,6 +89,15 @@ const filteredRows = computed(() => {
       }
     })
     .filter(r => (Number(r.plan || 0) > 1) || (Number(r.fact || 0) > 1))
+})
+
+// totals for Plan / Fact / Delta
+const totals = computed(() => {
+  const arr = filteredRows.value || []
+  const plan = arr.reduce((s, r) => s + (Number(r.plan) || 0), 0)
+  const fact = arr.reduce((s, r) => s + (Number(r.fact) || 0), 0)
+  const delta = fact - plan
+  return { plan, fact, delta }
 })
 
 const smetaLabel = computed(() => {
