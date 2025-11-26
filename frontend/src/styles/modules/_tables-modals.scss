@@ -120,6 +120,39 @@
 .modal .smeta-breakdown-table thead th { white-space: nowrap; }
 /* for mobile keep the compact list view (thead hidden) — see responsive block further below */
 
+/* Mobile-friendly modal sizing hook (activated via `is-mobile` class from composable) */
+.modal.is-mobile {
+  width: calc(100vw - var(--gap-md));
+  max-width: calc(100vw - var(--gap-md));
+  max-height: calc(100vh - var(--gap-md));
+  border-radius: var(--modal-mobile-border-radius);
+  padding: var(--modal-mobile-padding);
+  margin: var(--gap-xs) auto;
+}
+
+.modal.is-mobile .modal-body {
+  max-height: calc(100vh - 190px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--gap-sm);
+  box-sizing: border-box;
+}
+
+.modal.is-mobile .modal-table {
+  width: 100%;
+  max-width: 100%;
+  font-size: var(--font-size-label);
+  table-layout: fixed;
+}
+
+.modal.is-mobile .modal-table :is(th, td) {
+  padding: var(--gap-sm) var(--gap-xs);
+  white-space: nowrap;
+  font-size: inherit;
+}
+
+.modal.is-mobile .modal-table colgroup col { width: auto !important; }
+
 /* Make modal table adapt to its content so it doesn't look too sparse.
    - use auto table layout within modal so columns size to content
    - reduce vertical padding for modal rows (compact when many rows)
@@ -145,6 +178,14 @@
 .modal .smeta-breakdown-table tbody td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 @media (max-width: 767px) {
+  :root {
+    --modal-col-first: 170px;
+    --modal-col-second-min: 110px;
+    --modal-col-second-max: 160px;
+    --modal-col-third-min: 90px;
+    --modal-col-third-max: 120px;
+  }
+
   .modal-list { row-gap: var(--gap-xs); padding: 2px 0; }
   .modal-row { column-gap: var(--gap-sm); padding: var(--gap-xs) var(--gap-sm); font-size: var(--font-size-body-sm); line-height: 1.06; box-sizing: border-box; }
   .modal-row > div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: var(--gap-sm) var(--gap-sm); }
@@ -157,9 +198,10 @@
   .modal-row.modal-row-header > div { text-align: center; font-weight: 700; font-size: var(--font-size-caption); padding: var(--gap-sm) var(--gap-sm); }
   .modal-list[data-columns="3"] .modal-row, .modal-list[data-columns="3"] .modal-row.modal-row-header { grid-template-columns: 70px minmax(140px, 220px) minmax(70px, 110px); }
   .modal-list[data-columns="2"] .modal-row, .modal-list[data-columns="2"] .modal-row.modal-row-header { grid-template-columns: 90px minmax(140px, 1fr); }
-  .modal { width: 100%; }
-  .modal-body { max-height: none; padding-right: var(--gap-sm); }
-  .modal .smeta-breakdown-table thead { display: none; }
+  .modal { width: 100%; max-height: calc(100vh - var(--gap-lg)); }
+  .modal-backdrop { padding: var(--gap-sm); align-items: center; }
+  .modal-body { max-height: none; padding: var(--gap-sm); }
+  .modal .smeta-breakdown-table { max-width: 100%; }
 }
 
 /* smeta-breakdown-table (extracted from components.css) */

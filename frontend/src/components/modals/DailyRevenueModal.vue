@@ -1,6 +1,6 @@
 <template>
-    <div v-if="visible" class="modal-backdrop visible" @click.self="$emit('close')">
-    <div class="modal p-md" role="dialog" aria-modal="true">
+  <div v-if="visible" class="modal-backdrop visible" @click.self="$emit('close')">
+    <div class="modal p-md" :class="{ 'is-mobile': isMobile }" role="dialog" aria-modal="true">
       <header class="modal-header items-center row-between">
         <h3 class="modal-title text-h2">Выручка по дням</h3>
         <button class="modal-close control-sm" @click="$emit('close')">✕</button>
@@ -9,7 +9,7 @@
       <div class="modal-body">
         <div v-if="loading">Загрузка…</div>
         <div v-else-if="error" class="dashboard__state dashboard__state--error">Ошибка: {{ error }}</div>
-        <table v-else class="smeta-breakdown-table modal-table">
+        <table v-else class="smeta-breakdown-table modal-table" :class="{ 'is-mobile': isMobile }">
           <colgroup>
             <col class="col-date" />
             <col class="col-amount" />
@@ -35,10 +35,13 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch } from 'vue'
+import { useIsMobile } from '../../composables/useIsMobile.js'
 
 const props = defineProps({ visible: Boolean, month: String })
 const emit = defineEmits(['close'])
+
+const { isMobile } = useIsMobile()
 
 const rows = ref([])
 const loading = ref(false)
