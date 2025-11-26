@@ -38,6 +38,8 @@
   --font-size-h1: 1.75rem;
   --font-size-h2: 1.2rem;
   --font-size-h3: 1.05rem;
+  /* Unified numeric size used for key numeric values in cards and KPIs */
+  --font-size-numeric: var(--font-size-h2);
   --font-size-body: 0.95rem;
   --font-size-body-sm: 0.88rem;
   --font-size-caption: 0.78rem;
