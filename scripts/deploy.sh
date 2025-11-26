@@ -9,6 +9,7 @@ REMOTE_HOST="${REMOTE_HOST:-podolsk.mad.moclean.ru}"
 REMOTE_PATH="${REMOTE_PATH:-/var/www/u3330235/data/www/podolsk.mad.moclean.ru}"
 SSH_KEY="${SSH_KEY:-$HOME/.ssh/id_ed25519_mad}"
 DRY_RUN="${DRY_RUN:-false}"
+FORCE_SYNC="${FORCE_SYNC:-false}"
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
@@ -38,11 +39,21 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
       UPSTREAM="origin/$BRANCH"
     fi
 
-    # ensure working tree is clean before forcing reset
+    # handle uncommitted changes: stash by default, or force reset if requested
+    STASHED=0
     if [ -n "$(git status --porcelain)" ]; then
-      echo "Error: uncommitted changes present in repository. Commit or stash before deploying."
-      echo "Run: git status --porcelain; aborting deploy."
-      exit 1
+      if [ "$FORCE_SYNC" = "true" ]; then
+        echo "FORCE_SYNC=true — will discard local changes and proceed with hard reset."
+      else
+        echo "Uncommitted changes detected — stashing before update."
+        if git stash push -u -m "deploy-$(date +%s)" >/dev/null 2>&1; then
+          STASHED=1
+          echo "Local changes stashed (run 'git stash list' to see)."
+        else
+          echo "Warning: git stash failed — aborting deploy to avoid data loss."
+          exit 1
+        fi
+      fi
     fi
 
     # reset local branch to upstream to ensure full sync
@@ -53,6 +64,10 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     else
       echo "Upstream '$UPSTREAM' not found; attempting pull --ff-only"
       git pull --ff-only || true
+    fi
+
+    if [ "$STASHED" -eq 1 ]; then
+      echo "Note: local changes were stashed. To restore: 'git stash pop' (may conflict)."
     fi
   fi
 fi
