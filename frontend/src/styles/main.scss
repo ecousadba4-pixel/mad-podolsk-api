@@ -1,8 +1,6 @@
 /* Main style entry — явные слои: tokens -> foundations -> components -> utilities -> overrides
    Этот файл импортируется единым импортом в `frontend/src/main.js`.
 */
-@layer tokens, foundations, components, utilities, overrides;
-
 /* Local font faces (Manrope) — place font files in `public/fonts/manrope/` */
 @use './_fonts.scss' as *;
 
@@ -26,6 +24,10 @@
 
 /* Переопределения и «минимальная логика» на SCSS/CSS-переменных */
 @use './modules/_pickers.scss' as *;
+
+/* Declare CSS layers after all `@use` rules so SASS module rules are valid.
+   `@use` must come before any other stylesheet rules — keep @layer below. */
+@layer tokens, foundations, components, utilities, overrides;
 
 /* Debug helpers (temporary) */
 /* removed: debug spacing import (cleanup after verification) */
