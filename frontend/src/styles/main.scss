@@ -6,6 +6,9 @@
    add an `@font-face` rule instead of this import. */
 @import url('https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;600;700&display=swap');
 
+/* Local font faces (Manrope) — place font files in `public/fonts/manrope/` */
+@import './_fonts.scss';
+
 @import './_tokens.scss';
 @import './_foundations.scss';
 
