@@ -1,0 +1,19 @@
+/* Migration checklist: visual fixes reconciled into modules
+   This file keeps a short checklist and contains NO runtime CSS rules.
+   Remove this file import from `main.scss` after final QA.
+
+   Items already moved into modules:
+   - `.card` and top-level card styling -> `components.css` / component module
+   - `.smeta-card--large`, `.smeta-card__body` -> `modules/_tables-modals.scss`
+   - `.modal` and modal internals -> `modules/_tables-modals.scss`
+   - `.last-updated`, header controls -> `modules/_header-controls.scss`
+   - `.pill`, `.pill-dot`, `.mode-btn`, `.picker-toggle` -> `modules/_buttons-pills.scss`
+
+   Remaining TODOs before removal:
+   1. Search for any remaining `!important` in `frontend/src/styles` and remove/replace.
+   2. Verify tokenized spacing and radii for moved components match visual expectations.
+   3. Run visual QA and confirm no double borders or missing backgrounds.
+   4. Remove `@import` / `@use` of this file from `main.scss`.
+*/
+  /* Apply only to main container primitives to avoid nested frame stacking */
+

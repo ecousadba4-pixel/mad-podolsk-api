@@ -128,8 +128,8 @@
   position: absolute;
   right: var(--gap-md);
   bottom: var(--gap-sm);
-  width: 22px;
-  height: 22px;
+  width: var(--hint-size);
+  height: var(--hint-size);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -215,7 +215,7 @@
 .summary-card,
 .summary-card-skeleton,
 .summary-card-interactive {
-  min-height: 106px; /* было 141px, уменьшено на 25% */
+  min-height: var(--summary-card-min-height); /* tokenized min-height */
 }
 
 .summary-value.negative {

@@ -1,0 +1,29 @@
+/* Main style entry — явные слои: tokens -> foundations -> components -> overrides -> pages
+   Этот файл импортируется единым импортом в `frontend/src/main.js`.
+*/
+@import './_tokens.scss';
+@import './_foundations.scss';
+
+/* Decomposed modules */
+@import './modules/_typography.scss';
+@import './modules/_layout-grid.scss';
+@import './modules/_header-controls.scss';
+@import './modules/_tables-modals.scss';
+@import './modules/_buttons-pills.scss';
+
+/* Затем подключаем существующие глобальные CSS (сохраняем их, минимально вмешиваясь) */
+@import './base.css';
+@import './utilities.css';
+@import './layout.css';
+@import './components.css';
+@import './mockup.css';
+@import './print.css';
+@import './summary.css';
+@import './work.css';
+@import './categories.css';
+
+/* Переопределения и «минимальная логика» на SCSS/CSS-переменных */
+@import './_overrides.scss';
+
+/* Emergency visual fixes (temporary) — файл переведён в чек-лист, импорт удалён */
+/* (remove this comment when you're confident all migrations are complete) */

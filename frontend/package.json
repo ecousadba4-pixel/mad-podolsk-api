@@ -9,7 +9,8 @@
     "build:analyze": "ANALYZE=true vite build",
     "preview": "vite preview",
     "lint:css": "stylelint \"src/**/*.css\"",
-    "lint:css:fix": "stylelint \"src/**/*.css\" --fix"
+    "lint:css:fix": "stylelint \"src/**/*.css\" --fix",
+    "check:tokens": "node ./scripts/check-tokens.cjs"
   },
   "dependencies": {
     "@tanstack/vue-virtual": "*",
@@ -24,6 +25,8 @@
     "cssnano": "^5.1.14",
     "playwright": "^1.41.0",
     "rollup-plugin-visualizer": "^5.9.0",
+    "sass": "^1.70.0",
+    "sass-embedded": "^1.93.3",
     "stylelint": "^16.26.0",
     "stylelint-config-standard": "^39.0.1",
     "stylelint-order": "^7.0.0",

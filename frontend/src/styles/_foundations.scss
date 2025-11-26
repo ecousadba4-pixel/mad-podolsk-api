@@ -1,0 +1,30 @@
+/* Foundations: миксины, функции и базовые правила, использующие токены */
+
+/* Breakpoints (used with custom media queries in codebase) */
+$bp-sm: 640px;
+$bp-md: 768px;
+$bp-lg: 900px;
+$bp-xl: 1024px;
+
+@function px-to-rem($px, $base: 16) {
+  @return (#{$px / $base}rem);
+}
+
+/* Простая миксина для центровки контейнера страницы */
+@mixin page-container {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--page-hpad);
+  padding-right: var(--page-hpad);
+  max-width: var(--page-max-width);
+}
+
+/* Utility: fluid font-size via clamp */
+@mixin fluid-type($min, $preferred, $max) {
+  font-size: clamp(#{$min}, #{$preferred}, #{$max});
+}
+
+/* Set small helpers as custom properties on :root for usage later */
+:root {
+  --page-hpad: var(--page-hpad); /* kept for reference */
+}

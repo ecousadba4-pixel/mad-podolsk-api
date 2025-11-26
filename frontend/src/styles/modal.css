@@ -39,9 +39,9 @@
 
   /* Allow modal to size to its content (table) but cap to viewport */
   width: auto;
-  max-width: min(95vw, 880px);
+  max-width: min(95vw, var(--modal-max-width));
   border: 1px solid var(--border-soft);
-  max-height: calc(100vh - 32px);
+  max-height: calc(100vh - var(--modal-viewport-offset));
   display: flex;
   flex-direction: column;
   position: relative;
@@ -50,7 +50,7 @@
 .modal-header {
   /* layout (display / alignment / gap) is provided by utility classes (e.g. .row-between)
      to avoid duplication; keep spacing-only rules here */
-  margin-bottom: 2px; /* strongly reduce bottom margin to bring table very close to header */
+  margin-bottom: calc(var(--gap-xs) / 2); /* was 2px */
   padding-top: 0; /* ensure header sits at top */
 }
 
@@ -63,7 +63,7 @@
 .modal-subtitle {
   color: var(--text-muted);
   font-size: var(--font-size-body-sm);
-  margin-top: 2px;
+  margin-top: var(--gap-xs);
 }
 
 .modal-close {
@@ -100,11 +100,11 @@
   scrollbar-color: var(--accent) var(--accent-soft);
   flex: 1;
   min-height: 0;
-  padding: calc(var(--gap-xs) + 2px) var(--gap-md) var(--gap-md); /* smaller top padding, keep side/bottom padding */
+  padding: calc(var(--gap-xs) * 1.5) var(--gap-md) var(--gap-md); /* was calc(var(--gap-xs) + 2px) */
 }
 
-.modal-body::-webkit-scrollbar {
-  width: 10px;
+  .modal-body::-webkit-scrollbar {
+  width: 10px; /* scrollbar width left as explicit value */
 }
 
 .modal-body::-webkit-scrollbar-track {
@@ -165,7 +165,7 @@
 }
 
 .modal-list[data-columns="3"] .modal-row {
-  grid-template-columns: 1fr minmax(140px, 220px) minmax(100px, 160px);
+  grid-template-columns: 1fr minmax(var(--modal-col-second-min), var(--modal-col-second-max)) minmax(var(--modal-col-third-min), var(--modal-col-third-max));
 }
 
 /* Make tables inside modal more responsive: allow horizontal scroll, wrapping and readable cells */
@@ -184,13 +184,13 @@
 }
 .modal .smeta-breakdown-table table { width: auto; }
 
-/* Increase column widths in modal table (approx. 2x) */
-.modal .smeta-breakdown-table :is(th, td):first-child {
-  min-width: 220px; /* date column wider */
+  /* Increase column widths in modal table (approx. 2x) */
+  .modal .smeta-breakdown-table :is(th, td):first-child {
+  min-width: var(--modal-col-first); /* date column wider */
 }
 
-.modal .smeta-breakdown-table :is(th, td):nth-child(2) {
-  min-width: 240px; /* value column wider */
+  .modal .smeta-breakdown-table :is(th, td):nth-child(2) {
+  min-width: var(--modal-col-second-max); /* value column wider */
 }
 
 .modal .smeta-breakdown-table :is(th, td) {
@@ -398,7 +398,7 @@
 /* Compact table rows inside modal: reduce padding/line-height for denser display */
 .modal .smeta-breakdown-table th,
 .modal .smeta-breakdown-table td {
-  padding: 4px 8px; /* tighter vertical padding */
+  padding: var(--gap-xs) var(--gap-sm); /* tighter vertical padding */
 }
 
 .modal .smeta-breakdown-table td {
@@ -408,6 +408,6 @@
 .modal .smeta-breakdown-table thead th { text-align: center; }
 .modal .smeta-breakdown-table { margin-top: 1px; }
 .modal .smeta-breakdown-table tr:hover { background: rgb(0 0 0 / 2%); }
-.modal .modal-row-date { font-weight: 600; padding: 6px 8px; text-align: center }
-.modal .modal-row-value { padding: 6px 8px; text-align: right }
+.modal .modal-row-date { font-weight: 600; padding: calc(var(--gap-xs) + 2px) var(--gap-sm); text-align: center }
+.modal .modal-row-value { padding: calc(var(--gap-xs) + 2px) var(--gap-sm); text-align: right }
 

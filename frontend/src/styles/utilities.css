@@ -1,7 +1,7 @@
 /* Small utility classes: text, layout, accessibility helpers */
 
 :root {
-  /* utilities may rely on tokens defined in tokens.css */
+  /* utilities rely on tokens defined in `src/styles/_tokens.scss` */
 }
 
 /* Spacing utilities (small focused set) ---------------------------------- */
@@ -292,74 +292,7 @@
   }
 }
 
-/* Generic pill helper (migrated from layout.css) */
-.pill {
-  font-size: var(--font-size-caption);
-  padding: var(--gap-sm) var(--card-inner-gap);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-soft);
-  background: var(--bg-muted);
-  color: var(--text-main);
-  display: inline-flex;
-  align-items: center;
-  gap: var(--gap-sm);
-  min-height: var(--control-height);
-}
-
-.pill-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: var(--radius-xxl);
-  background: var(--success);
-  position: relative;
-  flex: 0 0 auto;
-  box-shadow: 0 2px 6px rgb(15 157 88 / 18%);
-  isolation: isolate;
-}
-
-.pill-dot::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: var(--control-height-sm);
-  height: var(--control-height-sm);
-  border-radius: var(--radius-xxl);
-  background: rgb(15 157 88 / 8%);
-  filter: blur(6px);
-  pointer-events: none;
-  z-index: -1;
-}
-
-.pill-info {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.15;
-  width: 100%;
-  align-items: center;
-  text-align: center;
-}
-
-.pill-label,
-.pill-value {
-  display: block;
-  width: 100%;
-  text-align: center;
-}
-
-.pill-label {
-  font-size: var(--font-size-tiny);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.pill-value {
-  font-weight: 600;
-  color: var(--text-main);
-  word-break: break-word;
-}
+/* Pill and button helpers moved to `modules/_buttons-pills.scss` */
 
 /* Table skeleton styles (moved from components.css) */
 .table-skeleton{display:flex;flex-direction:column;gap:12px}

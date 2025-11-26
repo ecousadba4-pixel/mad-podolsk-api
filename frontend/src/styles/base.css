@@ -1,5 +1,5 @@
 /* Backwards-compat bridge: keep base.css as a thin aggregator.
-   This allows including only base.css in legacy setups,
-   while Vite/modern bundlers can import tokens.css + layout.css directly. */
-@import url("./tokens.css");
+   Tokens have been migrated to `_tokens.scss` and are imported
+   from the SCSS entrypoint (`main.scss`). Do not import the legacy tokens file here.
+*/
 @import url("./layout.css");

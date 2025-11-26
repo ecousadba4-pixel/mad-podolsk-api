@@ -1,0 +1,206 @@
+/* Header and top-level controls (extracted from `components.css`) */
+
+.app-header {
+  position: static; /* disabled sticky header per request */
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--card-padding);
+
+  /* unify horizontal spacing between header blocks */
+  --header-gap: var(--gap-lg);
+
+  gap: var(--header-gap);
+  background: transparent;
+}
+
+.app-header__left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xs);
+}
+
+.app-header__title {
+  margin: 0;
+  font-size: var(--font-size-h1);
+  font-weight: 700;
+}
+
+.app-header__subtitle {
+  margin: 0;
+  font-size: var(--font-size-body-sm);
+  color: var(--text-subtle);
+}
+
+.app-header__right {
+  display: flex;
+  align-items: center;
+  gap: var(--header-gap);
+}
+
+.app-header__right > * {
+  display: inline-flex;
+  align-items: center;
+
+  /* ensure every direct control matches the control height token */
+  min-height: var(--control-height);
+  height: var(--control-height);
+  margin: 0; /* prevent extra external spacing — gap handles horizontal spacing */
+}
+.app-header__left > * { margin: 0; }
+
+.app-header__mode-switch {
+  display: inline-flex;
+
+  /* make wrapper match control height and avoid adding extra vertical padding */
+  height: var(--control-height);
+  padding: 0;
+  border-radius: 14px;
+  background: var(--bg-card, var(--surface-base));
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  align-items: center;
+}
+
+.mode-btn {
+  border: none;
+  background: transparent;
+
+  /* make each button fill the wrapper height and avoid extra vertical padding */
+  height: 100%;
+  padding: 0 var(--card-inner-gap);
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--text-main);
+  font-weight: 600;
+  line-height: 1;
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.12s ease;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-xs);
+  font-family: var(--font-sans);
+}
+
+.mode-btn-line1{
+  font-size: var(--font-size-caption);
+  color: var(--text-muted);
+  text-transform: none;
+}
+
+.mode-btn-line2{
+  font-size: var(--font-size-body-sm);
+  line-height: 1;
+  color: var(--text-main);
+}
+
+.mode-btn--active .mode-btn-line1,
+.mode-btn--active .mode-btn-line2{
+  color: var(--text-inverse);
+}
+
+.mode-btn:not(.mode-btn--active) .mode-btn-line1,
+.mode-btn:not(.mode-btn--active) .mode-btn-line2{
+  color: var(--text-muted);
+}
+
+.mode-btn:not(.mode-btn--active):hover {
+  background: rgb(15 23 42 / 4%);
+}
+
+.mode-btn--active {
+  background: var(--accent);
+  color: var(--text-inverse);
+  box-shadow: none;
+}
+
+.app-header__month {
+  flex-direction: column;
+  font-size: var(--font-size-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-soft);
+  position: relative;
+
+  /* make this a neutral wrapper when MonthPicker provides its own control
+     avoid double frames by not drawing border/background here on desktop */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  min-width: 0;
+  font-family: var(--font-sans);
+
+  /* ensure month wrapper aligns controls vertically with header */
+  height: var(--control-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-header__month-input {
+  margin-top: var(--gap-xs);
+  padding: 0;
+  border-radius: 6px;
+  border: none;
+  font-size: var(--font-size-h3);
+  font-weight: 700;
+  background: transparent;
+  color: var(--text-main);
+  appearance: none;
+  outline: none;
+  width: 100%;
+}
+
+.app-header__month-label {
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+  display: block;
+}
+
+.app-header__month-input::-webkit-calendar-picker-indicator{ opacity: 0; }
+
+.last-updated {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  padding: var(--gap-sm) var(--card-inner-gap);
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+
+  /* allow the badge to size to its content on desktop */
+  min-width: 0;
+  width: auto;
+  max-width: 100%;
+}
+
+.last-updated { min-height: var(--control-height); }
+
+.last-updated__dot{
+  width: 12px;
+  height: 12px;
+  background: var(--success);
+  flex: 0 0 12px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.last-updated__text{ display:flex; flex-direction:column; align-items:stretch }
+
+.last-updated__label{ font-size: var(--font-size-label); color: var(--text-muted); text-transform:uppercase; letter-spacing:0.06em }
+
+.last-updated__time{ font-size: var(--font-size-body); font-weight:700; color:var(--text-main) }
+
+.last-updated__label,
+.last-updated__time{ display:block; width:100%; box-sizing:border-box }
+
+.month-selector { display:inline-flex; flex-direction:column; font-size:var(--font-size-body-sm) }
+.month-selector.inline{ display:flex; align-items:center; gap:var(--gap-md) }
+.month-selector.inline .month-selector__label{ color:var(--text-label-strong); font-weight:500 }
+.month-selector__label{ font-size:var(--font-size-label); text-transform:uppercase; letter-spacing:0.06em; color:var(--text-soft) }
+.month-selector__input{ display:block; margin-top:var(--gap-xs); padding:var(--gap-sm) var(--gap-md); border-radius:6px; border:1px solid var(--border-neutral) }
+.month-selector__select{ padding:var(--gap-sm) var(--gap-md); border-radius:6px }

@@ -1,0 +1,107 @@
+/* Minimal overrides to replace hardcoded sizes with tokens/custom properties.
+   Импортируется ПОСЛЕ существующих CSS-файлов, поэтому имеет приоритет при равной специфичности.
+*/
+
+/* Picker toggles: вместо фиксированной ширины используем токен */
+.month-picker__toggle,
+.day-picker__toggle,
+.picker__toggle {
+  min-width: var(--picker-min-width);
+  padding: 0 var(--picker-toggle-padding);
+}
+
+/* Surface restoration: ensure top-level card/panel surfaces use design tokens
+   This is intentionally in `_overrides.scss` (imported last) so it can
+   restore visuals removed during decomposition without using `!important`.
+*/
+.card,
+.smeta-card--large,
+.panel,
+.smeta-panel,
+.dashboard-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  border-radius: var(--radius-lg);
+}
+
+.last-updated {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  border-radius: var(--radius-sm);
+}
+
+/* Dashboard card width -> токен */
+.dashboard-card {
+  width: var(--dashboard-card-width);
+}
+
+/* Contract execution spacing */
+.contract-execution .panel-meta {
+  gap: var(--contract-meta-gap);
+}
+
+/* Smeta compact progress height -> токен */
+.smeta-cards__list .smeta-progress__bar {
+  height: var(--smeta-compact-progress-height);
+}
+
+/* Small tweaks: replace explicit pixel paddings with gap-based paddings where reasonable */
+.smeta-card__value { margin-top: calc(var(--gap-xs)); }
+.smeta-card__progress-percent { min-width: 36px; }
+
+/* Table header padding replaced with token-based padding for easier tuning */
+.smeta-breakdown-table thead th {
+  padding: calc(var(--gap-sm) + 4px);
+}
+
+/* Ensure pickers shrink on mobile using tokenized heights */
+@media (width <= 640px) {
+  .month-picker__toggle, .day-picker__toggle, .picker__toggle {
+    min-height: var(--control-height-sm);
+    height: var(--control-height-sm);
+    padding: 0 8px;
+  }
+
+  /* Layout overrides: use tokens for toast offsets and slide animation */
+  .toast {
+    bottom: var(--fab-offset);
+    right: var(--fab-offset);
+  }
+
+  @keyframes slide-in {
+    from { transform: translateX(var(--slide-translate)); opacity: 0 }
+    to   { transform: translateX(0); opacity: 1 }
+  }
+
+  /* Modal overrides: prefer tokenized sizes where the original used hard px values */
+  .modal {
+    max-width: min(95vw, var(--modal-max-width));
+    max-height: calc(100vh - var(--modal-viewport-offset));
+  }
+
+  @media (width <= 480px) {
+    .modal { border-radius: var(--modal-mobile-border-radius); padding: var(--modal-mobile-padding); }
+    .modal-backdrop { padding: var(--gap-sm); }
+    .modal-close { top: var(--modal-close-offset, var(--gap-sm)); right: var(--modal-close-offset, var(--gap-sm)); }
+  }
+
+  /* Summary / hint tweaks */
+  .summary-card-hint {
+    width: var(--hint-size);
+    height: var(--hint-size);
+    border-radius: var(--radius-sm);
+  }
+
+  /* Category card min-height driven by token */
+  .category-card { min-height: var(--category-card-min-height); }
+
+  /* Ensure modal table column minimums are controllable by CSS variables */
+  .modal .smeta-breakdown-table :is(th, td):first-child { min-width: var(--modal-col-first, 220px); }
+  .modal .smeta-breakdown-table :is(th, td):nth-child(2) { min-width: var(--modal-col-second, 240px); }
+
+  /* Use token for compact table paddings */
+  .modal .smeta-breakdown-table th,
+  .modal .smeta-breakdown-table td { padding: var(--gap-sm) var(--gap-md); }
+}

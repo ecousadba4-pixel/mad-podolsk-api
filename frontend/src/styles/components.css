@@ -8,7 +8,7 @@
   box-shadow: var(--shadow-card);
 }
 
-/* Typography utility classes (use tokens from tokens.css) */
+/* Typography utility classes (use tokens from `src/styles/_tokens.scss`) */
 .type-h1 { font-size: var(--font-size-h1); }
 .type-h2 { font-size: var(--font-size-h2); }
 .type-h3 { font-size: var(--font-size-h3); }
@@ -50,210 +50,8 @@
 }
 
 .layout-grid--auto-fit {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-}
+  /* Header and control styles moved to `modules/_header-controls.scss` */
 
-/* Panels */
-.panel {
-  background: rgb(255 255 255 / 95%);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-soft);
-  border: 1px solid var(--border-soft);
-  padding: var(--card-padding);
-  margin-top: var(--section-gap);
-}
-
-.panel:first-of-type {
-  margin-top: 0;
-}
-
-.panel + .panel {
-  margin-top: var(--section-gap);
-}
-
-/* Full-bleed panel: stretch to viewport width while keeping inner padding */
-.panel--full-bleed {
-  /* Full-bleed centered in viewport while respecting .page horizontal padding */
-  position: relative;
-  inset-inline: 50% auto;
-  translate: -50%;
-
-  /* shift outward by half viewport minus page horizontal padding */
-  margin-inline: calc(-50vw + var(--page-hpad, 0px));
-
-  /* make visible area equal to viewport minus page paddings */
-  inline-size: calc(100vw - (var(--page-hpad, 0px) * 2));
-  box-sizing: border-box;
-  padding-inline: var(--card-padding);
-  max-inline-size: 100vw;
-}
-
-/* keep inner content of full-bleed panels aligned with page content */
-.panel--full-bleed > .panel-header,
-.panel--full-bleed > .panel-body {
-  max-width: var(--page-max-width, 1180px);
-  margin-inline: auto;
-  padding-inline: var(--page-hpad, 0);
-  box-sizing: border-box;
-}
-
-/* stronger specificity for smeta-panel inside full-bleed: remove the extra panel-body padding that shifts table */
-.panel--full-bleed.smeta-panel > .panel-body {
-  padding-left: var(--page-hpad, 0);
-  padding-right: var(--page-hpad, 0);
-}
-
-.panel--full-bleed.smeta-panel > .panel-header {
-  padding-left: var(--page-hpad, 0);
-  padding-right: var(--page-hpad, 0);
-}
-
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--gap-sm);
-  margin-bottom: var(--gap-sm);
-  flex-wrap: wrap;
-}
-
-.panel-title {
-  font-size: var(--font-size-h3);
-  font-weight: 600;
-}
-
-.panel-title-group {
-  flex: 1;
-  min-width: 260px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.panel-title-text-desktop {
-  display: inline;
-}
-
-.panel-title-mobile {
-  display: none;
-  flex-direction: column;
-  gap: var(--gap-xs);
-}
-
-.panel-title-mobile-label {
-  font-size: var(--font-size-label);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-}
-
-.panel-title-mobile-value {
-  font-size: var(--font-size-h3);
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-/* Controls placed in panel header (right side) — hidden on desktop, visible on mobile
-   Note: control layout is now provided by the utility `.panel-controls`. Keep
-   responsive helper for smeta-sort-select. */
-@media (width <= 640px) {
-  .smeta-sort-select { display: inline-block; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg-card); font-size: var(--font-size-body-sm); }
-}
-
-/* Fallback: apply compact header controls on slightly larger narrow screens
-   where the 640px breakpoint might be too tight (tablets in portrait, zoomed view). */
-@media (width <= 900px) {
-  .app-header__right .app-header__mode-switch {
-    padding: 2px;
-    height: 32px;
-    min-height: 32px;
-    border-radius: 8px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .app-header__right .app-header__mode-switch .mode-btn {
-    height: 28px;
-    min-height: 28px;
-    padding: 4px 8px;
-    font-size: 0.96em;
-  }
-
-  .app-header__right > * { height: 32px; min-height: 32px }
-}
-
-/* Force month selector and last-updated on the same row and equal width
-   for narrow screens (mobile + small tablets). */
-@media (width <= 900px) {
-  .app-header__right {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--gap-md);
-  }
-
-  .app-header__mode-switch {
-    order: 1;
-    flex: 1 1 100%;
-    width: 100%;
-  }
-
-  .app-header__month {
-    order: 2;
-    flex: 1 1 50%;
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-  }
-
-  .app-header__month .month-picker__toggle,
-  .app-header__month .day-picker__toggle {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .last-updated {
-    order: 3;
-    flex: 1 1 50%;
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
-}
-
-/* For smeta DETAILS panel show two-line mobile title and hide desktop title */
-@media (width <= 640px) {
-  .smeta-panel.smeta-details .panel-title { display: none; }
-  .smeta-panel.smeta-details .panel-title-mobile { display: flex; }
-}
-
-.panel-subtitle {
-  font-size: var(--font-size-caption);
-  color: var(--text-muted);
-}
-
-/* ContractExecution specific */
-.contract-execution .panel-meta {
-  display: flex;
-  gap: var(--gap-lg);
-  align-items: center;
-}
-
-.contract-execution .panel-meta-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  min-width: 120px;
-}
-
-.contract-execution .panel-meta-values .panel-meta-item {
-  /* for the row that contains numeric values: left-align and allow shrinking */
-  align-items: flex-start;
-  min-width: 0;
-  flex: 1 1 0;
-  text-align: left;
 }
 
 .contract-execution .panel-meta-label {
@@ -448,8 +246,8 @@
     width: 100%;
     justify-content: flex-start;
     padding: 2px;
-    min-height: 32px;
-    height: 32px;
+    min-height: var(--control-height-mobile);
+    height: var(--control-height-mobile);
     border-radius: 8px;
   }
 
@@ -470,8 +268,8 @@
 
   /* ensure direct header controls use compact heights on mobile */
   .app-header__right > * {
-    min-height: 32px;
-    height: 32px;
+    min-height: var(--control-height-mobile);
+    height: var(--control-height-mobile);
   }
 
   /* Ensure the title/left area doesn't force the header to overflow on small screens */
@@ -504,13 +302,13 @@
     justify-content: space-between;
     flex: 1 1 0;
     min-width: 0;
-    padding: 0 6px;
+    padding: 0 var(--gap-xs);
   }
 
   .contract-execution .panel-meta-label {
     font-size: var(--font-size-caption);
     color: var(--text-muted);
-    margin-right: 8px;
+    margin-right: var(--gap-sm);
     white-space: nowrap;
     flex: 0 0 auto;
   }
@@ -533,7 +331,7 @@
     display: flex;
     flex-wrap: nowrap; /* prevent wrapping so controls stay on the same line */
     align-items: center;
-    gap: 12px;
+    gap: var(--gap-md);
 
     /* match panel inner horizontal padding so header elements align with body */
     padding: calc(var(--gap-sm)) var(--card-padding) calc(var(--gap-sm)) var(--card-padding);
@@ -559,23 +357,23 @@
 
   /* panel-header-controls behavior now delegated to `.panel-controls` utility */
 
-  .smeta-sort-select { min-width: 140px; height: 36px; padding: 6px 12px; border-radius: 10px; }
+  .smeta-sort-select { min-width: var(--picker-min-width); height: var(--control-height-sm); padding: 6px var(--picker-toggle-padding); border-radius: var(--modal-mobile-border-radius); }
 }
 
 /* Mobile: make mode switch buttons symmetric (each 50% width) */
 @media (width <= 640px) {
   .app-header__mode-switch {
     display: flex;
-    gap: 6px;
+    gap: var(--gap-sm);
   }
 
   .app-header__mode-switch .mode-btn {
     flex: 1 1 50%;
     width: 50%;
-    padding: 4px 6px;
+    padding: var(--gap-xs) var(--gap-sm);
     justify-content: center;
-    min-height: 32px;
-    height: 32px;
+    min-height: var(--control-height-mobile);
+    height: var(--control-height-mobile);
     font-size: 0.95em;
   }
 
@@ -587,7 +385,7 @@
   }
 
   /* Reduce extra rounded padding so buttons align edge-to-edge visually */
-  .app-header__mode-switch { padding: 2px; border-radius: 8px; height: 32px; min-height: 32px }
+  .app-header__mode-switch { padding: 2px; border-radius: var(--radius-sm); height: var(--control-height-mobile); min-height: var(--control-height-mobile) }
 
   /* Month selector and last-updated share the second row and get equal width */
   .app-header__month {
@@ -606,9 +404,9 @@
 
 /* Extra small screens: reduce control heights and tweak contract execution layout */
 @media (width <= 480px) {
-  .app-header__right > * { min-height: 32px; height: 32px }
-  .month-picker__toggle, .day-picker__toggle { min-height: 32px; height: 32px; padding: 0 6px }
-  .last-updated { min-height: 32px; padding: 4px 8px }
+  .app-header__right > * { min-height: var(--control-height-mobile); height: var(--control-height-mobile) }
+  .month-picker__toggle, .day-picker__toggle { min-height: var(--control-height-mobile); height: var(--control-height-mobile); padding: 0 var(--gap-sm) }
+  .last-updated { min-height: var(--control-height-mobile); padding: var(--gap-xs) var(--gap-sm) }
 
   /* contract execution: labels row + values row style */
   .contract-execution .panel-meta { display: flex; flex-direction: column; gap: calc(var(--gap-xs) * 0.6); }
@@ -686,58 +484,7 @@
   align-items: center;
 }
 
-.mode-btn {
-  border: none;
-  background: transparent;
-
-  /* make each button fill the wrapper height and avoid extra vertical padding */
-  height: 100%;
-  padding: 0 var(--card-inner-gap);
-  border-radius: 10px;
-  cursor: pointer;
-  color: var(--text-main);
-  font-weight: 600;
-  line-height: 1;
-  transition: background-color 0.18s ease, color 0.18s ease, transform 0.12s ease;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--gap-xs);
-  font-family: var(--font-sans);
-}
-
-.mode-btn-line1{
-  font-size: var(--font-size-caption);
-  color: var(--text-muted);
-  text-transform: none;
-}
-
-.mode-btn-line2{
-  font-size: var(--font-size-body-sm);
-  line-height: 1;
-  color: var(--text-main);
-}
-
-.mode-btn--active .mode-btn-line1,
-.mode-btn--active .mode-btn-line2{
-  color: var(--text-inverse);
-}
-
-.mode-btn:not(.mode-btn--active) .mode-btn-line1,
-.mode-btn:not(.mode-btn--active) .mode-btn-line2{
-  color: var(--text-muted);
-}
-
-.mode-btn:not(.mode-btn--active):hover {
-  background: rgb(15 23 42 / 4%);
-}
-
-.mode-btn--active {
-  background: var(--accent);
-  color: var(--text-inverse);
-  box-shadow: none;
-}
+/* Mode buttons moved to `modules/_buttons-pills.scss` */
 
 .app-header__month {
   flex-direction: column;
@@ -923,101 +670,7 @@
 .smeta-panel .panel-title { font-size: var(--font-size-h2); }
 .smeta-panel .panel-body { padding: 0 var(--gap-xs) 0 var(--gap-xs) }
 
-/* Table layout for smeta breakdown/details to align headers and values */
-  .smeta-breakdown-table {
-    --smeta-col-unit: 140px;
-    --smeta-col-volume: 140px;
-    --smeta-col-amount: 140px;
-
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-  }
-
-  /* Modern lightweight table styles for smeta breakdown */
-  .smeta-breakdown-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    table-layout: fixed;
-    background: transparent;
-    font-size: var(--font-size-body);
-  }
-
-  .smeta-breakdown-table--daily {
-    --smeta-col-unit: 110px;
-    --smeta-col-volume: 120px;
-    --smeta-col-amount: 140px;
-  }
-
-  .smeta-breakdown-table thead th {
-    text-align: left;
-  font-size: var(--font-size-label);
-  color: var(--text-muted);
-  text-transform: uppercase;
-  padding: 12px;
-  vertical-align: middle;
-  background: color-mix(in srgb, var(--accent) 8%, var(--surface-base) 92%);
-  font-weight: 700;
-}
-
-/* numeric cells use utility class `.numeric` (moved to utilities.css) */
-  .smeta-breakdown-table td, .smeta-breakdown-table th {
-    padding: 14px 12px;
-    border-bottom: 1px solid rgb(15 23 42 / 4%);
-    vertical-align: middle;
-  }
-
-  .smeta-breakdown-table td:first-child {
-    word-break: break-word;
-    overflow-wrap: anywhere;
-  }
-
-  .smeta-breakdown-table tbody tr:hover { background: rgb(0 0 0 / 2%); }
-
-  .smeta-breakdown-table td:first-child {
-    word-break: break-word;
-    overflow-wrap: anywhere;
-  }
-
-  /* set reasonable widths for numeric columns while letting name column take remaining space */
-  .smeta-breakdown-table colgroup col:nth-child(2),
-  .smeta-breakdown-table colgroup col:nth-child(3),
-  .smeta-breakdown-table colgroup col:nth-child(4) {
-    width: var(--smeta-col-unit);
-  }
-
-  .smeta-breakdown-table colgroup col:nth-child(3) {
-    width: var(--smeta-col-volume);
-  }
-
-  .smeta-breakdown-table colgroup col:nth-child(4) {
-    width: var(--smeta-col-amount);
-  }
-
-
-/* Light zebra striping for rows to improve readability */
-.smeta-breakdown-table tbody tr:nth-child(odd) {
-  background: rgb(15 23 42 / 2%);
-}
-.smeta-breakdown-table tbody tr:hover { background: rgb(15 23 42 / 4%); }
-
-/* Rounded header and subtle card feel */
-.smeta-breakdown-table thead th:first-child { border-top-left-radius: 10px }
-.smeta-breakdown-table thead th:last-child { border-top-right-radius: 10px }
-.smeta-breakdown-table thead th { box-shadow: inset 0 -1px 0 rgb(15 23 42 / 2%) }
-
-/* Soft transition for hover & opacity changes */
-  .smeta-breakdown-table tbody tr, .smeta-breakdown-table td, .smeta-breakdown-table th { transition: background-color 140ms ease, color 140ms ease }
-
-  .smeta-breakdown-table__row--interactive { cursor: pointer; }
-
-  .smeta-breakdown-table__total-label {
-    font-weight: 700;
-    text-align: right;
-    padding-right: var(--card-inner-gap);
-  }
-  .smeta-breakdown-table__total-value { font-weight: 700; }
+/* smeta table styles moved to `modules/_tables-modals.scss` */
 
 /* make cards share same row and wrap as needed */
 .smeta-cards__list { align-items: stretch }
@@ -1175,7 +828,7 @@
 /* Smeta details loading state: dim existing table and show overlay skeleton */
 .smeta-details-wrapper{position:relative}
 .smeta-details-wrapper.is-loading > *{opacity:0.45;transition:opacity 180ms linear}
-.overlay-skeleton{position:absolute;inset:12px;z-index:8;pointer-events:none}
+.overlay-skeleton{position:absolute;inset:var(--gap-md);z-index:8;pointer-events:none}
 .overlay-skeleton .table-skeleton{background:transparent}
 
 /* Final overrides: ensure compact header controls take effect (highest priority) */
@@ -1212,13 +865,13 @@
 .month-picker__toggle, .day-picker__toggle, .picker__toggle {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--gap-md);
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
-  padding: 0 12px;
+  padding: 0 var(--gap-md);
   border-radius: var(--radius-md);
   cursor: pointer;
-  min-width: 160px;
+  min-width: var(--picker-min-width);
   height: var(--control-height);
 }
 
@@ -1240,7 +893,7 @@
 
 .month-picker__panel {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + var(--gap-sm));
   left: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
@@ -1249,25 +902,25 @@
   z-index: 40;
   max-height: 320px;
   overflow: auto;
-  padding: 8px;
+  padding: var(--gap-sm);
   width: 100%;
   box-sizing: border-box;
 }
 
-.month-picker__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.month-picker__item button { width: 100%; text-align: left; padding: 10px 12px; border-radius: 6px; background: transparent; border: none; cursor: pointer; font-size: var(--font-size-body); }
+.month-picker__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--gap-xs); }
+.month-picker__item button { width: 100%; text-align: left; padding: var(--gap-sm) var(--gap-md); border-radius: var(--radius-md); background: transparent; border: none; cursor: pointer; font-size: var(--font-size-body); }
 .month-picker__item button:hover, .month-picker__item button.is-focused { background: var(--bg-muted); }
 .month-picker__item button.is-active { background: var(--accent-soft); color: var(--accent-strong); font-weight: 700; }
-.month-picker__empty { padding: 12px; color: var(--text-muted); }
+.month-picker__empty { padding: var(--gap-md); color: var(--text-muted); }
 
 @media (width <= 640px) {
   .month-picker__toggle, .day-picker__toggle, .picker__toggle {
     width: 100%;
     min-width: 0;
-    padding: 0 8px;
-    min-height: 32px;
-    height: 32px;
-    gap: 8px;
+    padding: 0 var(--gap-sm);
+    min-height: var(--control-height-mobile);
+    height: var(--control-height-mobile);
+    gap: var(--gap-sm);
   }
   .month-picker__label, .day-picker__label { font-size: 0.64rem; margin-right: 6px }
   .month-picker__current, .day-picker__current { font-size: 0.95rem }

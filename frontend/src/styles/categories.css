@@ -25,7 +25,7 @@
   gap: var(--gap-xs);
   width: 100%;
   contain: layout style paint;
-  min-height: 141px;
+  min-height: var(--category-card-min-height);
 }
 
 .category-card::before {
