@@ -120,8 +120,8 @@ def compute_plan_fact(month: str, plan_fact_row: Optional[dict] = None):
             "fact_total": 0,
         }
 
-    plan_leto = int(row.get("plan_leto") or 0)
-    plan_zima = int(row.get("plan_zima") or 0)
+    plan_leto = row.get("plan_leto") or 0
+    plan_zima = row.get("plan_zima") or 0
 
     try:
         plan_vnereglament = int(round((plan_leto + plan_zima) * 0.43))
@@ -130,19 +130,16 @@ def compute_plan_fact(month: str, plan_fact_row: Optional[dict] = None):
 
     plan_total = int(plan_leto + plan_zima + plan_vnereglament)
 
-    fact_leto = int(row.get("fact_leto") or 0)
-    fact_zima = int(row.get("fact_zima") or 0)
+    fact_leto = row.get("fact_leto") or 0
+    fact_zima = row.get("fact_zima") or 0
     fact_vnereglament = row.get("fact_vnereglament")
     if fact_vnereglament is None:
         r = dashboard_repo.sum_fact_vnereglament(month_key)
-        try:
-            fact_vnereglament = int(r.get("s") or 0) if r else 0
-        except Exception:
-            fact_vnereglament = 0
+        fact_vnereglament = r.get("s") if r else 0
     else:
-        fact_vnereglament = int(fact_vnereglament or 0)
+        fact_vnereglament = fact_vnereglament or 0
 
-    fact_total = int(row.get("fact_total") or (fact_leto + fact_zima + fact_vnereglament))
+    fact_total = row.get("fact_total") or (fact_leto + fact_zima + fact_vnereglament)
 
     return {
         "month_key": row.get("month_key", month_key),
@@ -161,7 +158,7 @@ def compute_contract_amount(contract_row: Optional[dict] = None):
     row = contract_row or dashboard_repo.get_contract_amount_sum()
     if not row:
         return 0
-    return int((row.get("sum") or row.get("contract_amount") or 0))
+    return row.get("sum") or row.get("contract_amount") or 0
 
 
 def compute_avg_daily_revenue(month_key: str, fact_total: int):
@@ -180,10 +177,13 @@ def build_monthly_summary(month_key: str, bundle: Optional[dict] = None):
     summa_contract = compute_contract_amount(bundle)
     # For the contract card, use total executed amount across all available months
     # (do not filter by the selected month). This provides a cumulative 'Выполнено' value.
-    total_fact_all_months = int(bundle.get("fact_total_all_months") or 0) if bundle else 0
+    if bundle:
+        total_fact_all_months = bundle.get("fact_total_all_months") or 0
+    else:
+        total_fact_all_months = 0
     if not total_fact_all_months and not bundle:
         total_fact_row = dashboard_repo.get_total_fact_amount()
-        total_fact_all_months = int(total_fact_row["sum"] or 0) if total_fact_row else 0
+        total_fact_all_months = total_fact_row["sum"] if total_fact_row else 0
     contract_planfact_pct = float(total_fact_all_months / summa_contract) if summa_contract else None
     avg_daily_revenue = compute_avg_daily_revenue(month_key, plan_fact["fact_total"])
 
@@ -301,13 +301,13 @@ def build_monthly_smeta_details(month: str, smeta_key: str):
     rows_map = {}
     for r in plan_rows:
         desc = r["description"]
-        rows_map[desc] = {"description": desc, "plan": int(r["plan"] or 0), "fact": 0}
+        rows_map[desc] = {"description": desc, "plan": r.get("plan") or 0, "fact": 0}
     for r in fact_rows:
         desc = r["description"]
         if desc not in rows_map:
-            rows_map[desc] = {"description": desc, "plan": 0, "fact": int(r["fact"] or 0)}
+            rows_map[desc] = {"description": desc, "plan": 0, "fact": r.get("fact") or 0}
         else:
-            rows_map[desc]["fact"] = int(r["fact"] or 0)
+            rows_map[desc]["fact"] = r.get("fact") or 0
 
     rows = []
     for v in rows_map.values():
@@ -325,9 +325,6 @@ def build_monthly_smeta_description_daily(month: str, smeta_key: str, descriptio
         raise HTTPException(status_code=400, detail="invalid smeta_key")
 
     rows = dashboard_repo.get_description_daily_rows(month_key, description, codes)
-    for r in rows:
-        r["volume"] = int(r["volume"] or 0)
-        r["amount"] = int(r["amount"] or 0)
 
     return {"month": month_key, "smeta_key": smeta_key, "description": description, "rows": rows}
 
@@ -335,8 +332,6 @@ def build_monthly_smeta_description_daily(month: str, smeta_key: str, descriptio
 def build_monthly_daily_revenue(month: str):
     month_key = normalize_month(month)
     rows = dashboard_repo.get_monthly_daily_revenue_rows(month_key)
-    for r in rows:
-        r["amount"] = int(r["amount"] or 0)
     return {"month": month_key, "rows": rows}
 
 
@@ -347,16 +342,13 @@ def build_daily(date_value: str):
         raise HTTPException(status_code=400, detail="invalid date format")
 
     rows = dashboard_repo.get_daily_rows(date_value)
-    for r in rows:
-        r["volume"] = int(r["volume"] or 0)
-        r["amount"] = int(r["amount"] or 0)
 
     # Business rule: include only rows where amount > 5
     filtered_rows = [r for r in rows if r.get("amount", 0) > 5]
 
     # Recompute total as sum of amounts of filtered rows
     total_amount = sum(r.get("amount", 0) for r in filtered_rows)
-    return {"date": date_value, "rows": filtered_rows, "total": {"amount": int(total_amount)}}
+    return {"date": date_value, "rows": filtered_rows, "total": {"amount": total_amount}}
 
 
 def build_last_loaded():

@@ -24,7 +24,15 @@ def get_months_from_fact_with_money() -> List[dict]:
 def get_plan_fact_month(month_key: str) -> Optional[dict]:
     return db.query_one(
         """
-        SELECT month_key, plan_leto, plan_zima, plan_vnereglament, plan_total, fact_leto, fact_zima, fact_vnereglament, fact_total
+        SELECT month_key,
+               COALESCE(plan_leto, 0)::int AS plan_leto,
+               COALESCE(plan_zima, 0)::int AS plan_zima,
+               COALESCE(plan_vnereglament, 0)::int AS plan_vnereglament,
+               COALESCE(plan_total, 0)::int AS plan_total,
+               COALESCE(fact_leto, 0)::int AS fact_leto,
+               COALESCE(fact_zima, 0)::int AS fact_zima,
+               COALESCE(fact_vnereglament, 0)::int AS fact_vnereglament,
+               COALESCE(fact_total, 0)::int AS fact_total
         FROM skpdi_plan_fact_monthly_backend
         WHERE month_key = %s
         """,
@@ -37,17 +45,24 @@ def get_month_summary_bundle(month_key: str) -> Optional[dict]:
     return db.query_one(
         """
         WITH plan_fact AS (
-            SELECT month_key, plan_leto, plan_zima, plan_vnereglament, plan_total,
-                   fact_leto, fact_zima, fact_vnereglament, fact_total
+            SELECT month_key,
+                   COALESCE(plan_leto, 0)::int AS plan_leto,
+                   COALESCE(plan_zima, 0)::int AS plan_zima,
+                   COALESCE(plan_vnereglament, 0)::int AS plan_vnereglament,
+                   COALESCE(plan_total, 0)::int AS plan_total,
+                   COALESCE(fact_leto, 0)::int AS fact_leto,
+                   COALESCE(fact_zima, 0)::int AS fact_zima,
+                   COALESCE(fact_vnereglament, 0)::int AS fact_vnereglament,
+                   COALESCE(fact_total, 0)::int AS fact_total
             FROM skpdi_plan_fact_monthly_backend
             WHERE month_key = %s
         ),
         contract AS (
-            SELECT COALESCE(SUM(contract_amount), 0) AS contract_amount
+            SELECT COALESCE(SUM(contract_amount), 0)::int AS contract_amount
             FROM podolsk_mad_2025_contract_amount
         ),
         total_fact AS (
-            SELECT COALESCE(SUM(fact_total), 0) AS fact_total_all_months
+            SELECT COALESCE(SUM(fact_total), 0)::int AS fact_total_all_months
             FROM skpdi_plan_fact_monthly_backend
         )
         SELECT pf.month_key, pf.plan_leto, pf.plan_zima, pf.plan_vnereglament, pf.plan_total,
@@ -64,7 +79,7 @@ def get_month_summary_bundle(month_key: str) -> Optional[dict]:
 def sum_fact_vnereglament(month_key: str) -> Optional[dict]:
     return db.query_one(
         """
-        SELECT COALESCE(SUM(fact_amount_done),0) AS s
+        SELECT COALESCE(SUM(fact_amount_done),0)::int AS s
         FROM skpdi_plan_vs_fact_monthly
         WHERE to_char(month_start,'YYYY-MM')=%s AND smeta_code IN ('внерегл_ч_1','внерегл_ч_2')
         """,
@@ -73,7 +88,9 @@ def sum_fact_vnereglament(month_key: str) -> Optional[dict]:
 
 
 def get_contract_amount_sum() -> Optional[dict]:
-    return db.query_one("SELECT COALESCE(SUM(contract_amount),0) AS sum FROM podolsk_mad_2025_contract_amount")
+    return db.query_one(
+        "SELECT COALESCE(SUM(contract_amount),0)::int AS sum FROM podolsk_mad_2025_contract_amount"
+    )
 
 
 def get_total_fact_amount() -> Optional[dict]:
@@ -81,7 +98,7 @@ def get_total_fact_amount() -> Optional[dict]:
 
     Uses the plan_fact backend table which contains monthly fact_total values.
     """
-    return db.query_one("SELECT COALESCE(SUM(fact_total),0) AS sum FROM skpdi_plan_fact_monthly_backend")
+    return db.query_one("SELECT COALESCE(SUM(fact_total),0)::int AS sum FROM skpdi_plan_fact_monthly_backend")
 
 
 def get_monthly_items(month_key: str) -> List[dict]:
@@ -103,7 +120,7 @@ def get_last_loaded_row() -> Optional[dict]:
 def get_plan_rows_by_smeta(month_key: str, smeta_code: str) -> List[dict]:
     return db.query(
         """
-        SELECT description, COALESCE(SUM(planned_amount),0) AS plan
+        SELECT description, COALESCE(SUM(planned_amount),0)::int AS plan
         FROM skpdi_plan_vs_fact_monthly
         WHERE to_char(month_start,'YYYY-MM')=%s AND smeta_code=%s
         GROUP BY description
@@ -115,7 +132,7 @@ def get_plan_rows_by_smeta(month_key: str, smeta_code: str) -> List[dict]:
 def get_fact_rows_by_smeta(month_key: str, smeta_codes: Sequence[str]) -> List[dict]:
     return db.query(
         """
-        SELECT description, COALESCE(SUM(fact_amount_done),0) AS fact
+        SELECT description, COALESCE(SUM(fact_amount_done),0)::int AS fact
         FROM skpdi_plan_vs_fact_monthly
         WHERE to_char(month_start,'YYYY-MM')=%s AND smeta_code = ANY(%s)
         GROUP BY description
@@ -127,8 +144,8 @@ def get_fact_rows_by_smeta(month_key: str, smeta_codes: Sequence[str]) -> List[d
 def get_description_daily_rows(month_key: str, description: str, smeta_codes: Sequence[str]) -> List[dict]:
     return db.query(
         """
-        SELECT to_char(date_done,'YYYY-MM-DD') AS date, COALESCE(SUM(total_volume),0) AS volume,
-               MIN(unit) AS unit, COALESCE(SUM(total_amount),0) AS amount
+        SELECT to_char(date_done,'YYYY-MM-DD') AS date, COALESCE(SUM(total_volume),0)::int AS volume,
+               MIN(unit) AS unit, COALESCE(SUM(total_amount),0)::int AS amount
         FROM skpdi_fact_with_money
         WHERE to_char(date_done,'YYYY-MM')=%s AND status='Рассмотрено' AND description=%s AND smeta_code = ANY(%s)
         GROUP BY date_done
@@ -141,7 +158,7 @@ def get_description_daily_rows(month_key: str, description: str, smeta_codes: Se
 def get_monthly_daily_revenue_rows(month_key: str) -> List[dict]:
     return db.query(
         """
-        SELECT to_char(date_done,'YYYY-MM-DD') AS date, COALESCE(SUM(total_amount),0) AS amount
+        SELECT to_char(date_done,'YYYY-MM-DD') AS date, COALESCE(SUM(total_amount),0)::int AS amount
         FROM skpdi_fact_with_money
         WHERE to_char(date_done,'YYYY-MM')=%s AND status='Рассмотрено'
         GROUP BY date_done
@@ -154,7 +171,7 @@ def get_monthly_daily_revenue_rows(month_key: str) -> List[dict]:
 def get_daily_rows(date_value: str) -> List[dict]:
     return db.query(
         """
-        SELECT description, MIN(unit) AS unit, COALESCE(SUM(total_volume),0) AS volume, COALESCE(SUM(total_amount),0) AS amount
+        SELECT description, MIN(unit) AS unit, COALESCE(SUM(total_volume),0)::int AS volume, COALESCE(SUM(total_amount),0)::int AS amount
         FROM skpdi_fact_with_money
         WHERE to_char(date_done,'YYYY-MM-DD')=%s AND status='Рассмотрено'
         GROUP BY description
@@ -167,7 +184,7 @@ def get_daily_rows(date_value: str) -> List[dict]:
 def get_daily_total(date_value: str) -> Optional[dict]:
     return db.query_one(
         """
-        SELECT COALESCE(SUM(total_amount),0) AS total
+        SELECT COALESCE(SUM(total_amount),0)::int AS total
         FROM skpdi_fact_with_money
         WHERE to_char(date_done,'YYYY-MM-DD')=%s AND status='Рассмотрено'
         """,
