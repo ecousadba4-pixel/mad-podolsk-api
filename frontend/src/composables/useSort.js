@@ -24,7 +24,16 @@ export function useSort(items, options = {}) {
   }
 
   const sortedItems = computed(() => {
-    const list = unref(items) || []
+    // Support passing either a ref/array or a getter function that returns the array.
+    // If `items` is a function (e.g. `() => props.items`) we must call it,
+    // otherwise `unref(items)` would return the function itself and later
+    // spreading `[...list]` would fail with "list is not iterable".
+    let list
+    if (typeof items === 'function') {
+      list = unref(items()) || []
+    } else {
+      list = unref(items) || []
+    }
     if (!sortKey.value) return list
     const sorter = compare || ((a, b, key, dir) => {
       const va = Number(a?.[key] || 0)

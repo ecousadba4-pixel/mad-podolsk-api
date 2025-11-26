@@ -12,7 +12,12 @@ function normalizeKey(key) {
 }
 
 function createQueryClient(defaultOptions = {}) {
-  const cache = reactive(new Map())
+  // Use a plain Map here. Using `reactive(new Map())` makes Vue unwrap
+  // nested refs inside stored values, turning `status: ref('idle')`
+  // into the raw string `'idle'`. That causes attempts to access
+  // `status.value` to fail with "Cannot create property 'value' on string 'idle'".
+  // Storing refs inside a plain Map preserves them correctly.
+  const cache = new Map()
   const defaults = {
     staleTime: 5 * 60 * 1000,
     retry: 2,
