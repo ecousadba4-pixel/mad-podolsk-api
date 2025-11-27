@@ -129,7 +129,7 @@ const total = computed(() => {
   return (props.rows || []).reduce((s, r) => s + (Number(r?.amount) || 0), 0)
 })
 
-// --- collapse / expand title logic (copied/adapted from SmetaDetailsTable.vue) ---
+// --- collapse / expand title logic (copied/adapted from SmetaDetails.vue) ---
 const expanded = ref(new Set())
 const clamped = ref({})
 const titleEls = new Map()

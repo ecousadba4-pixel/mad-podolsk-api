@@ -12,7 +12,7 @@ import SmetaPanelNote from '../components/ui/SmetaPanelNote.vue'
 const ContractExecutionSection = defineAsyncComponent(() => import('../components/sections/ContractExecutionSection.vue'))
 const SummaryKpiSection = defineAsyncComponent(() => import('../components/sections/SummaryKpiSection.vue'))
 const SmetaCardsSection = defineAsyncComponent(() => import('../components/sections/SmetaCardsSection.vue'))
-const SmetaDetailsTable = defineAsyncComponent(() => import('../components/sections/SmetaDetailsTable.vue'))
+const SmetaDetails = defineAsyncComponent(() => import('../components/sections/SmetaDetails.vue'))
 const smetaSortKey = ref('plan')
 const smetaSortDir = ref(-1)
 
@@ -92,7 +92,7 @@ function onSmetaSelect(key){
                     </div>
                     <div class="panel-body" v-show="!isSmetaCollapsed">
                       <div class="smeta-details-wrapper" :class="{ 'is-loading': smetaDetailsLoading }">
-                        <SmetaDetailsTable :items="smetaDetails" :sort-key="smetaSortKey" :sort-dir="smetaSortDir" @sort-changed="(p)=>{ smetaSortKey = p.key; smetaSortDir = p.dir }" @select="(item)=> onSelectDescription(item)" />
+                        <SmetaDetails :items="smetaDetails" :sort-key="smetaSortKey" :sort-dir="smetaSortDir" @sort-changed="(p)=>{ smetaSortKey = p.key; smetaSortDir = p.dir }" @select="(item)=> onSelectDescription(item)" />
                         <TableSkeleton v-if="smetaDetailsLoading" class="overlay-skeleton" />
                       </div>
                     </div>

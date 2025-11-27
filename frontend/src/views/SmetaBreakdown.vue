@@ -11,35 +11,7 @@
       <div v-if="loading" class="skeleton">Загрузка...</div>
 
       <div v-if="!loading" class="smeta-breakdown-scroll" :class="{ 'is-mobile': isMobile }">
-        <table class="smeta-breakdown-table">
-        <thead>
-          <tr>
-            <th>Работы</th>
-            <th class="numeric">План</th>
-            <th class="numeric">Факт</th>
-            <th class="numeric">Отклонение</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in sortedRows" :key="row.id" @click="openByDescription(row)">
-            <td>{{ row.title || row.description }}</td>
-            <td class="numeric">{{ formatMoney(row.plan) }}</td>
-            <td class="numeric">{{ formatMoney(row.fact) }}</td>
-            <td :class="{'negative': (row.fact - row.plan) < 0}" class="numeric">{{ formatMoney((row.fact || 0) - (row.plan || 0)) }}</td>
-          </tr>
-          <tr v-if="filteredRows.length === 0">
-            <td colspan="4" class="muted">Нет данных для выбранной сметы</td>
-          </tr>
-        </tbody>
-        <tfoot v-if="filteredRows.length > 0">
-          <tr class="smeta-breakdown-table__totals">
-            <td>Итого</td>
-            <td class="numeric">{{ formatMoney(totals.plan) }}</td>
-            <td class="numeric">{{ formatMoney(totals.fact) }}</td>
-            <td :class="{'negative': totals.delta < 0}" class="numeric">{{ formatMoney(totals.delta) }}</td>
-          </tr>
-        </tfoot>
-        </table>
+        <SmetaDetails :items="filteredRows" :sort-key="sortKey" :sort-dir="sortDir" @select="openByDescription" />
       </div>
     </div>
   </section>
@@ -108,6 +80,7 @@ const smetaLabel = computed(() => {
 import { ref } from 'vue'
 import { useIsMobile } from '../composables/useIsMobile.js'
 import SmetaPanelNote from '../components/ui/SmetaPanelNote.vue'
+import SmetaDetails from '../components/sections/SmetaDetails.vue'
 
 // Sorting state for the table — used by mobile sort control and desktop headers if needed
 const sortKeyRef = ref('plan')

@@ -258,7 +258,7 @@ pill "Данные обновлены" - отображает плашку с у
 ContractExecutionSection
 SummaryKpiSection
 SmetaCardsSection
-SmetaDetailsTable
+SmetaDetails
 
 Модальные окна:
 DailyRevenueModal
@@ -284,9 +284,9 @@ components/sections/SummaryKpiSection.vue
 components/sections/SmetaCardsSection.vue
 Рендерит три карточки: Лето, Зима, Внерегламент.
 В них отображаются показатели - План/Факт/Отклонение
-При клике устанавливает selectedSmeta в Pinia и инициирует загрузку данных для SmetaDetailsTable.
+При клике устанавливает selectedSmeta в Pinia и инициирует загрузку данных для SmetaDetails.
 
-components/tables/SmetaDetailsTable.vue
+components/tables/SmetaDetails.vue
 Получает список rows для выбранной сметы.
 
 Колонки: Работы, План, Факт, Отклонение.
