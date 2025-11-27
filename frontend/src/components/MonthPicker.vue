@@ -278,6 +278,14 @@ const currentLabel = computed(()=>{
 
   .month-picker__label { font-size: var(--font-size-tiny); }
   .month-picker__current { font-size: var(--font-size-body); }
+
+  /* Mobile: keep month names on a single line in the dropdown */
+  .month-picker__item button {
+    font-size: var(--font-size-small);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 </style>
 
