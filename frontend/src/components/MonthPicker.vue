@@ -44,17 +44,14 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { useDashboardUiStore } from '../store/dashboardUiStore.js'
-import { useDashboardDataStore } from '../store/dashboardDataStore.js'
+import { useDashboardStore } from '../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
 
 const props = defineProps({ modelValue: { type: String, default: '' } })
 const emit = defineEmits(['update:modelValue'])
 
-const uiStore = useDashboardUiStore()
-const dataStore = useDashboardDataStore()
-const { availableMonths } = storeToRefs(dataStore)
-const { selectedMonth } = storeToRefs(uiStore)
+const store = useDashboardStore()
+const { availableMonths, selectedMonth } = storeToRefs(store)
 const open = ref(false)
 const loading = ref(false)
 const activeIndex = ref(-1)

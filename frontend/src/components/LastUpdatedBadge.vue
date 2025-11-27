@@ -10,12 +10,12 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useDashboardDataStore } from '../store/dashboardDataStore.js'
+import { useDashboardStore } from '../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
 
 const props = defineProps({ loadedAt: { type: [String, Date], default: null } })
 
-const store = useDashboardDataStore()
+const store = useDashboardStore()
 const { loadedAt, monthlySummary } = storeToRefs(store)
 
 const source = computed(() => {

@@ -2,14 +2,11 @@
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 // Details table moved out to keep panels separate
-import { useDashboardUiStore } from '../../store/dashboardUiStore.js'
-import { useDashboardDataStore } from '../../store/dashboardDataStore.js'
+import { useDashboardStore } from '../../store/dashboardStore.js'
 
-const uiStore = useDashboardUiStore()
-const dataStore = useDashboardDataStore()
+const store = useDashboardStore()
 // use storeToRefs to subscribe only to specific refs, reducing re-renders
-const { smetaCards, smetaCardsLoading } = storeToRefs(dataStore)
-const { selectedSmeta } = storeToRefs(uiStore)
+const { smetaCards, smetaCardsLoading, selectedSmeta } = storeToRefs(store)
 
 const emit = defineEmits(['select'])
 const cards = computed(() => smetaCards.value || [])

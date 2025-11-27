@@ -1,12 +1,12 @@
 <script setup>
 // Temporary: use new header component for iterative rebuild and testing
 import AppHeader from './components/AppHeader.vue'
-import { useDashboardUiStore } from './store/dashboardUiStore.js'
+import { useDashboardStore } from './store/dashboardStore.js'
 import { ref, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
-const store = useDashboardUiStore()
+const store = useDashboardStore()
 const { mode } = storeToRefs(store)
 const router = useRouter()
 const routerShell = ref(null)

@@ -18,29 +18,28 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useDashboardUiStore } from '../store/dashboardUiStore.js'
-import { useSmetaSelection } from '../composables/useSmetaSelection.js'
-import { useSmetaSorting } from '../composables/useSmetaSorting.js'
-import { useDescriptionsModal } from '../composables/useDescriptionsModal.js'
+import { useDashboardStore } from '../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
 
 const route = useRoute()
 const router = useRouter()
-const uiStore = useDashboardUiStore()
-const { smetaDetails, smetaDetailsLoading, selectedSmetaLabel, selectSmeta, ensureDetailsLoaded } = useSmetaSelection()
-const { selectedMonth } = storeToRefs(uiStore)
-const { open: openDescriptionModal } = useDescriptionsModal()
-const smetaKey = computed(() => route.params.smetaKey || uiStore.selectedSmeta.value)
+const store = useDashboardStore()
+const { smetaDetailsLoading, smetaDetails, selectedMonth: selectedMonthRef, smetaCards, selectedSmeta } = storeToRefs(store)
 
-watch(smetaKey, (key) => {
-  selectSmeta(key)
-  ensureDetailsLoaded(key)
-}, { immediate: true })
+const smetaKey = computed(() => route.params.smetaKey || selectedSmeta.value || 'leto')
+
+onMounted(async () => {
+  // set selected smeta in store for other components and fetch details
+  store.setSelectedSmeta(smetaKey.value)
+  await store.fetchSmetaDetails(smetaKey.value)
+  console.log('[SmetaBreakdown] mounted, smetaKey=', smetaKey.value)
+})
 
 const loading = computed(() => smetaDetailsLoading.value)
 const rows = computed(() => smetaDetails.value)
+const selectedMonth = computed(() => selectedMonthRef.value)
 
 // show only rows where plan>1 or fact>1
 // Special rule: if selected smeta is vnerereg (внерегламент) then Plan should be shown as 0
@@ -71,7 +70,12 @@ const totals = computed(() => {
   return { plan, fact, delta }
 })
 
-const smetaLabel = computed(() => selectedSmetaLabel.value || smetaKey.value)
+const smetaLabel = computed(() => {
+  // derive a human-friendly label from smetaKey or fall back
+  const key = smetaKey.value
+  const map = { leto: 'Лето', zima: 'Зима', vnereg: 'Внерегламент', vner1: 'Внерегламент' }
+  return map[key] || (smetaCards.value.find(c => c.smeta_key === key)?.label) || key
+})
 
 import { ref } from 'vue'
 import { useIsMobile } from '../composables/useIsMobile.js'
@@ -79,7 +83,8 @@ import SmetaPanelNote from '../components/ui/SmetaPanelNote.vue'
 import SmetaDetails from '../components/sections/SmetaDetails.vue'
 
 // Sorting state for the table — used by mobile sort control and desktop headers if needed
-const { sortKey: sortKeyRef, sortDir: sortDirRef } = useSmetaSorting('plan', -1)
+const sortKeyRef = ref('plan')
+const sortDirRef = ref(-1)
 
 function valueForRow(r, key){
   if (key === 'delta') return (Number(r.fact || 0) - Number(r.plan || 0))
@@ -119,7 +124,8 @@ function formatMoney(v){
 }
 
 function openByDescription(row){
-  openDescriptionModal(row.title || row.description)
+  // set selected description and navigate to modal/view for daily breakdown
+  store.setSelectedDescription(row.title || row.description)
   // we can navigate to a daily-details route in future; for now open /daily and keep selection
   router.push({ path: '/daily' })
 }

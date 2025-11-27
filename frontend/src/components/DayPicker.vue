@@ -23,13 +23,11 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useDashboardUiStore } from '../store/dashboardUiStore.js'
-import { useDashboardDataStore } from '../store/dashboardDataStore.js'
+import { useDashboardStore } from '../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
 
-const uiStore = useDashboardUiStore()
-const dataStore = useDashboardDataStore()
-const { selectedDate } = storeToRefs(uiStore)
+const store = useDashboardStore()
+const { selectedDate } = storeToRefs(store)
 const inputDate = ref(null)
 
 const value = computed(() => selectedDate.value)
@@ -62,8 +60,8 @@ async function onInput(e){
   if (!v) return
   // ignore selections outside current month
   if (v < monthStart.value || v > monthEnd.value) return
-  uiStore.setSelectedDate(v)
-  await dataStore.refetchDaily()
+  store.setSelectedDate(v)
+  await store.fetchDaily(v)
 }
 </script>
 
