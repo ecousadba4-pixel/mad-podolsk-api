@@ -4,8 +4,7 @@
 
       <div v-if="dailyLoading">Загрузка...</div>
       <template v-else>
-        <!-- Printable report kept on the page for export; button moved to AppHeader -->
-        <ReportPrintable :rows="dailyRows" :date="selectedDate" :total="dailyTotal" />
+        <!-- Printable report removed; export button kept in AppHeader -->
 
         <MobileDailyFull v-if="isMobile || forceMobile" :rows="dailyRows" :total-amount="dailyTotal" :date="selectedDate" />
         <DailyTable v-else :rows="dailyRows" :total-amount="dailyTotal" :date="selectedDate" />
@@ -20,7 +19,6 @@ import { useDashboardStore } from '../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
 import DailyTable from '../components/sections/DailyTable.vue'
 import MobileDailyFull from '../components/sections/MobileDailyFull.vue'
-import ReportPrintable from '../components/report/ReportPrintable.vue'
 import { useBodyClass } from '../composables/useBodyClass.js'
 import { useIsMobile } from '../composables/useIsMobile.js'
 
