@@ -139,11 +139,14 @@ function formatMoney(v){
 /* Mobile-specific: make columns equal width and ensure scrollbar space reserved */
 
 /* Mobile — self-contained rules for modal table (no !important) */
+.modal.is-mobile .modal-body {
+  overflow-x: visible; /* не прячем правый край таблицы: данные влезают */
+  padding-bottom: 0; /* убираем лишний отступ под воображаемый скролл */
+}
+
 .modal.is-mobile .smeta-breakdown-table__modal-wrapper {
-  overflow-x: auto; /* allow table to scroll horizontally if needed */
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 1.2rem; /* reserve space so vertical scrollbar won't overlap rows */
-  scrollbar-gutter: stable both-edges; /* reserve scrollbar gutter where supported */
+  overflow: visible; /* скрываем искусственную границу справа в мобильном модальном окне */
+  padding-bottom: 0;
 }
 
 .modal.is-mobile .smeta-breakdown-table--modal {
