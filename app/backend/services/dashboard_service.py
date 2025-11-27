@@ -335,6 +335,12 @@ def build_monthly_daily_revenue(month: str):
     return {"month": month_key, "rows": rows}
 
 
+def fetch_monthly_dates(month: str):
+    """Return list of available dates (YYYY-MM-DD) for the given month."""
+    month_key = normalize_month(month)
+    return dashboard_repo.get_monthly_dates(month_key)
+
+
 def build_daily(date_value: str):
     try:
         datetime.strptime(date_value, "%Y-%m-%d")

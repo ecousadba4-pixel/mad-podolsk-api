@@ -42,6 +42,11 @@ def monthly_daily_revenue(month: str = Query(..., description="YYYY-MM")):
     return dashboard_service.build_monthly_daily_revenue(month)
 
 
+@router.get("/monthly/dates", response_model=list)
+def monthly_dates(month: str = Query(..., description="YYYY-MM")):
+    return dashboard_service.fetch_monthly_dates(month)
+
+
 @router.get("/monthly/smeta-details", response_model=MonthlySmetaDetailsResponse)
 def monthly_smeta_details(month: str = Query(..., description="YYYY-MM"), smeta_key: str = Query(...)):
     return dashboard_service.build_monthly_smeta_details(month, smeta_key)

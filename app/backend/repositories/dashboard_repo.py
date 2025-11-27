@@ -190,3 +190,17 @@ def get_daily_total(date_value: str) -> Optional[dict]:
         """,
         (date_value,),
     )
+
+
+def get_monthly_dates(month_key: str) -> List[str]:
+    """Return list of distinct YYYY-MM-DD dates in the given month from fact_with_money (status='Рассмотрено')."""
+    rows = db.query(
+        """
+        SELECT DISTINCT to_char(date_done,'YYYY-MM-DD') AS date
+        FROM skpdi_fact_with_money
+        WHERE to_char(date_done,'YYYY-MM')=%s AND status='Рассмотрено'
+        ORDER BY date
+        """,
+        (month_key,),
+    )
+    return [r.get('date') for r in rows] if rows else []
