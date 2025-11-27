@@ -12,7 +12,8 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useDashboardStore } from '../../store/dashboardStore.js'
+import { useDashboardDataStore } from '../../store/dashboardDataStore.js'
+import { useDashboardUiStore } from '../../store/dashboardUiStore.js'
 
 const props = defineProps({
   selector: { type: String, default: '#report-to-print' },
@@ -82,9 +83,9 @@ async function onClick() {
     return
   }
 
-  const store = useDashboardStore()
-  const monthRef = store.selectedMonth
-  const month = monthRef && monthRef.value !== undefined ? monthRef.value : monthRef
+  const dataStore = useDashboardDataStore()
+  const uiStore = useDashboardUiStore()
+  const month = uiStore.selectedMonth.value
   if (!month) {
     alert('Не выбран месяц для экспорта')
     return
@@ -92,9 +93,9 @@ async function onClick() {
 
   loading.value = true
   try {
-    try { await store.fetchSmetaCards() } catch (_) {}
+    try { await dataStore.refetchSmetaCards() } catch (_) {}
     const getVal = (v) => (v && v.value !== undefined ? v.value : v)
-    const cards = getVal(store.smetaCards) || []
+    const cards = getVal(dataStore.smetaCards) || []
 
     const smetaNameMap = {
       leto: 'Лето',
@@ -104,8 +105,9 @@ async function onClick() {
 
     const groups = []
     for (const card of cards) {
-      try { await store.fetchSmetaDetails(card.smeta_key) } catch (_) {}
-      const details = getVal(store.smetaDetails) || []
+      uiStore.setSelectedSmeta(card.smeta_key)
+      try { await dataStore.refetchSmetaDetails() } catch (_) {}
+      const details = getVal(dataStore.smetaDetails) || []
       const key = card.smeta_key || card.smeta_key === 0 ? card.smeta_key : null
       const mapped = key && smetaNameMap[key] ? smetaNameMap[key] : null
       const title = mapped || card.title_ru || card.title || card.smeta_name || card.smeta_key

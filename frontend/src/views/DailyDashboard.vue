@@ -15,8 +15,8 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-import { useDashboardStore } from '../store/dashboardStore.js'
+import { useDashboardDataStore } from '../store/dashboardDataStore.js'
+import { useDashboardUiStore } from '../store/dashboardUiStore.js'
 import { storeToRefs } from 'pinia'
 import DailyTable from '../components/sections/DailyTable.vue'
 import MobileDailyFull from '../components/sections/MobileDailyFull.vue'
@@ -24,8 +24,10 @@ import ReportPrintable from '../components/report/ReportPrintable.vue'
 import { useBodyClass } from '../composables/useBodyClass.js'
 import { useIsMobile } from '../composables/useIsMobile.js'
 
-const store = useDashboardStore()
-const { dailyLoading, dailyRows, dailyTotal, selectedDate } = storeToRefs(store)
+const dataStore = useDashboardDataStore()
+const uiStore = useDashboardUiStore()
+const { dailyLoading, dailyRows, dailyTotal } = storeToRefs(dataStore)
+const { selectedDate } = storeToRefs(uiStore)
 
 useBodyClass('page-daily-bg')
 
@@ -36,10 +38,4 @@ try {
   const sp = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
   forceMobile = sp ? sp.get('mobile') === '1' : false
 } catch (e) { forceMobile = false }
-
-onMounted(()=>{
-  // пометить режим и загрузить данные за текущую выбранную дату
-  store.setMode && store.setMode('daily')
-  store.fetchDaily(selectedDate.value)
-})
 </script>

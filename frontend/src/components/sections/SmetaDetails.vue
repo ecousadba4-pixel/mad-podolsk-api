@@ -111,14 +111,14 @@ const emit = defineEmits(['select','sort-changed'])
 import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useIsMobile } from '../../composables/useIsMobile.js'
 import { useSort } from '../../composables/useSort.js'
-import { useDashboardStore } from '../../store/dashboardStore.js'
+import { useDashboardUiStore } from '../../store/dashboardUiStore.js'
 import { storeToRefs } from 'pinia'
 import SmetaDetailsMobile from './SmetaDetailsMobile.vue'
 
 const { isMobile } = useIsMobile()
 
 // detect selected smeta from global store so we can apply smeta-specific defaults
-const store = useDashboardStore()
+const store = useDashboardUiStore()
 const { selectedSmeta } = storeToRefs(store)
 
 function isVneregKey(key) {

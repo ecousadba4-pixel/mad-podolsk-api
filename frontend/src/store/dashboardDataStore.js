@@ -1,7 +1,8 @@
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useQuery, useInvalidateQueries } from '../composables/useQueryClient.js'
 import { getAvailableDates, getAvailableMonths, getBySmeta, getDaily, getLastLoaded, getMonthlySummary, getSmetaDetails } from '../api/dashboard.js'
+import { useDashboardUiStore } from './dashboardUiStore.js'
 
 function fallbackMonths() {
   const list = []
@@ -13,13 +14,8 @@ function fallbackMonths() {
   return list
 }
 
-export const useDashboardStore = defineStore('dashboard', () => {
-  const mode = ref('monthly')
-  const selectedMonth = ref(new Date().toISOString().slice(0, 7))
-  const selectedDate = ref(new Date().toISOString().slice(0, 10))
-  const selectedSmeta = ref(null)
-  const selectedDescription = ref(null)
-
+export const useDashboardDataStore = defineStore('dashboard-data', () => {
+  const ui = useDashboardUiStore()
   const invalidateQueries = useInvalidateQueries()
 
   const availableMonthsQuery = useQuery({
@@ -41,27 +37,27 @@ export const useDashboardStore = defineStore('dashboard', () => {
       }
       return []
     },
-    staleTime: 60 * 60 * 1000
+    staleTime: 60 * 60 * 1000,
   })
 
   const monthlySummaryQuery = useQuery({
-    queryKey: () => ['monthly-summary', selectedMonth.value],
-    queryFn: () => getMonthlySummary(selectedMonth.value),
-    enabled: computed(() => Boolean(selectedMonth.value)),
-    staleTime: 5 * 60 * 1000
+    queryKey: () => ['monthly-summary', ui.selectedMonth.value],
+    queryFn: () => getMonthlySummary(ui.selectedMonth.value),
+    enabled: computed(() => Boolean(ui.selectedMonth.value)),
+    staleTime: 5 * 60 * 1000,
   })
 
   const lastLoadedQuery = useQuery({
-    queryKey: () => ['last-loaded', selectedMonth.value],
-    queryFn: () => getLastLoaded(selectedMonth.value),
-    enabled: computed(() => Boolean(selectedMonth.value)),
-    staleTime: 60 * 1000
+    queryKey: () => ['last-loaded', ui.selectedMonth.value],
+    queryFn: () => getLastLoaded(ui.selectedMonth.value),
+    enabled: computed(() => Boolean(ui.selectedMonth.value)),
+    staleTime: 60 * 1000,
   })
 
   const smetaCardsQuery = useQuery({
-    queryKey: () => ['smeta-cards', selectedMonth.value],
+    queryKey: () => ['smeta-cards', ui.selectedMonth.value],
     queryFn: async () => {
-      const res = await getBySmeta(selectedMonth.value)
+      const res = await getBySmeta(ui.selectedMonth.value)
       const raw = (res && res.cards) || []
       const mapped = raw.map(c => {
         const plan = Number(c.plan) || 0
@@ -73,15 +69,15 @@ export const useDashboardStore = defineStore('dashboard', () => {
       mapped.sort((a, b) => (Number(b.fact) || 0) - (Number(a.fact) || 0))
       return mapped
     },
-    enabled: computed(() => Boolean(selectedMonth.value)),
+    enabled: computed(() => Boolean(ui.selectedMonth.value)),
     staleTime: 3 * 60 * 1000,
-    refetchOnWindowFocus: true
+    refetchOnWindowFocus: true,
   })
 
   const smetaDetailsQuery = useQuery({
-    queryKey: () => ['smeta-details', selectedMonth.value, selectedSmeta.value],
+    queryKey: () => ['smeta-details', ui.selectedMonth.value, ui.selectedSmeta.value],
     queryFn: async () => {
-      const res = await getSmetaDetails(selectedMonth.value, selectedSmeta.value)
+      const res = await getSmetaDetails(ui.selectedMonth.value, ui.selectedSmeta.value)
       const raw = (res && res.rows) || []
       return raw.map(r => {
         const title = r.title || r.description || r.work_name || r.name || ''
@@ -92,23 +88,23 @@ export const useDashboardStore = defineStore('dashboard', () => {
         return { ...r, title, plan, fact, delta, progressPercent }
       })
     },
-    enabled: computed(() => Boolean(selectedSmeta.value) && Boolean(selectedMonth.value)),
-    staleTime: 2 * 60 * 1000
+    enabled: computed(() => Boolean(ui.selectedSmeta.value) && Boolean(ui.selectedMonth.value)),
+    staleTime: 2 * 60 * 1000,
   })
 
   const availableDatesQuery = useQuery({
-    queryKey: () => ['available-dates', selectedMonth.value],
-    queryFn: () => getAvailableDates(selectedMonth.value),
-    enabled: computed(() => Boolean(selectedMonth.value)),
-    staleTime: 60 * 1000
+    queryKey: () => ['available-dates', ui.selectedMonth.value],
+    queryFn: () => getAvailableDates(ui.selectedMonth.value),
+    enabled: computed(() => Boolean(ui.selectedMonth.value)),
+    staleTime: 60 * 1000,
   })
 
   const dailyQuery = useQuery({
-    queryKey: () => ['daily', selectedDate.value],
+    queryKey: () => ['daily', ui.selectedDate.value],
     queryFn: async () => {
-      const res = await getDaily(selectedDate.value)
+      const res = await getDaily(ui.selectedDate.value)
       const rawRows = (res && res.rows) || []
-      const dateValue = res?.date || selectedDate.value
+      const dateValue = res?.date || ui.selectedDate.value
       const rows = rawRows.map(r => {
         const unit = r.unit || ''
         const volumeNumber = Number(r.volume || 0)
@@ -118,27 +114,27 @@ export const useDashboardStore = defineStore('dashboard', () => {
           name: r.description || r.name || r.work_name || '',
           unit,
           volume: `${volumeNumber}${unit ? ` (${unit})` : ''}`,
-          amount
+          amount,
         }
       })
       const totalFromApi = res?.total?.amount
       const total = Number(totalFromApi !== undefined ? totalFromApi : rows.reduce((s, r) => s + (Number(r.amount) || 0), 0))
       return { rows, total, date: dateValue }
     },
-    enabled: computed(() => Boolean(selectedDate.value)),
-    staleTime: 2 * 60 * 1000
+    enabled: computed(() => Boolean(ui.selectedDate.value)),
+    staleTime: 2 * 60 * 1000,
   })
 
   watch(smetaCardsQuery.data, (cards) => {
     const list = cards || []
-    const hasSelected = list.some(c => c && c.smeta_key === selectedSmeta.value)
+    const hasSelected = list.some(c => c && c.smeta_key === ui.selectedSmeta.value)
     if (!hasSelected) {
-      selectedSmeta.value = list.length ? list[0].smeta_key : null
+      ui.setSelectedSmeta(list.length ? list[0].smeta_key : null)
     }
   }, { immediate: true })
 
-  watch(selectedMonth, () => {
-    selectedDescription.value = null
+  watch(() => ui.selectedMonth.value, () => {
+    ui.setSelectedDescription(null)
     invalidateQueries(['smeta-details'])
   })
 
@@ -180,7 +176,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
         .sort()
       if (candidates.length) {
         const nearest = candidates[candidates.length - 1]
-        selectedDate.value = nearest
+        ui.setSelectedDate(nearest)
         await dailyQuery.refetch()
         return nearest
       }
@@ -192,7 +188,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
         const res = await getDaily(iso)
         const rows = (res && res.rows) || []
         if (rows.length) {
-          selectedDate.value = iso
+          ui.setSelectedDate(iso)
           await dailyQuery.refetch()
           return iso
         }
@@ -202,24 +198,14 @@ export const useDashboardStore = defineStore('dashboard', () => {
     }
 
     const td = new Date().toISOString().slice(0, 10)
-    selectedDate.value = td
+    ui.setSelectedDate(td)
     await dailyQuery.refetch()
     return td
   }
 
-  function setMode(m) { mode.value = m }
-  function setSelectedMonth(month) { if (month) selectedMonth.value = month }
-  function setSelectedDate(date) { if (date) selectedDate.value = date }
-  function setSelectedSmeta(key) { selectedSmeta.value = key }
-  function setSelectedDescription(desc) { selectedDescription.value = desc }
   function setLoadedAt(ts) { if (ts) invalidateQueries(['last-loaded']); return ts }
 
   return {
-    mode,
-    selectedMonth,
-    selectedDate,
-    selectedSmeta,
-    selectedDescription,
     availableMonths,
     monthlySummary,
     monthlyLoading,
@@ -232,23 +218,12 @@ export const useDashboardStore = defineStore('dashboard', () => {
     dailyRows,
     dailyTotal,
     dailyLoading,
-    setMode,
-    setSelectedMonth,
-    setSelectedDate,
-    setSelectedSmeta,
-    setSelectedDescription,
-    setLoadedAt,
     findNearestDateWithData,
-    fetchMonthlySummary: () => monthlySummaryQuery.refetch(),
-    fetchSmetaCards: () => smetaCardsQuery.refetch(),
-    fetchSmetaDetails: (key) => {
-      if (key) selectedSmeta.value = key
-      return smetaDetailsQuery.refetch()
-    },
-    fetchDaily: (date) => {
-      if (date) selectedDate.value = date
-      return dailyQuery.refetch()
-    },
-    fetchAvailableMonths: () => availableMonthsQuery.refetch()
+    setLoadedAt,
+    refetchMonthlySummary: () => monthlySummaryQuery.refetch(),
+    refetchSmetaCards: () => smetaCardsQuery.refetch(),
+    refetchSmetaDetails: () => smetaDetailsQuery.refetch(),
+    refetchDaily: () => dailyQuery.refetch(),
+    refetchAvailableMonths: () => availableMonthsQuery.refetch(),
   }
 })

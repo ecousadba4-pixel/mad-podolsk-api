@@ -2,7 +2,8 @@
 import { useIsMobile } from '../composables/useIsMobile.js'
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useDashboardStore } from '../store/dashboardStore.js'
+import { useDashboardUiStore } from '../store/dashboardUiStore.js'
+import { useDashboardDataStore } from '../store/dashboardDataStore.js'
 import { storeToRefs } from 'pinia'
 import LastUpdatedBadge from './LastUpdatedBadge.vue'
 import MonthPicker from './MonthPicker.vue'
@@ -24,8 +25,10 @@ onUnmounted(() => {
 
 const router = useRouter()
 const route = useRoute()
-const store = useDashboardStore()
-const { selectedMonth: selectedMonthRef, monthlySummary, selectedDate, loadedAt } = storeToRefs(store)
+const uiStore = useDashboardUiStore()
+const dataStore = useDashboardDataStore()
+const { selectedMonth: selectedMonthRef, selectedDate } = storeToRefs(uiStore)
+const { monthlySummary, loadedAt } = storeToRefs(dataStore)
 
 // выбор режима (локально + навигация)
 const isMonthlyActive = computed(() => route.path === '/' || route.name === 'monthly')
@@ -33,20 +36,20 @@ const isMonthlyActive = computed(() => route.path === '/' || route.name === 'mon
 function setMonthly() {
   if (!isMonthlyActive.value) {
     router.push({ path: '/' })
-    store.setMode('monthly')
-    store.fetchMonthlySummary()
-    store.fetchSmetaCards()
+    uiStore.setMode('monthly')
+    dataStore.refetchMonthlySummary()
+    dataStore.refetchSmetaCards()
   }
 }
 
 function setDaily() {
   if (isMonthlyActive.value) {
     router.push({ path: '/daily' })
-    store.setMode('daily')
+    uiStore.setMode('daily')
     ;(async () => {
-      try { await store.fetchMonthlySummary() } catch(e) { /* ignore */ }
-      await store.findNearestDateWithData()
-      await store.fetchDaily(selectedDate.value)
+      try { await dataStore.refetchMonthlySummary() } catch(e) { /* ignore */ }
+      await dataStore.findNearestDateWithData()
+      await dataStore.refetchDaily()
     })()
   }
 }
@@ -55,10 +58,10 @@ const selectedMonth = computed({
   get: () => selectedMonthRef.value,
   set: (value) => {
     if (!value) return
-    store.setSelectedMonth(value)
-    store.setSelectedSmeta(null)
-    store.fetchMonthlySummary()
-    store.fetchSmetaCards()
+    uiStore.setSelectedMonth(value)
+    uiStore.setSelectedSmeta(null)
+    dataStore.refetchMonthlySummary()
+    dataStore.refetchSmetaCards()
   }
 })
 </script>

@@ -1,8 +1,11 @@
 <script setup>
 import { computed, defineAsyncComponent, ref } from 'vue'
 import { useIsMobile } from '../composables/useIsMobile.js'
-import { useModal } from '../composables/useModal.js'
-import { useDashboardStore } from '../store/dashboardStore.js'
+import { useDashboardUiStore } from '../store/dashboardUiStore.js'
+import { useDashboardDataStore } from '../store/dashboardDataStore.js'
+import { useSmetaSelection } from '../composables/useSmetaSelection.js'
+import { useSmetaSorting } from '../composables/useSmetaSorting.js'
+import { useDescriptionsModal } from '../composables/useDescriptionsModal.js'
 import { storeToRefs } from 'pinia'
 import TableSkeleton from '../components/ui/TableSkeleton.vue'
 import DailyRevenueModal from '../components/modals/DailyRevenueModal.vue'
@@ -13,52 +16,33 @@ const ContractExecutionSection = defineAsyncComponent(() => import('../component
 const SummaryKpiSection = defineAsyncComponent(() => import('../components/sections/SummaryKpiSection.vue'))
 const SmetaCardsSection = defineAsyncComponent(() => import('../components/sections/SmetaCardsSection.vue'))
 const SmetaDetails = defineAsyncComponent(() => import('../components/sections/SmetaDetails.vue'))
-const smetaSortKey = ref('plan')
-const smetaSortDir = ref(-1)
 
-// use composable for mobile detection
 const { isMobile } = useIsMobile()
 
-const store = useDashboardStore()
-const { monthlyLoading, monthlyError, monthlySummary, smetaDetails, smetaDetailsLoading, selectedMonth, selectedSmeta, selectedDescription, smetaCards } = storeToRefs(store)
+const uiStore = useDashboardUiStore()
+const dataStore = useDashboardDataStore()
+const { monthlyLoading, monthlyError, monthlySummary } = storeToRefs(dataStore)
+const { selectedMonth, selectedSmeta, isDailyModalOpen } = storeToRefs(uiStore)
 
-const selectedSmetaLabel = computed(() => {
-  const key = selectedSmeta.value
-  if (!key) return ''
-  const found = (smetaCards.value || []).find(s => s.smeta_key === key)
-  const name = found ? found.label : key
-  return name
-})
-
-const selectedSmetaDesktopTitle = computed(() => {
-  const name = selectedSmetaLabel.value
-  return name ? `Расшифровка работ по смете «${name}»` : 'Расшифровка работ по смете'
-})
-
-const dailyRevenueModal = useModal(false)
-const smetaDescModal = useModal(false)
+const { selectedSmetaLabel, selectedSmetaDesktopTitle, smetaDetails, smetaDetailsLoading, selectSmeta, ensureDetailsLoaded } = useSmetaSelection()
+const { sortKey: smetaSortKey, sortDir: smetaSortDir } = useSmetaSorting('plan', -1)
+const { selectedDescription, isDescriptionModalOpen, open: openSmetaDescription, close: closeSmetaDescription } = useDescriptionsModal()
 
 // collapsed state for mobile smeta list (toggle from header chevron)
 const isSmetaCollapsed = ref(false)
 
-const isDailyModalOpen = computed(() => dailyRevenueModal.isOpen.value)
-const isSmetaDescOpen = computed(() => smetaDescModal.isOpen.value)
-
-const openDailyRevenue = () => dailyRevenueModal.open()
-const closeDailyRevenue = () => dailyRevenueModal.close()
-const openSmetaDescription = () => smetaDescModal.open()
-const closeSmetaDescription = () => smetaDescModal.close()
+const openDailyRevenue = () => uiStore.openDailyModal()
+const closeDailyRevenue = () => uiStore.closeDailyModal()
 
 // открыть попап расшифровки при выборе description
 function onSelectDescription(item){
-  store.setSelectedDescription(item.title || item.description)
-  openSmetaDescription()
+  openSmetaDescription(item.title || item.description)
 }
 
 // Handler for smeta card selection emitted by SmetaCardsSection
 function onSmetaSelect(key){
-  store.setSelectedSmeta(key)
-  store.fetchSmetaDetails(key)
+  selectSmeta(key)
+  ensureDetailsLoaded(key)
 }
 </script>
 
@@ -92,7 +76,7 @@ function onSmetaSelect(key){
                     </div>
                     <div class="panel-body" v-show="!isSmetaCollapsed">
                       <div class="smeta-details-wrapper" :class="{ 'is-loading': smetaDetailsLoading }">
-                        <SmetaDetails :items="smetaDetails" :sort-key="smetaSortKey" :sort-dir="smetaSortDir" @sort-changed="(p)=>{ smetaSortKey = p.key; smetaSortDir = p.dir }" @select="(item)=> onSelectDescription(item)" />
+                        <SmetaDetails :items="smetaDetails" :sort-key="smetaSortKey" :sort-dir="smetaSortDir" @sort-changed="(p)=>{ smetaSortKey.value = p.key; smetaSortDir.value = p.dir }" @select="(item)=> onSelectDescription(item)" />
                         <TableSkeleton v-if="smetaDetailsLoading" class="overlay-skeleton" />
                       </div>
                     </div>
@@ -102,7 +86,7 @@ function onSmetaSelect(key){
 
                   <!-- Модальные окна -->
                   <DailyRevenueModal :visible="isDailyModalOpen" :month="selectedMonth" @close="closeDailyRevenue()" />
-                  <SmetaDescriptionDailyModal :visible="isSmetaDescOpen" :month="selectedMonth" :smeta_key="selectedSmeta" :description="selectedDescription" @close="closeSmetaDescription()" />
+                  <SmetaDescriptionDailyModal :visible="isDescriptionModalOpen" :month="selectedMonth" :smeta_key="selectedSmeta" :description="selectedDescription" @close="closeSmetaDescription()" />
                 </div>
 
                 <div v-else class="dashboard__state">Данные ещё не загружены.</div>

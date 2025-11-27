@@ -7,9 +7,9 @@ const SmetaBreakdown = () => import('../views/SmetaBreakdown.vue')
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', component: MonthlyDashboard },
-    { path: '/daily', component: DailyDashboard },
-    { path: '/smeta/:smetaKey', component: SmetaBreakdown }
+    { path: '/', name: 'monthly', component: MonthlyDashboard },
+    { path: '/daily', name: 'daily', component: DailyDashboard },
+    { path: '/smeta/:smetaKey?', name: 'smeta', component: SmetaBreakdown },
   ],
 })
 

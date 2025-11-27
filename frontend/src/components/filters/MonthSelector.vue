@@ -1,9 +1,9 @@
 <script setup>
 import { computed } from 'vue'
-import { useDashboardStore } from '../../store/dashboardStore.js'
+import { useDashboardUiStore } from '../../store/dashboardUiStore.js'
 import { storeToRefs } from 'pinia'
 
-const store = useDashboardStore()
+const store = useDashboardUiStore()
 const { selectedMonth } = storeToRefs(store)
 const emit = defineEmits(['change'])
 
