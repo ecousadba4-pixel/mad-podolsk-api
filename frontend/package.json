@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "copy:vendor": "mkdir -p public/vendor && cp node_modules/html2pdf.js/dist/html2pdf.bundle.min.js public/vendor/html2pdf.bundle.min.js",
+    "copy:vendor": "node ./scripts/copy-vendor.cjs",
     "postinstall": "npm run copy:vendor || true",
     "build:analyze": "ANALYZE=true vite build",
     "preview": "vite preview",
