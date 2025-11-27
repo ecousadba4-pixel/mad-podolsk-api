@@ -10,7 +10,8 @@
       <div class="panel-body">
       <div v-if="loading" class="skeleton">Загрузка...</div>
 
-      <table v-else class="smeta-breakdown-table">
+      <div v-if="!loading" class="smeta-breakdown-scroll" :class="{ 'is-mobile': isMobile }">
+        <table class="smeta-breakdown-table">
         <thead>
           <tr>
             <th>Работы</th>
@@ -38,7 +39,8 @@
             <td :class="{'negative': totals.delta < 0}" class="numeric">{{ formatMoney(totals.delta) }}</td>
           </tr>
         </tfoot>
-      </table>
+        </table>
+      </div>
     </div>
   </section>
 </template>
@@ -188,6 +190,21 @@ function openByDescription(row){
 @media (max-width: 520px) {
   .work-panel-header { grid-template-columns: 1fr; }
   .panel-header-controls { justify-self: start; }
+}
+
+/* Make the smeta breakdown table scroll and fit inside mobile modal/viewports */
+.smeta-breakdown-scroll { width: 100%; }
+
+@media (max-width: 640px) {
+  .smeta-breakdown-scroll.is-mobile {
+    max-height: calc(100vh - 140px); /* reserve space for header/modal chrome */
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 6px; /* give slight room for scrollbar */
+  }
+
+  .smeta-breakdown-table { width: 100%; table-layout: auto; }
+  .smeta-breakdown-table td, .smeta-breakdown-table th { word-break: break-word; }
 }
 </style>
 
