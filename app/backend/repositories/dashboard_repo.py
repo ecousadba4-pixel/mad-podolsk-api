@@ -104,7 +104,7 @@ def get_total_fact_amount() -> Optional[dict]:
 def get_monthly_items(month_key: str) -> List[dict]:
     return db.query(
         """
-        SELECT to_char(month_start,'YYYY-MM-DD') AS month_start, smeta_code AS smeta, work_name, planned_amount, fact_amount
+        SELECT to_char(month_start,'YYYY-MM-DD') AS month_start, smeta_code AS smeta, description AS work_name, planned_amount, fact_amount
         FROM skpdi_plan_vs_fact_monthly
         WHERE to_char(month_start,'YYYY-MM')=%s
         ORDER BY planned_amount DESC
