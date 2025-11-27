@@ -4,7 +4,7 @@
     <div class="mobile-daily__constrain" ref="constrainRef">
       <div class="mobile-daily__card">
         <header class="mobile-daily__header">
-          <h3 class="panel-title text-h3">Данные по выручке<span v-if="displayDate"> — {{ displayDate }}</span></h3>
+          <h3 class="panel-title text-h3">Выручка<span v-if="displayDateShort"> — {{ displayDateShort }}</span></h3>
         </header>
         <!-- Mobile table content rendered here -->
         <div class="smeta-details-mobile">
@@ -73,6 +73,21 @@ const displayDate = computed(() => {
     const d = typeof props.date === 'string' ? new Date(props.date) : props.date
     if (!(d instanceof Date) || Number.isNaN(d.getTime())) return String(props.date)
     return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+  } catch (e) {
+    return String(props.date)
+  }
+})
+
+// Short date for mobile single-line header: DD.MM.YYYY
+const displayDateShort = computed(() => {
+  if (!props.date) return ''
+  try {
+    const d = typeof props.date === 'string' ? new Date(props.date) : props.date
+    if (!(d instanceof Date) || Number.isNaN(d.getTime())) return String(props.date)
+    const dd = String(d.getDate()).padStart(2, '0')
+    const mm = String(d.getMonth() + 1).padStart(2, '0')
+    const yyyy = d.getFullYear()
+    return `${dd}.${mm}.${yyyy}`
   } catch (e) {
     return String(props.date)
   }
@@ -228,6 +243,7 @@ onBeforeUnmount(() => {
   box-sizing: border-box;
 }
 .mobile-daily__header { margin-bottom: calc(var(--gap-sm)); }
+.mobile-daily__date { margin-top: 2px; color: inherit; font-size: inherit; line-height: 1.05; }
 .mobile-daily__spacer { width: 100%; height: 0px; }
 
 .smeta-mobile-row-labels,
