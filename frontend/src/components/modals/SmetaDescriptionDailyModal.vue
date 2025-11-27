@@ -20,7 +20,7 @@
             </thead>
             <tbody>
               <tr v-for="r in rowsList" :key="r.date">
-                <td class="modal-row-date">{{ formatDate(r.date) }}</td>
+                <td class="modal-row-date date-col">{{ formatDate(r.date) }}</td>
                 <td class="unit-col">{{ r.unit || '-' }}</td>
                 <td class="numeric">{{ r.volume }}</td>
                 <td class="numeric modal-row-value">{{ formatMoney(r.amount) }}</td>
@@ -90,23 +90,48 @@ function formatMoney(v){
 </script>
 
 <style scoped>
+/* Reduce horizontal gaps: table sizes to content and paddings are smaller */
 .smeta-breakdown-table.modal-table {
-  table-layout: fixed;
-  width: 100%;
+  table-layout: auto; /* allow columns to size to content */
+  width: auto; /* don't stretch to full modal width */
+  max-width: calc(100% - 24px);
+  margin: 0 auto;
+  border-collapse: collapse; /* remove default cell spacing */
+}
+
+.modal-body {
+  overflow-x: auto; /* keep horizontal scroll if content still wider */
+  text-align: center; /* center inline-table inside modal body */
+}
+
+/* Reduce paddings to shrink inter-column gaps */
+.smeta-breakdown-table.modal-table {
+  display: inline-table; /* allow centering via text-align on parent */
 }
 
 .smeta-breakdown-table.modal-table th,
 .smeta-breakdown-table.modal-table td {
-  width: 25%;
-  overflow: hidden;
+  padding: 0.32rem 0.5rem;
+  text-align: center;
+  vertical-align: middle;
   white-space: nowrap;
-  text-overflow: ellipsis;
+}
+
+.smeta-breakdown-table.modal-table thead th {
+  padding: 0.36rem 0.5rem;
+  font-weight: 600;
+}
+
+/* Keep date column wide enough to show full date, but don't let it add extra spacing */
+.smeta-breakdown-table.modal-table th.date-col,
+.smeta-breakdown-table.modal-table td.date-col {
+  min-width: 110px;
+  width: auto;
 }
 
 .modal-table th.unit-col,
 .modal-table td.unit-col {
-  text-align: center;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
 }
 </style>
