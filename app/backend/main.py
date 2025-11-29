@@ -25,24 +25,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Инициализатор метрик Prometheus
-instrumentator = Instrumentator()
+# === Prometheus metrics ===
+# ВАЖНО: вызывать ИМЕННО ЗДЕСЬ, а не в startup_event
+Instrumentator().instrument(app).expose(
+    app,
+    endpoint="/metrics",
+    include_in_schema=False,  # не светить /metrics в /docs
+)
 
 
 @app.on_event("startup")
-async def startup_event():
-    # 1. База данных
+def startup_event():
     dsn = os.environ.get("DB_DSN")
     if dsn:
         db.init_db(dsn)
-
-    # 2. Метрики Prometheus
-    # instrument() — навесить middleware, expose() — отдать /metrics
-    instrumentator.instrument(app).expose(
-        app,
-        endpoint="/metrics",       # путь для Prometheus
-        include_in_schema=False,   # не показывать в /docs
-    )
 
 
 @app.on_event("shutdown")
@@ -53,3 +49,4 @@ def shutdown_event():
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
