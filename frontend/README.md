@@ -7,7 +7,7 @@ Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://
 Integration with backend
 ------------------------
 
-By default the frontend sends requests to the production backend at `https://mad-podolsk-karinausadba.amvera.io`, regardless of which domain serves the SPA. If you need to hit another host (e.g. local backend while the UI is served from a different domain), control the base URL via the environment variable `VITE_API_BASE`. A default `.env` is provided in the `frontend/` folder with `VITE_API_BASE` set to the live backend host. To override it locally (for development) export the variable before running `npm run dev`:
+By default the frontend sends requests to the production backend at `https://api.podolsk.mad.moclean.ru`, regardless of which domain serves the SPA. If you need to hit another host (e.g. local backend while the UI is served from a different domain), control the base URL via the environment variable `VITE_API_BASE`. A default `.env` is provided in the `frontend/` folder with `VITE_API_BASE` set to the live backend host. To override it locally (for development) export the variable before running `npm run dev`:
 
 ```bash
 # run dev against local backend
