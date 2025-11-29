@@ -2,13 +2,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.backend.routers.dashboard import router as dashboard_router
 from app.backend import db
+from prometheus_fastapi_instrumentator import Instrumentator
 import os
 
 app = FastAPI(title="SKPDI Dashboard Backend")
 
+# Подключаем роутер дашборда
 app.include_router(dashboard_router, prefix="/api/dashboard")
 
-# CORS: читать разрешённые origin'ы из переменной окружения ALLOWED_ORIGINS (comma-separated)
+# CORS: читаем разрешённые origin'ы из переменной окружения ALLOWED_ORIGINS (comma-separated)
 allowed = os.environ.get("ALLOWED_ORIGINS", "*")
 if allowed and allowed != "":
     origins = [o.strip() for o in allowed.split(",")]
@@ -23,12 +25,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Инициализатор метрик Prometheus
+instrumentator = Instrumentator()
+
 
 @app.on_event("startup")
-def startup_event():
+async def startup_event():
+    # 1. База данных
     dsn = os.environ.get("DB_DSN")
     if dsn:
         db.init_db(dsn)
+
+    # 2. Метрики Prometheus
+    # instrument() — навесить middleware, expose() — отдать /metrics
+    instrumentator.instrument(app).expose(
+        app,
+        endpoint="/metrics",       # путь для Prometheus
+        include_in_schema=False,   # не показывать в /docs
+    )
 
 
 @app.on_event("shutdown")
