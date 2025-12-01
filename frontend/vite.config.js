@@ -10,6 +10,7 @@ export default defineConfig({
     // add visualizer only when ANALYZE=true is set in environment
     ...(process.env.ANALYZE === 'true' ? [visualizer({ filename: 'dist/stats.html', open: false })] : []),
     // (UnoCSS skipped due to vite version compatibility) 
+    // PurgeCSS настроен через postcss.config.cjs
     // Generate compressed assets for server delivery (gzip + brotli)
     ...(process.env.NODE_ENV === 'production' ? [
       (compression && compression.default ? compression.default({ algorithm: 'gzip', ext: '.gz' }) : compression({ algorithm: 'gzip', ext: '.gz' })),
