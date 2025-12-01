@@ -38,16 +38,20 @@ const currentLabel = computed(() => {
   return d.toLocaleString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' })
 })
 
-// Restrict picker to current calendar month
+// Restrict picker to a 30-day range ending today (includes today)
+// NOTE: выбираем 30 дней назад от сегодня (включительно). Если нужно
+// другое поведение (например, 30 дней вперёд или диапазон по выбранному
+// месяцу), сообщите и я поменяю.
 const monthStart = computed(() => {
   const t = new Date()
-  const s = new Date(t.getFullYear(), t.getMonth(), 1)
+  const s = new Date(t)
+  // 30 дней включая сегодня -> от сегодняшней даты минус 29 дней
+  s.setDate(s.getDate() - 29)
   return s.toISOString().slice(0,10)
 })
 const monthEnd = computed(() => {
   const t = new Date()
-  const e = new Date(t.getFullYear(), t.getMonth() + 1, 0)
-  return e.toISOString().slice(0,10)
+  return t.toISOString().slice(0,10)
 })
 
 function openNative(){
