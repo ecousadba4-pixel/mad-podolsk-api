@@ -42,11 +42,18 @@
 @layer foundations {
   *, *::before, *::after { box-sizing: border-box; }
 
-  html, body {
+  html {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    /* Резервирует место под скроллбар, предотвращая "прыжки" контента */
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    margin: 0;
     width: 100%;
     max-width: 100vw;
     overflow-x: hidden;
   }
-
-  body { margin: 0; }
 }
