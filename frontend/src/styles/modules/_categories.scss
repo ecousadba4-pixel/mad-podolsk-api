@@ -13,7 +13,7 @@
 
 /* Медиазапрос удалён — auto-fit обеспечивает адаптивность */
 
-.transition-lift-border, .category-card, .summary-card-interactive { transition: var(--transition-lift), var(--transition-border); }
+.category-card, .summary-card-interactive { transition: var(--transition-lift), var(--transition-border); }
 
 .category-card {
 	/* moved from `_overrides.scss` — keep min-height token-driven */
@@ -49,7 +49,7 @@
 .category-delta { font-weight:600; color:var(--text-main); }
 .category-delta.delta-negative { color: var(--danger); }
 
-.category-progress { margin-top:auto; display:flex; flex-direction:column; gap:var(--gap-xs); padding-top:var(--gap-xs); padding-inline: var(--card-inner-gap); box-sizing:border-box; }
+.category-progress { margin-top:auto; display:flex; flex-direction:column; gap:var(--gap-xs); padding-top:var(--gap-xs); padding-inline: var(--card-inner-gap); }
 /* .category-progress-labels and .category-progress-bar/fill are now unified in _cards.scss */
 
 @media (max-width: 640px) { .category-card { gap:0; justify-content: space-evenly; } .category-card > .category-title, .category-card > .category-values, .category-card > .category-progress { margin:0; } .category-title { margin-bottom:0; } .category-values { margin-top:0; } .category-progress { margin-top:0; } }

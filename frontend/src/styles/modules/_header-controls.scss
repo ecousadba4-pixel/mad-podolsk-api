@@ -7,7 +7,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-sizing: border-box;
   width: 100%;
   max-width: 100vw;
   /* keep vertical padding but reset any utility horizontal padding (e.g. `p-md`) 
@@ -44,7 +43,6 @@
   --header-inner-hpad: calc(var(--page-hpad) + var(--card-padding));
   padding-left: var(--header-inner-hpad);
   padding-right: var(--header-inner-hpad);
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -212,7 +210,7 @@
 /* Compact header adjustments (migrated from components.css) */
 @media (max-width: 879px) {
   .app-header__right > * { height: 32px; min-height: 32px; }
-  .app-header__mode-switch { height: 32px; min-height: 32px; padding: 2px; border-radius: 8px; box-sizing: border-box; }
+  .app-header__mode-switch { height: 32px; min-height: 32px; padding: 2px; border-radius: 8px; }
   .app-header__mode-switch .mode-btn { height: 100%; min-height: 28px; padding: 4px 8px; }
   .app-header__month { flex: 1 1 50%; min-width: 0 }
 }
@@ -247,7 +245,6 @@
   margin-right: auto;
   padding-left: var(--page-hpad);
   padding-right: var(--page-hpad);
-  box-sizing: border-box;
 }
 
 .app-header.new-app-header .new-header-row { display: flex; align-items: center; }
@@ -314,13 +311,13 @@
 
   .app-header.new-app-header .new-header-row--title > div { padding-left: 12px; padding-right: 12px; }
   .app-header.new-app-header .app-header__subtitle { margin: 4px 0 0 0; }
-  .app-header.new-app-header .new-header-row--switch { width: 100%; padding: 8px 0 0 0; box-sizing: border-box; }
+  .app-header.new-app-header .new-header-row--switch { width: 100%; padding: 8px 0 0 0; }
   .app-header.new-app-header .new-header-row--switch { display: flex; flex-direction: column; gap: var(--gap-sm); }
   .app-header.new-app-header .app-header__mode-switch { width: 100%; display: flex; gap: 0.5rem; margin: 0; }
   .app-header.new-app-header .app-header__mode-switch { border-radius: 12px; }
   .app-header.new-app-header .app-header__mode-switch .mode-btn { flex: 1 1 0; min-width: 0; width: 100%; display:flex; align-items:center; justify-content:center; padding: 10px 0; }
 
-  .app-header.new-app-header .new-header-row--controls { display:flex; flex-direction:row; gap: 0.75rem; width: 100%; box-sizing: border-box; }
+  .app-header.new-app-header .new-header-row--controls { display:flex; flex-direction:row; gap: 0.75rem; width: 100%; }
   .app-header.new-app-header .new-header-row--controls > * { flex: 1 1 0; min-width: 0; display:flex; align-items:center; height: var(--control-height-mobile); }
   .app-header.new-app-header .new-header-row--controls .app-header__picker.control { padding: 0; }
   .app-header.new-app-header .new-header-row--controls .app-header__picker.control .picker-toggle,

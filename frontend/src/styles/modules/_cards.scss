@@ -64,7 +64,6 @@
   box-shadow: var(--shadow-card);
   border: 1px solid var(--border-soft);
   overflow: hidden;
-  box-sizing: border-box;
 }
 
 .smeta-card.is-selected { border-color: var(--accent); box-shadow: 0 8px 20px rgb(47 111 237 / 8%); }
@@ -80,7 +79,7 @@
 .smeta-card__value{ font-size: var(--font-size-body); font-weight:700; color:var(--text-main); margin-top:4px }
 .smeta-card__value.delta-negative{ color:var(--danger) }
 
-.smeta-card__progress{ display:flex; flex-direction:column; gap:var(--gap-xs); width:100%; padding-inline: 0; box-sizing: border-box; align-items: stretch; }
+.smeta-card__progress{ display:flex; flex-direction:column; gap:var(--gap-xs); width:100%; padding-inline: 0; align-items: stretch; }
 .smeta-card__progress-label{ font-size:11px; color:var(--text-muted); text-transform:uppercase }
 .smeta-progress__wrap{ display:flex; align-items:center; gap:var(--gap-md) }
 

@@ -102,7 +102,7 @@
 .text-body { font-size: var(--font-size-body); }
 .text-body-sm { font-size: var(--font-size-body-sm); }
 .text-caption { font-size: var(--font-size-caption); }
-.text-label, .type-label { font-size: var(--font-size-label); }
+.text-label { font-size: var(--font-size-label); }
 
 /* Utility for truncation with multiline clamp (2 lines) */
 .truncate-2 {
@@ -139,6 +139,14 @@
 .uppercase { text-transform: uppercase; }
 .nowrap { white-space: nowrap; }
 .ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Label style helper — common pattern for uppercase labels with tracking */
+.label-style {
+  font-size: var(--font-size-label);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
 
 /* Alignment helpers */
 .align-right { text-align: right; }

@@ -30,7 +30,6 @@
   box-shadow: var(--shadow-soft);
   border-radius: var(--radius-lg);
   padding: var(--card-padding);
-  box-sizing: border-box;
 }
 
 /* Unified panel title styles for dashboard blocks (contract execution, smeta cards, smeta details)
@@ -112,7 +111,6 @@
   align-items: flex-start;
   width: 100%;
   max-width: 100vw;
-  box-sizing: border-box;
   transition: opacity 200ms ease, filter 200ms ease;
 }
 
@@ -129,7 +127,7 @@
 .contract-card-values > div { flex:1 1 0; min-width:0 }
 .contract-card-values .label { font-size:0.75rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:2px }
 
-.contract-progress { padding-inline: var(--card-inner-gap); box-sizing: border-box; }
+.contract-progress { padding-inline: var(--card-inner-gap); }
 .contract-progress-bar {
   width:100%;
   height: var(--progress-height);
@@ -170,8 +168,6 @@
 }
 
 /* Contract execution layout and meta (migrated from components.css) */
-.contract-execution { box-sizing: border-box; }
-
 .contract-execution .panel-meta-label {
   font-size: var(--font-size-label);
   color: var(--text-muted);
@@ -384,7 +380,6 @@
 .page {
   --page-hpad: clamp(12px, 3vw, 28px);
   display: block;
-  box-sizing: border-box;
   width: 100%;
   max-width: var(--page-max-width);
   margin-left: auto;
@@ -405,7 +400,7 @@
 }
 
 /* Ensure top-level children of `.page` keep vertical spacing similar to previous `gap` behaviour */
-.page > * { width: 100%; box-sizing: border-box; }
+.page > * { width: 100%; }
 .page > * + * { margin-top: var(--card-frame-gap); }
 
 /* Dashboard / smeta panel layout rules (migrated from components.css) */
@@ -416,7 +411,6 @@
   flex: 1 1 100%;
   width: 100%;
   max-width: 100%;
-  box-sizing: border-box;
   margin-left: 0;
   margin-right: 0;
 }
@@ -444,7 +438,6 @@
     flex: 1 1 100%;
     width: 100%;
     max-width: 100%;
-    box-sizing: border-box;
     margin-left: 0;
     margin-right: 0;
     padding-left: var(--card-padding);
