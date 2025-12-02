@@ -1,7 +1,7 @@
 import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useQuery, useInvalidateQueries } from '../composables/useQueryClient.js'
-import { getAvailableDates, getAvailableMonths, getBySmeta, getDaily, getLastLoaded, getMonthlySummary, getSmetaDetails } from '../api/dashboard.js'
+import { getAvailableDates, getAvailableMonths, getBySmeta, getDaily, getLastLoaded, getMonthlySummary, getSmetaDetails, getSmetaDetailsWithTypes } from '../api/dashboard.js'
 
 // ============================================================================
 // HELPERS
@@ -142,6 +142,24 @@ export const useDashboardStore = defineStore('dashboard', () => {
     staleTime: 2 * 60 * 1000
   })
 
+  const smetaDetailsWithTypesQuery = useQuery({
+    queryKey: () => ['smeta-details-with-types', selectedMonth.value, selectedSmeta.value],
+    queryFn: async () => {
+      const res = await getSmetaDetailsWithTypes(selectedMonth.value, selectedSmeta.value)
+      if (!res || !res.rows) return null
+      // Normalize rows
+      return res.rows.map(r => ({
+        type_of_work: r.type_of_work || 'Прочее',
+        description: r.description || '',
+        plan: Number(r.plan || 0),
+        fact: Number(r.fact || 0),
+        delta: Number(r.delta ?? (r.fact - r.plan))
+      }))
+    },
+    enabled: computed(() => Boolean(selectedSmeta.value) && Boolean(selectedMonth.value)),
+    staleTime: 2 * 60 * 1000
+  })
+
   // --------------------------------------------------------------------------
   // DAILY QUERIES (dates, daily data)
   // --------------------------------------------------------------------------
@@ -198,6 +216,8 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const smetaCardsLoading = computed(() => smetaCardsQuery.isLoading.value || smetaCardsQuery.isFetching.value)
   const smetaDetails = computed(() => smetaDetailsQuery.data.value || [])
   const smetaDetailsLoading = computed(() => smetaDetailsQuery.isLoading.value || smetaDetailsQuery.isFetching.value)
+  const smetaDetailsWithTypes = computed(() => smetaDetailsWithTypesQuery.data.value || null)
+  const smetaDetailsWithTypesLoading = computed(() => smetaDetailsWithTypesQuery.isLoading.value || smetaDetailsWithTypesQuery.isFetching.value)
 
   // Meta
   const loadedAt = computed(() => {
@@ -309,6 +329,8 @@ export const useDashboardStore = defineStore('dashboard', () => {
     smetaCardsLoading,
     smetaDetails,
     smetaDetailsLoading,
+    smetaDetailsWithTypes,
+    smetaDetailsWithTypesLoading,
     
     // Daily data
     dailyRows,

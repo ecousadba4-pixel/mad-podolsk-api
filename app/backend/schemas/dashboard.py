@@ -114,3 +114,30 @@ class DailyResponse(BaseModel):
     date: str
     rows: List[DailyRow]
     total: DailyTotal
+
+
+# --- Type of Work schemas ---
+
+class TypeOfWorkRow(BaseModel):
+    type_of_work: str
+    amount: int
+
+
+class TypeOfWorkResponse(BaseModel):
+    month: str
+    rows: List[TypeOfWorkRow]
+    total: int
+
+
+class SmetaDetailWithTypeRow(BaseModel):
+    type_of_work: str
+    description: str
+    plan: int
+    fact: int
+    delta: int
+
+
+class SmetaDetailsWithTypesResponse(BaseModel):
+    month: str
+    smeta_key: str
+    rows: List[SmetaDetailWithTypeRow]

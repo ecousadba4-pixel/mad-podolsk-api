@@ -107,6 +107,6 @@
 .summary-value.positive { color: var(--success); }
 .summary-value.negative { color: var(--danger); }
 
-.summary-progress { margin-top: auto; display:flex; flex-direction:column; gap:var(--gap-xs); padding-top:var(--gap-xs); padding-inline:var(--card-inner-gap); }
+.summary-progress { margin-top: auto; display:flex; flex-direction:column; gap:var(--gap-xs); padding-top:var(--gap-xs); padding-inline:var(--card-inner-gap); padding-right: calc(var(--hint-size) + var(--gap-md) + var(--gap-xs)); }
 /* .summary-progress-labels and .summary-progress-bar/fill are now unified in _cards.scss */
 }

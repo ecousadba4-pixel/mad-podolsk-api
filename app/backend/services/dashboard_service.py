@@ -368,3 +368,49 @@ def build_last_loaded():
         return {"loaded_at": loaded.isoformat()}
     except Exception:
         return {"loaded_at": str(loaded)}
+
+
+def build_fact_by_type_of_work(month: str):
+    """Build aggregated fact amounts by type_of_work for modal display."""
+    month_key = normalize_month(month)
+    rows = dashboard_repo.get_fact_by_type_of_work(month_key)
+    
+    # Calculate total
+    total = sum(r.get("amount", 0) for r in rows)
+    
+    return {
+        "month": month_key,
+        "rows": rows,
+        "total": total
+    }
+
+
+def build_smeta_details_with_types(month: str, smeta_key: str):
+    """Build smeta details with type_of_work grouping for hierarchical display."""
+    month_key = normalize_month(month)
+    codes = smeta_key_to_codes(smeta_key)
+    if not codes:
+        raise HTTPException(status_code=400, detail="invalid smeta_key")
+    
+    raw_rows = dashboard_repo.get_smeta_details_with_type_of_work(month_key, codes)
+    
+    # For vnereglement, set plan to 0
+    is_vnereg = smeta_key == "vnereglement"
+    
+    rows = []
+    for r in raw_rows:
+        plan = 0 if is_vnereg else r.get("plan", 0)
+        fact = r.get("fact", 0)
+        rows.append({
+            "type_of_work": r.get("type_of_work", "Прочее"),
+            "description": r.get("description", ""),
+            "plan": plan,
+            "fact": fact,
+            "delta": fact - plan
+        })
+    
+    return {
+        "month": month_key,
+        "smeta_key": smeta_key,
+        "rows": rows
+    }

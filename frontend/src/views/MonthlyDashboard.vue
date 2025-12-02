@@ -1,12 +1,13 @@
 <script setup>
-import { computed, defineAsyncComponent, ref } from 'vue'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useIsMobile } from '../composables/useIsMobile.js'
 import { useModal } from '../composables/useModal.js'
 import { useDashboardStore } from '../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
 import { TableSkeleton } from '../components/common'
-import { DailyRevenueModal, SmetaDescriptionDailyModal } from '../components/modals'
+import { DailyRevenueModal, SmetaDescriptionDailyModal, TypeOfWorkModal } from '../components/modals'
 import { PageSection } from '../components/layouts'
+import { isVneregKey } from '../composables/useSmetaBreakdown.js'
 
 const ContractExecutionSection = defineAsyncComponent(() => import('../components/dashboard/ContractExecutionSection.vue'))
 const SummaryKpiSection = defineAsyncComponent(() => import('../components/dashboard/SummaryKpiSection.vue'))
@@ -20,6 +21,17 @@ const { isMobile } = useIsMobile()
 
 const store = useDashboardStore()
 const { monthlyLoading, monthlyError, monthlySummary, smetaDetails, smetaDetailsLoading, selectedMonth, selectedSmeta, selectedDescription, smetaCards } = storeToRefs(store)
+
+// Watch for smeta changes to set default sort key
+// Лето и Зима - сортировка по План, Внерегламент - сортировка по Факт
+watch(selectedSmeta, (newKey) => {
+  if (isVneregKey(newKey)) {
+    smetaSortKey.value = 'fact'
+  } else {
+    smetaSortKey.value = 'plan'
+  }
+  smetaSortDir.value = -1
+}, { immediate: true })
 
 const selectedSmetaLabel = computed(() => {
   const key = selectedSmeta.value
@@ -36,17 +48,21 @@ const selectedSmetaDesktopTitle = computed(() => {
 
 const dailyRevenueModal = useModal(false)
 const smetaDescModal = useModal(false)
+const typeOfWorkModal = useModal(false)
 
 // collapsed state for mobile smeta list (toggle from header chevron)
 const isSmetaCollapsed = ref(false)
 
 const isDailyModalOpen = computed(() => dailyRevenueModal.isOpen.value)
 const isSmetaDescOpen = computed(() => smetaDescModal.isOpen.value)
+const isTypeOfWorkModalOpen = computed(() => typeOfWorkModal.isOpen.value)
 
 const openDailyRevenue = () => dailyRevenueModal.open()
 const closeDailyRevenue = () => dailyRevenueModal.close()
 const openSmetaDescription = () => smetaDescModal.open()
 const closeSmetaDescription = () => smetaDescModal.close()
+const openTypeOfWorkModal = () => typeOfWorkModal.open()
+const closeTypeOfWorkModal = () => typeOfWorkModal.close()
 
 // открыть попап расшифровки при выборе description
 function onSelectDescription(item){
@@ -76,7 +92,7 @@ function onSmetaSelect(key){
                   <ContractExecutionSection :contract="monthlySummary.contract" />
 
                   <!-- Summary KPI -->
-                  <SummaryKpiSection :kpi="monthlySummary.kpi" @open-daily="openDailyRevenue" />
+                  <SummaryKpiSection :kpi="monthlySummary.kpi" @open-daily="openDailyRevenue" @open-fact-types="openTypeOfWorkModal" />
 
                   <!-- Сметные карточки -->
                   <SmetaCardsSection @select="onSmetaSelect" />
@@ -109,6 +125,7 @@ function onSmetaSelect(key){
                   <!-- Модальные окна -->
                   <DailyRevenueModal :visible="isDailyModalOpen" :month="selectedMonth" @close="closeDailyRevenue()" />
                   <SmetaDescriptionDailyModal :visible="isSmetaDescOpen" :month="selectedMonth" :smeta_key="selectedSmeta" :description="selectedDescription" @close="closeSmetaDescription()" />
+                  <TypeOfWorkModal :visible="isTypeOfWorkModalOpen" :month="selectedMonth" @close="closeTypeOfWorkModal()" />
                 </div>
 
                 <div v-else class="dashboard__state">Данные ещё не загружены.</div>

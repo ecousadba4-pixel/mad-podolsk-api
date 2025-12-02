@@ -6,7 +6,7 @@
         <div class="summary-value">{{ formatMoney(kpi?.plan_total) }}</div>
       </article>
 
-      <article class="summary-card p-md">
+      <article class="summary-card summary-card-interactive p-md" @click="$emit('open-fact-types')">
         <div class="summary-label type-label">Факт, ₽</div>
         <div class="summary-value">{{ formatMoney(kpi?.fact_total) }}</div>
 
@@ -19,6 +19,7 @@
             <div class="summary-progress-fill progress__fill" :style="{ '--progress': percentExecuted + '%' }" :class="{ overflow: rawPercent > 100 }"></div>
           </div>
         </div>
+        <div class="summary-card-hint" aria-hidden="true">i</div>
       </article>
 
       <article class="summary-card p-md">
@@ -41,7 +42,7 @@ import { useDashboardStore } from '../../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
 
 const props = defineProps({ kpi: { type: Object, default: () => ({}) } })
-const emit = defineEmits(['open-daily'])
+const emit = defineEmits(['open-daily', 'open-fact-types'])
 
 // Покажем иконку-подсказку только если выбран текущий календарный месяц
 const store = useDashboardStore()

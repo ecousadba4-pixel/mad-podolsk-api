@@ -204,3 +204,83 @@ def get_monthly_dates(month_key: str) -> List[str]:
         (month_key,),
     )
     return [r.get('date') for r in rows] if rows else []
+
+
+def get_fact_by_type_of_work(month_key: str) -> List[dict]:
+    """Return aggregated fact amounts by type_of_work for the given month.
+    
+    Joins skpdi_fact_with_money with spkdi_type_of_work on (smeta_code, smeta_section).
+    """
+    return db.query(
+        """
+        SELECT 
+            COALESCE(t.type_of_work, 'Прочее') AS type_of_work,
+            COALESCE(SUM(f.total_amount), 0)::int AS amount
+        FROM skpdi_fact_with_money f
+        LEFT JOIN spkdi_type_of_work t 
+            ON f.smeta_code = t.smeta_code 
+            AND f.smeta_section = t.smeta_section
+        WHERE to_char(f.date_done, 'YYYY-MM') = %s 
+            AND f.status = 'Рассмотрено'
+        GROUP BY t.type_of_work
+        ORDER BY amount DESC
+        """,
+        (month_key,),
+    )
+
+
+def get_smeta_details_with_type_of_work(month_key: str, smeta_codes: Sequence[str]) -> List[dict]:
+    """Return smeta details grouped by type_of_work for the given month and smeta codes.
+    
+    Returns rows with: type_of_work, description, plan, fact.
+    Uses skpdi_fact_with_money for fact data with type_of_work join.
+    """
+    return db.query(
+        """
+        WITH plan_agg AS (
+            SELECT 
+                p.smeta_code,
+                p.description,
+                COALESCE(SUM(p.planned_amount), 0)::int AS plan
+            FROM skpdi_plan_vs_fact_monthly p
+            WHERE to_char(p.month_start, 'YYYY-MM') = %s 
+                AND p.smeta_code = ANY(%s)
+            GROUP BY p.smeta_code, p.description
+        ),
+        fact_with_type AS (
+            SELECT 
+                f.smeta_code,
+                f.description,
+                COALESCE(t.type_of_work, 'Прочее') AS type_of_work,
+                COALESCE(SUM(f.total_amount), 0)::int AS fact
+            FROM skpdi_fact_with_money f
+            LEFT JOIN spkdi_type_of_work t 
+                ON f.smeta_code = t.smeta_code 
+                AND f.smeta_section = t.smeta_section
+            WHERE to_char(f.date_done, 'YYYY-MM') = %s 
+                AND f.status = 'Рассмотрено'
+                AND f.smeta_code = ANY(%s)
+            GROUP BY f.smeta_code, f.description, t.type_of_work
+        ),
+        combined AS (
+            SELECT 
+                COALESCE(f.type_of_work, 'Прочее') AS type_of_work,
+                COALESCE(p.description, f.description) AS description,
+                COALESCE(p.plan, 0) AS plan,
+                COALESCE(f.fact, 0) AS fact
+            FROM plan_agg p
+            FULL OUTER JOIN fact_with_type f 
+                ON p.smeta_code = f.smeta_code 
+                AND p.description = f.description
+        )
+        SELECT 
+            type_of_work,
+            description,
+            plan,
+            fact
+        FROM combined
+        WHERE plan > 1 OR fact > 1
+        ORDER BY type_of_work NULLS LAST, fact DESC
+        """,
+        (month_key, list(smeta_codes), month_key, list(smeta_codes)),
+    )

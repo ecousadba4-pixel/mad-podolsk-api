@@ -1,9 +1,20 @@
 <template>
   <div>
-    <div v-if="!items || items.length === 0" class="empty-state">Нет данных по смете</div>
+    <div v-if="!hasAnyData" class="empty-state">Нет данных по смете</div>
 
-    <!-- Desktop/table view -->
-    <table v-if="!isMobile" :class="['smeta-breakdown-table', `sorted-by-${sortKey}`]">
+    <!-- Desktop/table view with type_of_work grouping -->
+    <SmetaDetailsDesktop
+      v-if="!isMobile && hasTypedData"
+      :items="itemsWithTypes"
+      :sort-key="sortKey"
+      :sort-dir="sortDir"
+      :smeta-key="selectedSmeta"
+      @sort-changed="onSortChanged"
+      @select="$emit('select', $event)"
+    />
+
+    <!-- Desktop fallback (old view without types) -->
+    <table v-if="!isMobile && !hasTypedData && hasAnyData" :class="['smeta-breakdown-table', `sorted-by-${sortKey}`]">
         <colgroup>
           <col />
           <col />
@@ -111,12 +122,29 @@ import { storeToRefs } from 'pinia'
 import { isVneregKey } from '../../composables/useSmetaBreakdown.js'
 import { formatMoney } from '../../utils/format.js'
 import SmetaDetailsMobile from './SmetaDetailsMobile.vue'
+import SmetaDetailsDesktop from './SmetaDetailsDesktop.vue'
 
 const { isMobile } = useIsMobile()
 
 // detect selected smeta from global store so we can apply smeta-specific defaults
 const store = useDashboardStore()
-const { selectedSmeta } = storeToRefs(store)
+const { selectedSmeta, smetaDetailsWithTypes } = storeToRefs(store)
+
+// Check if we have typed data for hierarchical view
+const hasTypedData = computed(() => {
+  const typedItems = smetaDetailsWithTypes.value
+  return typedItems && typedItems.length > 0 && typedItems.some(item => item.type_of_work)
+})
+
+// Items with types for desktop hierarchical view
+const itemsWithTypes = computed(() => {
+  return smetaDetailsWithTypes.value || []
+})
+
+// Check if we have any data at all
+const hasAnyData = computed(() => {
+  return (props.items && props.items.length > 0) || hasTypedData.value
+})
 
 // Sorting state: default by plan desc — can be overridden by parent via props
 const compareRows = (a, b, key, dir) => {
@@ -157,6 +185,10 @@ watch(() => props.sortDir, (v) => { if (typeof v === 'number') setSort(sortKey.v
 function toggleSort(key){
   const next = toggleSortKey(key)
   emit('sort-changed', next)
+}
+
+function onSortChanged(payload) {
+  emit('sort-changed', payload)
 }
 
 // Totals for Plan / Fact / Delta

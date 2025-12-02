@@ -237,3 +237,35 @@ export async function getSmetaDescriptionDaily(month, smeta_key, description) {
     throw err
   }
 }
+
+/**
+ * Get fact amounts aggregated by type of work for the given month.
+ * Used for the "По типу работ" modal on Fact card.
+ */
+export async function getFactByTypeOfWork(month) {
+  const m = normalizeMonth(month)
+  try {
+    return await request(`/api/dashboard/monthly/fact-by-type-of-work?month=${encodeURIComponent(m)}`)
+  } catch (err) {
+    if (err && (err.status === 404 || (err.message && err.message.includes('Not Found')))) {
+      return { rows: [], total: 0 }
+    }
+    throw err
+  }
+}
+
+/**
+ * Get smeta details with type_of_work grouping for hierarchical display (desktop only).
+ */
+export async function getSmetaDetailsWithTypes(month, smeta_key) {
+  const m = normalizeMonth(month)
+  try {
+    return await request(`/api/dashboard/monthly/smeta-details-with-types?month=${encodeURIComponent(m)}&smeta_key=${encodeURIComponent(smeta_key)}`)
+  } catch (err) {
+    if (err && (err.status === 404 || (err.message && err.message.includes('Not Found')))) {
+      // Fallback to regular smeta details
+      return null
+    }
+    throw err
+  }
+}

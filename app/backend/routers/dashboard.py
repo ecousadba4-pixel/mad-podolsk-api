@@ -10,6 +10,8 @@ from app.backend.schemas.dashboard import (
     MonthlySmetaDescriptionDailyResponse,
     MonthlySmetaDetailsResponse,
     MonthlySummaryResponse,
+    TypeOfWorkResponse,
+    SmetaDetailsWithTypesResponse,
 )
 from app.backend.services import dashboard_service
 
@@ -70,3 +72,15 @@ def daily(date: Optional[str] = Query(None, alias="date", description="YYYY-MM-D
     if not date_value:
         raise HTTPException(status_code=400, detail="date is required")
     return dashboard_service.build_daily(date_value)
+
+
+@router.get("/monthly/fact-by-type-of-work", response_model=TypeOfWorkResponse)
+def monthly_fact_by_type_of_work(month: str = Query(..., description="YYYY-MM")):
+    """Get fact amounts aggregated by type of work for the given month."""
+    return dashboard_service.build_fact_by_type_of_work(month)
+
+
+@router.get("/monthly/smeta-details-with-types", response_model=SmetaDetailsWithTypesResponse)
+def monthly_smeta_details_with_types(month: str = Query(..., description="YYYY-MM"), smeta_key: str = Query(...)):
+    """Get smeta details with type_of_work grouping for hierarchical display."""
+    return dashboard_service.build_smeta_details_with_types(month, smeta_key)
