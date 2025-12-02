@@ -72,9 +72,9 @@ const total = computed(() => typeOfWorkQuery.data.value?.total || 0)
 const loading = computed(() => typeOfWorkQuery.isLoading.value || typeOfWorkQuery.isFetching.value)
 const error = computed(() => typeOfWorkQuery.error.value ? (typeOfWorkQuery.error.value.message || 'Ошибка загрузки') : null)
 
-// Sort by amount descending
+// Filter out empty rows and sort by amount descending
 const sortedRows = computed(() => {
-  const rows = [...rawRows.value]
+  const rows = rawRows.value.filter(r => r.type_of_work && r.amount)
   return rows.sort((a, b) => (b.amount || 0) - (a.amount || 0))
 })
 
