@@ -25,6 +25,11 @@ function onCardClick(key) {
 
     <CardsGrid v-else :loading="smetaCardsLoading" min-width="280px">
       <article v-for="c in cards" :key="c.smeta_key" :class="['smeta-card','smeta-card--large','card--interactive','p-md', { 'is-selected': selectedSmeta === c.smeta_key } ]" @click="onCardClick(c.smeta_key)">
+        <!-- Информационная плашка для Внерегламента (верхний правый угол) -->
+        <div v-if="String(c.smeta_key).toLowerCase().includes('vne')" class="smeta-card__info-badge">
+          30% от плана
+        </div>
+
         <div class="smeta-card__body">
           <header class="smeta-card__head">
             <h3 class="smeta-card__title text-h3">{{ c.label }}</h3>
