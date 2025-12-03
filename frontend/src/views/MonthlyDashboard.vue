@@ -107,8 +107,8 @@ function onSmetaSelect(key){
                       <div class="panel-title-group">
                         <h3 v-if="!isMobile" class="panel-title">{{ selectedSmetaDesktopTitle }}</h3>
                         <div v-if="isMobile" class="panel-title-mobile">
-                          <div class="panel-title-mobile-label">Работы по смете {{ selectedSmetaLabel }}</div>
-                          <p class="panel-note">Детали по виду работы при нажатии</p>
+                          <h3 class="panel-title-mobile-main">Работы по смете {{ selectedSmetaLabel }}</h3>
+                          <p class="panel-note-mobile">Детали по виду работы при нажатии</p>
                         </div>
                         <p v-else class="panel-note">Детали по виду работы при нажатии</p>
                       </div>

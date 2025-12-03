@@ -3,8 +3,8 @@
     <template #header>
       <div class="panel-title-group">
         <div v-if="isMobile" class="panel-title-mobile">
-          <div class="panel-title-mobile-label">Работы по смете {{ smetaLabel }}</div>
-          <p class="panel-note">Детали по виду работы при нажатии</p>
+          <h3 class="panel-title-mobile-main">Работы по смете {{ smetaLabel }}</h3>
+          <p class="panel-note-mobile">Детали по виду работы при нажатии</p>
         </div>
         <template v-else>
           <p class="panel-note">Детали по виду работы при нажатии</p>
@@ -66,12 +66,23 @@ function openByDescription(row) {
   font-family: var(--font-sans);
 }
 
-.panel-title-mobile { display: block; }
+.panel-title-mobile { display: flex; flex-direction: column; gap: 4px; width: 100%; }
 .panel-title { display: none; }
 
-.panel-title-mobile-left { display:flex; flex-direction:column; gap:4px; }
-.panel-title-mobile-label { font-size: var(--font-size-label); text-transform:uppercase; color:var(--text-muted); }
-.panel-title-mobile-value { font-size: clamp(1rem, 4vw, 1.2rem); line-height:1.2; font-weight:600; color:var(--text-primary); }
+.panel-title-mobile-main { 
+  font-family: var(--font-din);
+  font-size: var(--font-size-h3); 
+  line-height: 1.12; 
+  font-weight: 700; 
+  color: var(--text-main); 
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+.panel-note-mobile { 
+  font-size: var(--font-size-sm, 0.875rem); 
+  color: var(--text-muted); 
+  margin: 0;
+}
 
 /* Ensure mobile sort control uses DayPicker-style spacing */
 .panel-header-controls .month-select { display:flex; flex-direction:column; gap:4px; }
