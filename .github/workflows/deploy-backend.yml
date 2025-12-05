@@ -1,0 +1,64 @@
+name: Deploy backend to MAD VPS
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+      - 'scripts/**'
+      - 'requirements.txt'
+      - '.github/workflows/deploy-backend.yml'
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Copy backend files to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: 89.104.74.37
+          username: apps
+          key: ${{ secrets.VPS_SSH_KEY_MAIN }}   # название секрета подставь своё, если другое
+          source: |
+            app
+            scripts
+            requirements.txt
+          target: /home/apps/mad_podolsk_api_tmp
+          rm: true
+
+      - name: Deploy and restart backend service
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: 89.104.74.37
+          username: apps
+          key: ${{ secrets.VPS_SSH_KEY_MAIN }}
+          script: |
+            set -e
+
+            # Останавливаем сервис
+            sudo systemctl stop mad-podolsk-api.service || true
+
+            # Бэкапим предыдущую версию и подменяем на новую
+            rm -rf /home/apps/mad_podolsk_api_prev
+            if [ -d /home/apps/mad_podolsk_api ]; then
+              mv /home/apps/mad_podolsk_api /home/apps/mad_podolsk_api_prev
+            fi
+            mv /home/apps/mad_podolsk_api_tmp /home/apps/mad_podolsk_api
+
+            cd /home/apps/mad_podolsk_api
+
+            # Поднимаем venv, если надо
+            if [ ! -d venv ]; then
+              python3 -m venv venv
+            fi
+            source venv/bin/activate
+            pip install --upgrade pip
+            pip install -r requirements.txt
+
+            # Запускаем сервис
+            sudo systemctl start mad-podolsk-api.service
+            sudo systemctl status mad-podolsk-api.service --no-pager -l
