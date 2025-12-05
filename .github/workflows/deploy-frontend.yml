@@ -23,8 +23,16 @@ jobs:
       - name: Install deps and build
         working-directory: frontend
         run: |
-          npm install
+          # увеличим количество и таймауты ретраев скачивания
+          npm config set fetch-retries 5
+          npm config set fetch-retry-mintimeout 10000
+          npm config set fetch-retry-maxtimeout 60000
+
+          # пробуем несколько раз, если npm registry тупит
+          npm install || npm install || npm install
+
           npm run build
+
 
       - name: Upload built frontend to server
         uses: appleboy/scp-action@v0.1.7
