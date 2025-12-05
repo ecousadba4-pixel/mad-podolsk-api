@@ -174,8 +174,13 @@ def compute_plan_fact(month: str, plan_fact_row: Optional[dict] = None):
     fact_zima = row.get("fact_zima") or 0
     fact_vnereglament = row.get("fact_vnereglament")
     if fact_vnereglament is None:
-        r = dashboard_repo.sum_fact_vnereglament(month_key)
-        fact_vnereglament = r.get("s") if r else 0
+        # Use pre-calculated sum from bundle if available, otherwise fallback to separate query
+        sum_from_bundle = row.get("sum_fact_vnereglament")
+        if sum_from_bundle is not None:
+            fact_vnereglament = sum_from_bundle
+        else:
+            r = dashboard_repo.sum_fact_vnereglament(month_key)
+            fact_vnereglament = r.get("s") if r else 0
     else:
         fact_vnereglament = fact_vnereglament or 0
 

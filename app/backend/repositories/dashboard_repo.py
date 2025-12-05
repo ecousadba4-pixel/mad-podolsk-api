@@ -41,7 +41,11 @@ def get_plan_fact_month(month_key: str) -> Optional[dict]:
 
 
 def get_month_summary_bundle(month_key: str) -> Optional[dict]:
-    """Return monthly plan/fact along with contract and total fact aggregates."""
+    """Return monthly plan/fact along with contract and total fact aggregates.
+    
+    Also includes sum_fact_vnereglament calculated from skpdi_plan_vs_fact_monthly
+    for cases when fact_vnereglament is NULL in the backend table.
+    """
     return db.query_one(
         """
         WITH plan_fact AS (
@@ -52,7 +56,7 @@ def get_month_summary_bundle(month_key: str) -> Optional[dict]:
                    COALESCE(plan_total, 0)::int AS plan_total,
                    COALESCE(fact_leto, 0)::int AS fact_leto,
                    COALESCE(fact_zima, 0)::int AS fact_zima,
-                   COALESCE(fact_vnereglament, 0)::int AS fact_vnereglament,
+                   fact_vnereglament,
                    COALESCE(fact_total, 0)::int AS fact_total
             FROM skpdi_plan_fact_monthly_backend
             WHERE month_key = %s
@@ -64,15 +68,23 @@ def get_month_summary_bundle(month_key: str) -> Optional[dict]:
         total_fact AS (
             SELECT COALESCE(SUM(fact_total), 0)::int AS fact_total_all_months
             FROM skpdi_plan_fact_monthly_backend
+        ),
+        vnereglament_fact AS (
+            SELECT COALESCE(SUM(fact_amount_done), 0)::int AS sum_fact_vnereglament
+            FROM skpdi_plan_vs_fact_monthly
+            WHERE month_start >= DATE %s
+              AND month_start < DATE %s + INTERVAL '1 month'
+              AND smeta_code IN ('внерегл_ч_1', 'внерегл_ч_2')
         )
         SELECT pf.month_key, pf.plan_leto, pf.plan_zima, pf.plan_vnereglament, pf.plan_total,
                pf.fact_leto, pf.fact_zima, pf.fact_vnereglament, pf.fact_total,
-               c.contract_amount, tf.fact_total_all_months
+               c.contract_amount, tf.fact_total_all_months, vf.sum_fact_vnereglament
         FROM contract c
         CROSS JOIN total_fact tf
+        CROSS JOIN vnereglament_fact vf
         LEFT JOIN plan_fact pf ON TRUE
         """,
-        (month_key,),
+        (month_key, month_key + '-01', month_key + '-01'),
     )
 
 
