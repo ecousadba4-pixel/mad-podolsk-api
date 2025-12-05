@@ -41,10 +41,12 @@ def get_plan_fact_month(month_key: str) -> Optional[dict]:
 
 
 def get_month_summary_bundle(month_key: str) -> Optional[dict]:
-    """Return monthly plan/fact along with contract and total fact aggregates.
+    """Return monthly plan/fact along with contract, total fact aggregates, and items.
     
     Also includes sum_fact_vnereglament calculated from skpdi_plan_vs_fact_monthly
     for cases when fact_vnereglament is NULL in the backend table.
+    
+    Returns items as JSON array to avoid separate get_monthly_items query.
     """
     return db.query_one(
         """
@@ -75,16 +77,32 @@ def get_month_summary_bundle(month_key: str) -> Optional[dict]:
             WHERE month_start >= DATE %s
               AND month_start < DATE %s + INTERVAL '1 month'
               AND smeta_code IN ('внерегл_ч_1', 'внерегл_ч_2')
+        ),
+        monthly_items AS (
+            SELECT COALESCE(json_agg(
+                json_build_object(
+                    'month_start', to_char(month_start, 'YYYY-MM-DD'),
+                    'smeta', smeta_code,
+                    'work_name', description,
+                    'planned_amount', planned_amount,
+                    'fact_amount', fact_amount_done
+                ) ORDER BY planned_amount DESC
+            ), '[]'::json) AS items
+            FROM skpdi_plan_vs_fact_monthly
+            WHERE month_start >= DATE %s
+              AND month_start < DATE %s + INTERVAL '1 month'
         )
         SELECT pf.month_key, pf.plan_leto, pf.plan_zima, pf.plan_vnereglament, pf.plan_total,
                pf.fact_leto, pf.fact_zima, pf.fact_vnereglament, pf.fact_total,
-               c.contract_amount, tf.fact_total_all_months, vf.sum_fact_vnereglament
+               c.contract_amount, tf.fact_total_all_months, vf.sum_fact_vnereglament,
+               mi.items
         FROM contract c
         CROSS JOIN total_fact tf
         CROSS JOIN vnereglament_fact vf
+        CROSS JOIN monthly_items mi
         LEFT JOIN plan_fact pf ON TRUE
         """,
-        (month_key, month_key + '-01', month_key + '-01'),
+        (month_key, month_key + '-01', month_key + '-01', month_key + '-01', month_key + '-01'),
     )
 
 

@@ -307,7 +307,13 @@ def build_combined_dashboard(month: Optional[str]):
             }
         )
 
-        items = dashboard_repo.get_monthly_items(month_key)
+        # Use items from bundle (JSON array) instead of separate query
+        bundle_items = bundle.get("items") if bundle else None
+        if bundle_items is not None:
+            # items already comes as a list from PostgreSQL json_agg
+            items = bundle_items if isinstance(bundle_items, list) else []
+        else:
+            items = dashboard_repo.get_monthly_items(month_key)
         # build cards for the three smeta categories (leto, zima, vnereglement)
         try:
             cards = build_monthly_by_smeta(month_key, plan_fact)["cards"]
