@@ -1,0 +1,59 @@
+name: Deploy frontend to MAD VPS
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-frontend.yml'
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22   # подставь свою версию, если другая
+
+      - name: Install deps and build
+        working-directory: frontend
+        run: |
+          npm install
+          npm run build
+
+      - name: Upload built frontend to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: 89.104.74.37
+          username: apps
+          key: ${{ secrets.VPS_SSH_KEY_MAIN }}
+          source: "frontend/dist/*"
+          target: "/home/apps/mad_podolsk_frontend_tmp"
+          rm: true
+
+      - name: Activate new frontend
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: 89.104.74.37
+          username: apps
+          key: ${{ secrets.VPS_SSH_KEY_MAIN }}
+          script: |
+            set -e
+
+            sudo mkdir -p /var/www/mad_podolsk_frontend
+
+            rm -rf /var/www/mad_podolsk_frontend_prev
+            if [ -d /var/www/mad_podolsk_frontend ]; then
+              mv /var/www/mad_podolsk_frontend /var/www/mad_podolsk_frontend_prev
+            fi
+
+            mkdir -p /var/www/mad_podolsk_frontend
+            cp -r /home/apps/mad_podolsk_frontend_tmp/* /var/www/mad_podolsk_frontend/
+
+            # Nginx часто можно не трогать, но reload безопасен
+            sudo systemctl reload nginx || true
