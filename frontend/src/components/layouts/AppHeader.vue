@@ -4,9 +4,9 @@ import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDashboardStore } from '../../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
-import { LastUpdatedBadge } from '../common'
+import { LastUpdatedBadge, ExportPdfButton } from '../common'
 import { MonthPicker, DayPicker } from '../pickers'
-// ExportPdfButton temporarily disabled in header during report work-in-progress
+// ExportPdfButton is now active in header for monthly mode
 
 const { isMobile } = useIsMobile()
 const innerRef = ref(null)
@@ -102,8 +102,11 @@ const selectedMonth = computed({
           <div class="app-header__updated control">
             <LastUpdatedBadge :loadedAt="monthlySummary?.value?.loaded_at || loadedAt" />
           </div>
-          <div class="app-header__export control" v-if="false">
-            <!-- ExportPdfButton temporarily disabled while report is being refined -->
+          <div class="app-header__export control" v-if="!isMobile">
+            <ExportPdfButton 
+              :month="selectedMonthRef" 
+              :isMonthlyMode="isMonthlyActive" 
+            />
           </div>
         </div>
       </div>

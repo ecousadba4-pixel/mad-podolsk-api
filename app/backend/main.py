@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.backend.routers.dashboard import router as dashboard_router
+from app.backend.routers.reports import router as reports_router
 from app.backend import db
 from prometheus_fastapi_instrumentator import Instrumentator
 import os
@@ -9,6 +10,9 @@ app = FastAPI(title="SKPDI Dashboard Backend")
 
 # Подключаем роутер дашборда
 app.include_router(dashboard_router, prefix="/api/dashboard")
+
+# Подключаем роутер отчётов
+app.include_router(reports_router, prefix="/api")
 
 # CORS: читаем разрешённые origin'ы из переменной окружения ALLOWED_ORIGINS (comma-separated)
 allowed = os.environ.get("ALLOWED_ORIGINS", "*")

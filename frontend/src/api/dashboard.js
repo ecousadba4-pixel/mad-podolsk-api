@@ -270,3 +270,54 @@ export async function getSmetaDetailsWithTypes(month, smeta_key) {
     throw err
   }
 }
+
+/**
+ * Download monthly PDF report.
+ * 
+ * Fetches PDF blob from backend and triggers browser download.
+ * Filename format: Report_MAD_Podolsk_MM-YYYY.pdf
+ * 
+ * @param {string} month - Month in YYYY-MM format
+ */
+export async function downloadMonthlyPdf(month) {
+  const m = normalizeMonth(month)
+  
+  // Use the same BASE URL as other API calls
+  const DEFAULT_BASE = 'https://api.podolsk.mad.moclean.ru'
+  const BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE)
+    ? import.meta.env.VITE_API_BASE
+    : DEFAULT_BASE
+  
+  const url = `${BASE}/api/reports/monthly?month=${encodeURIComponent(m)}`
+  
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/pdf'
+    }
+  })
+  
+  if (!response.ok) {
+    const text = await response.text().catch(() => '')
+    throw new Error(text || `${response.status} ${response.statusText}`)
+  }
+  
+  // Get blob and create download link
+  const blob = await response.blob()
+  const blobUrl = window.URL.createObjectURL(blob)
+  
+  // Generate filename: Report_MAD_Podolsk_MM-YYYY.pdf
+  const [year, monthNum] = m.split('-')
+  const filename = `Report_MAD_Podolsk_${monthNum}-${year}.pdf`
+  
+  // Trigger download
+  const link = document.createElement('a')
+  link.href = blobUrl
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  
+  // Cleanup blob URL
+  window.URL.revokeObjectURL(blobUrl)
+}
