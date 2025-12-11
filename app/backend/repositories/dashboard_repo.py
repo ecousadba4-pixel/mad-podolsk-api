@@ -5,19 +5,19 @@ from app.backend import db
 
 def get_months_from_plan_vs_fact_monthly() -> List[dict]:
     return db.query(
-        "SELECT DISTINCT to_char(month_start, 'YYYY-MM') AS month FROM skpdi_plan_vs_fact_monthly ORDER BY month DESC"
+        "SELECT DISTINCT to_char(month_start, 'YYYY-MM') AS month FROM mv_plan_vs_fact_monthly_ids ORDER BY month DESC"
     )
 
 
 def get_months_from_plan_fact_backend() -> List[dict]:
     return db.query(
-        "SELECT DISTINCT month_key AS month FROM skpdi_plan_fact_monthly_backend ORDER BY month DESC"
+        "SELECT DISTINCT month_key AS month FROM mv_plan_fact_monthly_backend_ids ORDER BY month DESC"
     )
 
 
 def get_months_from_fact_with_money() -> List[dict]:
     return db.query(
-        "SELECT DISTINCT to_char(date_done, 'YYYY-MM') AS month FROM skpdi_fact_with_money ORDER BY month DESC"
+        "SELECT DISTINCT to_char(date_done, 'YYYY-MM') AS month FROM mv_fact_daily_amounts WHERE status = 'Рассмотрено' ORDER BY month DESC"
     )
 
 
@@ -33,7 +33,7 @@ def get_plan_fact_month(month_key: str) -> Optional[dict]:
                COALESCE(fact_zima, 0)::int AS fact_zima,
                COALESCE(fact_vnereglament, 0)::int AS fact_vnereglament,
                COALESCE(fact_total, 0)::int AS fact_total
-        FROM skpdi_plan_fact_monthly_backend
+        FROM mv_plan_fact_monthly_backend_ids
         WHERE month_key = %s
         """,
         (month_key,),
@@ -43,7 +43,7 @@ def get_plan_fact_month(month_key: str) -> Optional[dict]:
 def get_month_summary_bundle(month_key: str) -> Optional[dict]:
     """Return monthly plan/fact along with contract, total fact aggregates, and items.
     
-    Also includes sum_fact_vnereglament calculated from skpdi_plan_vs_fact_monthly
+    Also includes sum_fact_vnereglament calculated from mv_plan_vs_fact_monthly_ids
     for cases when fact_vnereglament is NULL in the backend table.
     
     Returns items as JSON array to avoid separate get_monthly_items query.
@@ -60,7 +60,7 @@ def get_month_summary_bundle(month_key: str) -> Optional[dict]:
                    COALESCE(fact_zima, 0)::int AS fact_zima,
                    fact_vnereglament,
                    COALESCE(fact_total, 0)::int AS fact_total
-            FROM skpdi_plan_fact_monthly_backend
+            FROM mv_plan_fact_monthly_backend_ids
             WHERE month_key = %s
         ),
         contract AS (
@@ -69,14 +69,14 @@ def get_month_summary_bundle(month_key: str) -> Optional[dict]:
         ),
         total_fact AS (
             SELECT COALESCE(SUM(fact_total), 0)::int AS fact_total_all_months
-            FROM skpdi_plan_fact_monthly_backend
+            FROM mv_plan_fact_monthly_backend_ids
         ),
         vnereglament_fact AS (
             SELECT COALESCE(SUM(fact_amount_done), 0)::int AS sum_fact_vnereglament
-            FROM skpdi_plan_vs_fact_monthly
+            FROM mv_plan_vs_fact_monthly_ids
             WHERE month_start >= DATE %s
               AND month_start < DATE %s + INTERVAL '1 month'
-              AND smeta_code IN ('внерегл_ч_1', 'внерегл_ч_2')
+              AND smeta_code IN ('Внерегламент ч.1', 'Внерегламент ч.2')
         ),
         monthly_items AS (
             SELECT COALESCE(json_agg(
@@ -88,7 +88,7 @@ def get_month_summary_bundle(month_key: str) -> Optional[dict]:
                     'fact_amount', fact_amount_done
                 ) ORDER BY planned_amount DESC
             ), '[]'::json) AS items
-            FROM skpdi_plan_vs_fact_monthly
+            FROM mv_plan_vs_fact_monthly_ids
             WHERE month_start >= DATE %s
               AND month_start < DATE %s + INTERVAL '1 month'
         )
@@ -110,10 +110,10 @@ def sum_fact_vnereglament(month_key: str) -> Optional[dict]:
     return db.query_one(
         """
         SELECT COALESCE(SUM(fact_amount_done),0)::int AS s
-        FROM skpdi_plan_vs_fact_monthly
+        FROM mv_plan_vs_fact_monthly_ids
         WHERE month_start >= DATE %s
           AND month_start < DATE %s + INTERVAL '1 month'
-          AND smeta_code IN ('внерегл_ч_1','внерегл_ч_2')
+          AND smeta_code IN ('Внерегламент ч.1','Внерегламент ч.2')
         """,
         (month_key + '-01', month_key + '-01'),
     )
@@ -130,14 +130,14 @@ def get_total_fact_amount() -> Optional[dict]:
 
     Uses the plan_fact backend table which contains monthly fact_total values.
     """
-    return db.query_one("SELECT COALESCE(SUM(fact_total),0)::int AS sum FROM skpdi_plan_fact_monthly_backend")
+    return db.query_one("SELECT COALESCE(SUM(fact_total),0)::int AS sum FROM mv_plan_fact_monthly_backend_ids")
 
 
 def get_monthly_items(month_key: str) -> List[dict]:
     return db.query(
         """
         SELECT to_char(month_start, 'YYYY-MM-DD') AS month_start, smeta_code AS smeta, description AS work_name, planned_amount, fact_amount_done AS fact_amount
-        FROM skpdi_plan_vs_fact_monthly
+        FROM mv_plan_vs_fact_monthly_ids
         WHERE month_start >= DATE %s
           AND month_start < DATE %s + INTERVAL '1 month'
         ORDER BY planned_amount DESC
@@ -147,14 +147,25 @@ def get_monthly_items(month_key: str) -> List[dict]:
 
 
 def get_last_loaded_row() -> Optional[dict]:
-    return db.query_one("SELECT MAX(loaded_at) AS loaded_at FROM skpdi_fact_agg")
+    return db.query_one(
+        """
+        SELECT MAX(last_refresh) AS loaded_at
+        FROM pg_catalog.pg_matviews
+        WHERE matviewname = ANY(%s)
+        """,
+        ([
+            "mv_fact_daily_amounts",
+            "mv_plan_vs_fact_monthly_ids",
+            "mv_plan_fact_monthly_backend_ids",
+        ],),
+    )
 
 
 def get_plan_rows_by_smeta(month_key: str, smeta_code: str) -> List[dict]:
     return db.query(
         """
         SELECT description, COALESCE(SUM(planned_amount),0)::int AS plan
-        FROM skpdi_plan_vs_fact_monthly
+        FROM mv_plan_vs_fact_monthly_ids
         WHERE month_start >= DATE %s
           AND month_start < DATE %s + INTERVAL '1 month'
           AND smeta_code=%s
@@ -168,7 +179,7 @@ def get_fact_rows_by_smeta(month_key: str, smeta_codes: Sequence[str]) -> List[d
     return db.query(
         """
         SELECT description, COALESCE(SUM(fact_amount_done),0)::int AS fact
-        FROM skpdi_plan_vs_fact_monthly
+        FROM mv_plan_vs_fact_monthly_ids
         WHERE month_start >= DATE %s
           AND month_start < DATE %s + INTERVAL '1 month'
           AND smeta_code = ANY(%s)
@@ -183,7 +194,7 @@ def get_description_daily_rows(month_key: str, description: str, smeta_codes: Se
         """
         SELECT to_char(date_done, 'YYYY-MM-DD') AS date, COALESCE(SUM(total_volume),0)::int AS volume,
                MIN(unit) AS unit, COALESCE(SUM(total_amount),0)::int AS amount
-        FROM skpdi_fact_with_money
+        FROM mv_fact_daily_amounts
         WHERE date_done >= DATE %s
           AND date_done < DATE %s + INTERVAL '1 month'
           AND status='Рассмотрено'
@@ -200,7 +211,7 @@ def get_monthly_daily_revenue_rows(month_key: str) -> List[dict]:
     return db.query(
         """
         SELECT to_char(date_done, 'YYYY-MM-DD') AS date, COALESCE(SUM(total_amount),0)::int AS amount
-        FROM skpdi_fact_with_money
+        FROM mv_fact_daily_amounts
         WHERE date_done >= DATE %s
           AND date_done < DATE %s + INTERVAL '1 month'
           AND status='Рассмотрено'
@@ -215,7 +226,7 @@ def get_daily_rows(date_value: str) -> List[dict]:
     return db.query(
         """
         SELECT description, MIN(unit) AS unit, COALESCE(SUM(total_volume),0)::int AS volume, COALESCE(SUM(total_amount),0)::int AS amount
-        FROM skpdi_fact_with_money
+        FROM mv_fact_daily_amounts
         WHERE date_done = DATE %s
           AND status='Рассмотрено'
         GROUP BY description
@@ -229,7 +240,7 @@ def get_daily_total(date_value: str) -> Optional[dict]:
     return db.query_one(
         """
         SELECT COALESCE(SUM(total_amount),0)::int AS total
-        FROM skpdi_fact_with_money
+        FROM mv_fact_daily_amounts
         WHERE date_done = DATE %s
           AND status='Рассмотрено'
         """,
@@ -242,7 +253,7 @@ def get_monthly_dates(month_key: str) -> List[str]:
     rows = db.query(
         """
         SELECT DISTINCT to_char(date_done, 'YYYY-MM-DD') AS date
-        FROM skpdi_fact_with_money
+        FROM mv_fact_daily_amounts
         WHERE date_done >= DATE %s
           AND date_done < DATE %s + INTERVAL '1 month'
           AND status='Рассмотрено'
@@ -255,22 +266,19 @@ def get_monthly_dates(month_key: str) -> List[str]:
 
 def get_fact_by_type_of_work(month_key: str) -> List[dict]:
     """Return aggregated fact amounts by type_of_work for the given month.
-    
-    Joins skpdi_fact_with_money with spkdi_type_of_work on (smeta_code, smeta_section).
+
+    Joins mv_fact_daily_amounts, which already contains type_of_work resolved from dimensions.
     """
     return db.query(
         """
-        SELECT 
-            t.type_of_work AS type_of_work,
+        SELECT
+            COALESCE(f.type_of_work, 'Не указано') AS type_of_work,
             COALESCE(SUM(f.total_amount), 0)::int AS amount
-        FROM skpdi_fact_with_money f
-        LEFT JOIN spkdi_type_of_work t 
-            ON f.smeta_code = t.smeta_code 
-            AND f.smeta_section = t.smeta_section
+        FROM mv_fact_daily_amounts f
         WHERE f.date_done >= DATE %s
           AND f.date_done < DATE %s + INTERVAL '1 month'
           AND f.status = 'Рассмотрено'
-        GROUP BY t.type_of_work
+        GROUP BY f.type_of_work
         ORDER BY amount DESC
         """,
         (month_key + '-01', month_key + '-01'),
@@ -279,47 +287,40 @@ def get_fact_by_type_of_work(month_key: str) -> List[dict]:
 
 def get_smeta_details_with_type_of_work(month_key: str, smeta_codes: Sequence[str]) -> List[dict]:
     """Return smeta details grouped by type_of_work for the given month and smeta codes.
-    
+
     Returns rows with: type_of_work, description, plan, fact.
-    Uses spkdi_type_of_work for type_of_work lookup for both plan and fact data.
-    Join is done on (smeta_code, smeta_section) for both plan and fact tables.
+    Uses type_of_work from the materialized views instead of joining per-request.
     """
     month_start = month_key + '-01'
     return db.query(
         """
         WITH plan_with_type AS (
-            SELECT 
+            SELECT
                 p.smeta_code,
                 p.description,
-                t.type_of_work,
+                p.type_of_work,
                 COALESCE(SUM(p.planned_amount), 0)::int AS plan
-            FROM skpdi_plan_vs_fact_monthly p
-            LEFT JOIN spkdi_type_of_work t 
-                ON p.smeta_code = t.smeta_code 
-                AND p.smeta_section = t.smeta_section
+            FROM mv_plan_vs_fact_monthly_ids p
             WHERE p.month_start >= DATE %s
               AND p.month_start < DATE %s + INTERVAL '1 month'
               AND p.smeta_code = ANY(%s)
-            GROUP BY p.smeta_code, p.description, t.type_of_work
+            GROUP BY p.smeta_code, p.description, p.type_of_work
         ),
         fact_with_type AS (
-            SELECT 
+            SELECT
                 f.smeta_code,
                 f.description,
-                t.type_of_work,
+                f.type_of_work,
                 COALESCE(SUM(f.total_amount), 0)::int AS fact
-            FROM skpdi_fact_with_money f
-            LEFT JOIN spkdi_type_of_work t 
-                ON f.smeta_code = t.smeta_code 
-                AND f.smeta_section = t.smeta_section
+            FROM mv_fact_daily_amounts f
             WHERE f.date_done >= DATE %s
               AND f.date_done < DATE %s + INTERVAL '1 month'
               AND f.status = 'Рассмотрено'
               AND f.smeta_code = ANY(%s)
-            GROUP BY f.smeta_code, f.description, t.type_of_work
+            GROUP BY f.smeta_code, f.description, f.type_of_work
         ),
         combined AS (
-            SELECT 
+            SELECT
                 COALESCE(p.type_of_work, f.type_of_work) AS type_of_work,
                 COALESCE(p.description, f.description) AS description,
                 COALESCE(p.plan, 0) AS plan,

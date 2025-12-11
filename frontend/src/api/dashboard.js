@@ -13,7 +13,18 @@ function normalizeMonth(month) {
 
 function smetaKeyFromLabel(label) {
   if (!label) return label
-  const map = { 'лето': 'leto', 'зима': 'zima', 'внерегламент': 'vnereglement', 'вне регламент': 'vnereglement' }
+  const map = {
+    'Лето': 'leto',
+    'Зима': 'zima',
+    'Внерегламент': 'vnereglement',
+    'Внерегламент ч.1': 'vnereglement',
+    'Внерегламент ч.2': 'vnereglement',
+    // Fallback для возможных старых или строчных значений
+    'лето': 'leto',
+    'зима': 'zima',
+    'внерегламент': 'vnereglement',
+    'вне регламент': 'vnereglement'
+  }
   if (map[label]) return map[label]
   // fallback: ascii-safe slug
   return label.toString().toLowerCase().replace(/[^a-z0-9]+/gi, '-')

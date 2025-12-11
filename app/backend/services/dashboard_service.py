@@ -136,11 +136,11 @@ def resolve_description_id(desc_id: str) -> Optional[str]:
 
 def smeta_key_to_codes(smeta_key: str) -> Sequence[str]:
     if smeta_key == "leto":
-        return ["лето"]
+        return ["Лето"]
     if smeta_key == "zima":
-        return ["зима"]
+        return ["Зима"]
     if smeta_key == "vnereglement":
-        return ["внерегл_ч_1", "внерегл_ч_2"]
+        return ["Внерегламент ч.1", "Внерегламент ч.2"]
     return []
 
 
