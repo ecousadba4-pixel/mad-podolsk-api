@@ -149,15 +149,10 @@ def get_monthly_items(month_key: str) -> List[dict]:
 def get_last_loaded_row() -> Optional[dict]:
     return db.query_one(
         """
-        SELECT MAX(last_refresh) AS loaded_at
-        FROM pg_catalog.pg_matviews
-        WHERE matviewname = ANY(%s)
-        """,
-        ([
-            "mv_fact_daily_amounts",
-            "mv_plan_vs_fact_monthly_ids",
-            "mv_plan_fact_monthly_backend_ids",
-        ],),
+        SELECT last_update AS loaded_at
+        FROM mv_skpdi_lasttime_workdone
+        LIMIT 1
+        """
     )
 
 
