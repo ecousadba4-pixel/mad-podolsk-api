@@ -20,7 +20,7 @@
 1. **`skpdi_plan_vs_fact_monthly` (представление)**  
    Поля:
    - `month_start` — месяц данных
-   - `smeta_code` — код сметы (`лето`, `зима`, `внерегл_ч_1`, `внерегл_ч_2`)
+   - `smeta_code` — код сметы (`Лето`, `Зима`, `Внерегламент ч.1`, `Внерегламент ч.2`)
    - `description` — вид работ
    - `planned_amount` — план в деньгах
    - `fact_amount_done` — факт в деньгах
@@ -156,9 +156,9 @@
 }
 
 Соответствие smeta_key ↔ smeta_code:
-"leto" → smeta_code = "лето"
-"zima" → smeta_code = "зима"
-"vnereglement" → smeta_code IN ("внерегл_ч_1", "внерегл_ч_2")
+"leto" → smeta_code = "Лето"
+"zima" → smeta_code = "Зима"
+"vnereglement" → smeta_code IN ("Внерегламент ч.1", "Внерегламент ч.2")
 
 ### 4.5. Раздел «Расшифровка работ по смете» (таблица по видам работ)
 
