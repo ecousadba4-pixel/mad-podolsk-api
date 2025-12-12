@@ -149,8 +149,8 @@ def get_monthly_items(month_key: str) -> List[dict]:
 def get_last_loaded_row() -> Optional[dict]:
     return db.query_one(
         """
-        SELECT last_update AS loaded_at
-        FROM mv_skpdi_lasttime_workdone
+        SELECT last_loaded AS loaded_at
+        FROM last_loaded
         LIMIT 1
         """
     )
