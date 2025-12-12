@@ -134,13 +134,13 @@ def resolve_description_id(desc_id: str) -> Optional[str]:
         return _id_description_map.get(desc_id)
 
 
-def smeta_key_to_codes(smeta_key: str) -> Sequence[str]:
+def smeta_key_to_ids(smeta_key: str) -> Sequence[int]:
     if smeta_key == "leto":
-        return ["Лето"]
+        return [1]
     if smeta_key == "zima":
-        return ["Зима"]
+        return [2]
     if smeta_key == "vnereglement":
-        return ["Внерегламент ч.1", "Внерегламент ч.2"]
+        return [3, 4]
     return []
 
 
@@ -402,12 +402,12 @@ def build_combined_dashboard(month: Optional[str]):
 
 def _build_monthly_smeta_details_uncached(month_key: str, smeta_key: str):
     """Internal uncached implementation of monthly smeta details builder."""
-    codes = smeta_key_to_codes(smeta_key)
-    if not codes:
+    smeta_ids = smeta_key_to_ids(smeta_key)
+    if not smeta_ids:
         raise HTTPException(status_code=400, detail="invalid smeta_key")
 
-    plan_rows = [] if smeta_key == "vnereglement" else dashboard_repo.get_plan_rows_by_smeta(month_key, codes[0])
-    fact_rows = dashboard_repo.get_fact_rows_by_smeta(month_key, codes)
+    plan_rows = [] if smeta_key == "vnereglement" else dashboard_repo.get_plan_rows_by_smeta(month_key, smeta_ids[0])
+    fact_rows = dashboard_repo.get_fact_rows_by_smeta(month_key, smeta_ids)
 
     rows_map = {}
     for r in plan_rows:
@@ -451,11 +451,11 @@ def build_monthly_smeta_description_daily_by_id(month: str, smeta_key: str, desc
 
 def build_monthly_smeta_description_daily(month: str, smeta_key: str, description: str):
     month_key = normalize_month(month)
-    codes = smeta_key_to_codes(smeta_key)
-    if not codes:
+    smeta_ids = smeta_key_to_ids(smeta_key)
+    if not smeta_ids:
         raise HTTPException(status_code=400, detail="invalid smeta_key")
 
-    rows = dashboard_repo.get_description_daily_rows(month_key, description, codes)
+    rows = dashboard_repo.get_description_daily_rows(month_key, description, smeta_ids)
 
     return {"month": month_key, "smeta_key": smeta_key, "description": description, "rows": rows}
 
@@ -528,11 +528,11 @@ def build_fact_by_type_of_work(month: str):
 
 def _build_smeta_details_with_types_uncached(month_key: str, smeta_key: str):
     """Internal uncached implementation of smeta details with types builder."""
-    codes = smeta_key_to_codes(smeta_key)
-    if not codes:
+    smeta_ids = smeta_key_to_ids(smeta_key)
+    if not smeta_ids:
         raise HTTPException(status_code=400, detail="invalid smeta_key")
-    
-    raw_rows = dashboard_repo.get_smeta_details_with_type_of_work(month_key, codes)
+
+    raw_rows = dashboard_repo.get_smeta_details_with_type_of_work(month_key, smeta_ids)
     
     # For vnereglement, set plan to 0
     is_vnereg = smeta_key == "vnereglement"
