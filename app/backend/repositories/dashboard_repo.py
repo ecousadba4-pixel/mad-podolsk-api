@@ -156,31 +156,56 @@ def get_last_loaded_row() -> Optional[dict]:
     )
 
 
-def get_plan_rows_by_smeta(month_key: str, smeta_id: int) -> List[dict]:
+def get_plan_fact_rows_by_smeta(month_key: str, plan_smeta_id: Optional[int], smeta_ids: Sequence[int]) -> List[dict]:
+    """Return plan and fact rows for the given smeta IDs in a single query.
+
+    The query performs a single pass over ``mv_plan_vs_fact_monthly_ids`` and uses
+    ``FULL JOIN`` to combine plan and fact aggregates by description, mirroring the
+    approach used in ``get_smeta_details_with_type_of_work``.
+    """
+
+    month_start = month_key + '-01'
+    smeta_ids_for_monthly = list(smeta_ids)
+    if plan_smeta_id and plan_smeta_id not in smeta_ids_for_monthly:
+        smeta_ids_for_monthly.append(plan_smeta_id)
+
     return db.query(
         """
-        SELECT description, COALESCE(SUM(planned_amount),0)::int AS plan
-        FROM mv_plan_vs_fact_monthly_ids
-        WHERE month_start >= DATE %s
-          AND month_start < DATE %s + INTERVAL '1 month'
-          AND id_smeta=%s
-        GROUP BY description
+        WITH monthly AS (
+            SELECT description, id_smeta, planned_amount, fact_amount_done
+            FROM mv_plan_vs_fact_monthly_ids
+            WHERE month_start >= DATE %s
+              AND month_start < DATE %s + INTERVAL '1 month'
+              AND id_smeta = ANY(%s)
+        ),
+        plan_rows AS (
+            SELECT description, COALESCE(SUM(planned_amount), 0)::int AS plan
+            FROM monthly
+            WHERE %s IS NOT NULL AND id_smeta = %s
+            GROUP BY description
+        ),
+        fact_rows AS (
+            SELECT description, COALESCE(SUM(fact_amount_done), 0)::int AS fact
+            FROM monthly
+            WHERE id_smeta = ANY(%s)
+            GROUP BY description
+        )
+        SELECT
+            COALESCE(p.description, f.description) AS description,
+            COALESCE(p.plan, 0) AS plan,
+            COALESCE(f.fact, 0) AS fact
+        FROM plan_rows p
+        FULL JOIN fact_rows f
+            ON p.description = f.description
         """,
-        (month_key + '-01', month_key + '-01', smeta_id),
-    )
-
-
-def get_fact_rows_by_smeta(month_key: str, smeta_ids: Sequence[int]) -> List[dict]:
-    return db.query(
-        """
-        SELECT description, COALESCE(SUM(fact_amount_done),0)::int AS fact
-        FROM mv_plan_vs_fact_monthly_ids
-        WHERE month_start >= DATE %s
-          AND month_start < DATE %s + INTERVAL '1 month'
-          AND id_smeta = ANY(%s)
-        GROUP BY description
-        """,
-        (month_key + '-01', month_key + '-01', list(smeta_ids)),
+        (
+            month_start,
+            month_start,
+            smeta_ids_for_monthly,
+            plan_smeta_id,
+            plan_smeta_id,
+            list(smeta_ids),
+        ),
     )
 
 

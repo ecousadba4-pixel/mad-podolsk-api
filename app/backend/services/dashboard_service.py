@@ -406,27 +406,25 @@ def _build_monthly_smeta_details_uncached(month_key: str, smeta_key: str):
     if not smeta_ids:
         raise HTTPException(status_code=400, detail="invalid smeta_key")
 
-    plan_rows = [] if smeta_key == "vnereglement" else dashboard_repo.get_plan_rows_by_smeta(month_key, smeta_ids[0])
-    fact_rows = dashboard_repo.get_fact_rows_by_smeta(month_key, smeta_ids)
+    include_plan = smeta_key != "vnereglement"
+    plan_smeta_id = smeta_ids[0] if include_plan else None
 
-    rows_map = {}
-    for r in plan_rows:
-        desc = r["description"]
-        rows_map[desc] = {"description": desc, "plan": r.get("plan") or 0, "fact": 0}
-    for r in fact_rows:
-        desc = r["description"]
-        if desc not in rows_map:
-            rows_map[desc] = {"description": desc, "plan": 0, "fact": r.get("fact") or 0}
-        else:
-            rows_map[desc]["fact"] = r.get("fact") or 0
+    combined_rows = dashboard_repo.get_plan_fact_rows_by_smeta(month_key, plan_smeta_id, smeta_ids)
 
     rows = []
-    for v in rows_map.values():
-        if (v["plan"] or 0) > 1 or (v["fact"] or 0) > 1:
-            v["delta"] = v["fact"] - v["plan"]
+    for r in combined_rows:
+        plan_value = r.get("plan") or 0
+        fact_value = r.get("fact") or 0
+        if plan_value > 1 or fact_value > 1:
+            row = {
+                "description": r.get("description"),
+                "plan": plan_value,
+                "fact": fact_value,
+                "delta": fact_value - plan_value,
+            }
             # Register description and add description_id to the row
-            v["description_id"] = register_description(v["description"])
-            rows.append(v)
+            row["description_id"] = register_description(row["description"])
+            rows.append(row)
 
     return {"month": month_key, "smeta_key": smeta_key, "rows": rows}
 
