@@ -64,8 +64,14 @@ def get_month_summary_bundle(month_key: str) -> Optional[dict]:
             WHERE month_key = %s
         ),
         contract AS (
-            SELECT COALESCE(SUM(contract_amount), 0)::int AS contract_amount
-            FROM podolsk_mad_2025_contract_amount
+            SELECT CASE
+                WHEN DATE %s < DATE '2026-01-01' THEN COALESCE(
+                    (SELECT SUM(contract_amount) FROM podolsk_mad_2025_contract_amount), 0
+                )::int
+                ELSE COALESCE(
+                    (SELECT SUM(contract_amount) FROM podolsk_mad_2026_1sthalf_contract_amount), 0
+                )::int
+            END AS contract_amount
         ),
         total_fact AS (
             SELECT COALESCE(SUM(fact_total), 0)::int AS fact_total_all_months
@@ -102,7 +108,7 @@ def get_month_summary_bundle(month_key: str) -> Optional[dict]:
         CROSS JOIN monthly_items mi
         LEFT JOIN plan_fact pf ON TRUE
         """,
-        (month_key, month_key + '-01', month_key + '-01', month_key + '-01', month_key + '-01'),
+        (month_key, month_key + '-01', month_key + '-01', month_key + '-01', month_key + '-01', month_key + '-01'),
     )
 
 
@@ -119,7 +125,26 @@ def sum_fact_vnereglament(month_key: str) -> Optional[dict]:
     )
 
 
-def get_contract_amount_sum() -> Optional[dict]:
+def get_contract_amount_sum(month_key: Optional[str] = None) -> Optional[dict]:
+    """Return total contract amount choosing table by month.
+
+    If month_key is provided and is earlier than 2026-01, use 2025 table; otherwise use 2026 1st half table.
+    """
+    if month_key:
+        return db.query_one(
+            """
+            SELECT CASE
+                WHEN DATE %s < DATE '2026-01-01' THEN COALESCE(
+                    (SELECT SUM(contract_amount) FROM podolsk_mad_2025_contract_amount), 0
+                )::int
+                ELSE COALESCE(
+                    (SELECT SUM(contract_amount) FROM podolsk_mad_2026_1sthalf_contract_amount), 0
+                )::int
+            END AS sum
+            """,
+            (month_key + '-01',),
+        )
+    # Fallback: default to 2025 table if no month provided
     return db.query_one(
         "SELECT COALESCE(SUM(contract_amount),0)::int AS sum FROM podolsk_mad_2025_contract_amount"
     )

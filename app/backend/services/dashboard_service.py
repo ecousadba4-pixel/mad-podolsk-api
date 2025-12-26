@@ -249,8 +249,8 @@ def compute_plan_fact(month: str, plan_fact_row: Optional[dict] = None):
     }
 
 
-def compute_contract_amount(contract_row: Optional[dict] = None):
-    row = contract_row or dashboard_repo.get_contract_amount_sum()
+def compute_contract_amount(month_key: Optional[str] = None, contract_row: Optional[dict] = None):
+    row = contract_row or dashboard_repo.get_contract_amount_sum(month_key)
     if not row:
         return 0
     return row.get("sum") or row.get("contract_amount") or 0
@@ -269,7 +269,7 @@ def compute_avg_daily_revenue(month_key: str, fact_total: int):
 
 def build_monthly_summary(month_key: str, bundle: Optional[dict] = None):
     plan_fact = compute_plan_fact(month_key, plan_fact_row=bundle)
-    summa_contract = compute_contract_amount(bundle)
+    summa_contract = compute_contract_amount(month_key, bundle)
     # For the contract card, use total executed amount across all available months
     # (do not filter by the selected month). This provides a cumulative 'Выполнено' value.
     if bundle:
@@ -340,7 +340,7 @@ def _build_combined_dashboard_uncached(month_key: Optional[str]):
     if month_key:
         bundle = dashboard_repo.get_month_summary_bundle(month_key)
         plan_fact = compute_plan_fact(month_key, plan_fact_row=bundle)
-        contract_amount = compute_contract_amount(bundle)
+        contract_amount = compute_contract_amount(month_key, bundle)
         contract_completion_pct = (float(plan_fact["fact_total"]) / contract_amount) if contract_amount else None
         avg_daily_revenue = compute_avg_daily_revenue(month_key, plan_fact["fact_total"])
 
