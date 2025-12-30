@@ -1,6 +1,9 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
+import asyncio
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor
+
 import psycopg2
 from psycopg2 import pool
 from psycopg2.extras import RealDictCursor
@@ -9,14 +12,18 @@ import threading
 _pool: Optional[pool.ThreadedConnectionPool] = None
 _lock = threading.Lock()
 
+# Thread pool for async execution of sync DB operations
+_executor: Optional[ThreadPoolExecutor] = None
+_DEFAULT_EXECUTOR_WORKERS = 10
+
 
 def init_db(dsn: str, minconn: int | None = None, maxconn: int | None = None):
-    """Initialize a threaded connection pool.
+    """Initialize a threaded connection pool and async executor.
 
     If `minconn`/`maxconn` are not provided, try to read `DB_POOL_MIN`/`DB_POOL_MAX`
     from environment variables. Defaults to min=1, max=10.
     """
-    global _pool
+    global _pool, _executor
     with _lock:
         if _pool is None:
             env_min = os.environ.get("DB_POOL_MIN")
@@ -24,14 +31,20 @@ def init_db(dsn: str, minconn: int | None = None, maxconn: int | None = None):
             minc = minconn if minconn is not None else int(env_min) if env_min else 1
             maxc = maxconn if maxconn is not None else int(env_max) if env_max else 10
             _pool = psycopg2.pool.ThreadedConnectionPool(minc, maxc, dsn)
+        if _executor is None:
+            executor_workers = int(os.environ.get("DB_EXECUTOR_WORKERS", _DEFAULT_EXECUTOR_WORKERS))
+            _executor = ThreadPoolExecutor(max_workers=executor_workers, thread_name_prefix="db_async_")
 
 
 def close_db():
-    global _pool
+    global _pool, _executor
     with _lock:
         if _pool:
             _pool.closeall()
             _pool = None
+        if _executor:
+            _executor.shutdown(wait=True)
+            _executor = None
 
 
 def _get_conn_raw():
@@ -90,7 +103,8 @@ def pool_status() -> Dict[str, Any]:
     return status
 
 
-def query(sql: str, params: tuple = ()):  # returns list[dict]
+def query(sql: str, params: tuple = ()) -> List[Dict[str, Any]]:
+    """Execute SQL query and return list of dicts. Thread-safe with proper error handling."""
     conn = get_conn()
     try:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
@@ -100,10 +114,42 @@ def query(sql: str, params: tuple = ()):  # returns list[dict]
             except psycopg2.ProgrammingError:
                 rows = []
             return rows
+    except Exception:
+        conn.rollback()  # Rollback on error to prevent connection corruption
+        raise
     finally:
         put_conn(conn)
 
 
-def query_one(sql: str, params: tuple = ()):  # returns dict or None
+def query_one(sql: str, params: tuple = ()) -> Optional[Dict[str, Any]]:
+    """Execute SQL query and return single dict or None."""
     rows = query(sql, params)
     return rows[0] if rows else None
+
+
+# === Async wrappers for non-blocking DB access ===
+
+async def query_async(sql: str, params: tuple = ()) -> List[Dict[str, Any]]:
+    """Async wrapper for query() using run_in_executor.
+    
+    Use this in async endpoints to avoid blocking the event loop.
+    """
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(_executor, query, sql, params)
+
+
+async def query_one_async(sql: str, params: tuple = ()) -> Optional[Dict[str, Any]]:
+    """Async wrapper for query_one() using run_in_executor."""
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(_executor, query_one, sql, params)
+
+
+def health_check() -> Dict[str, Any]:
+    """Check database connectivity. Returns status dict."""
+    try:
+        result = query_one("SELECT 1 AS ok")
+        if result and result.get("ok") == 1:
+            return {"status": "healthy", "pool": pool_status()}
+        return {"status": "unhealthy", "error": "unexpected query result"}
+    except Exception as e:
+        return {"status": "unhealthy", "error": str(e)}

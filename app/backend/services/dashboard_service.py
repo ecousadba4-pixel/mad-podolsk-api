@@ -1,6 +1,8 @@
 import hashlib
 from calendar import monthrange
+from collections import OrderedDict
 from datetime import datetime
+from functools import lru_cache
 from threading import RLock
 from time import monotonic
 from typing import Any, Dict, List, Optional, Sequence, Tuple
@@ -17,6 +19,9 @@ SMETA_LABELS = {
 }
 
 _SENTINEL = object()
+
+# Configuration for description ID cache
+_DESCRIPTION_CACHE_MAX_SIZE = 10_000
 
 
 class _TTLCache:
@@ -94,44 +99,131 @@ _DAILY_REVENUE_CACHE = _KeyedTTLCache(ttl_seconds=120, max_entries=24)
 _SMETA_DETAILS_CACHE = _KeyedTTLCache(ttl_seconds=120, max_entries=50)
 _SMETA_DETAILS_TYPES_CACHE = _KeyedTTLCache(ttl_seconds=120, max_entries=50)
 
-# Cache for description -> id and id -> description mapping
-# This is an in-memory cache that builds up during the application lifetime
-_description_id_map: Dict[str, str] = {}  # description -> id
-_id_description_map: Dict[str, str] = {}  # id -> description
-_desc_map_lock = RLock()
+
+class _LRUDescriptionCache:
+    """Thread-safe LRU cache for description <-> ID mapping with bounded size."""
+    
+    __slots__ = ('_max_size', '_desc_to_id', '_id_to_desc', '_lock')
+    
+    def __init__(self, max_size: int = _DESCRIPTION_CACHE_MAX_SIZE):
+        self._max_size = max_size
+        self._desc_to_id: OrderedDict[str, str] = OrderedDict()
+        self._id_to_desc: Dict[str, str] = {}
+        self._lock = RLock()
+    
+    def register(self, description: str) -> str:
+        """Register description and return its ID. Thread-safe with LRU eviction."""
+        if not description:
+            return ""
+        
+        with self._lock:
+            # Check if already cached
+            if description in self._desc_to_id:
+                # Move to end (most recently used)
+                self._desc_to_id.move_to_end(description)
+                return self._desc_to_id[description]
+            
+            # Generate ID
+            desc_id = hashlib.sha256(description.encode('utf-8')).hexdigest()[:12]
+            
+            # Evict oldest if at capacity
+            while len(self._desc_to_id) >= self._max_size:
+                oldest_desc, oldest_id = self._desc_to_id.popitem(last=False)
+                self._id_to_desc.pop(oldest_id, None)
+            
+            # Add new entry
+            self._desc_to_id[description] = desc_id
+            self._id_to_desc[desc_id] = description
+            
+            return desc_id
+    
+    def register_batch(self, descriptions: Sequence[str]) -> Dict[str, str]:
+        """Register multiple descriptions at once. More efficient than individual calls.
+        
+        Returns dict mapping description -> id.
+        """
+        if not descriptions:
+            return {}
+        
+        result: Dict[str, str] = {}
+        with self._lock:
+            for description in descriptions:
+                if not description:
+                    result[description] = ""
+                    continue
+                
+                # Check if already cached
+                if description in self._desc_to_id:
+                    self._desc_to_id.move_to_end(description)
+                    result[description] = self._desc_to_id[description]
+                    continue
+                
+                # Generate ID
+                desc_id = hashlib.sha256(description.encode('utf-8')).hexdigest()[:12]
+                
+                # Evict oldest if at capacity
+                while len(self._desc_to_id) >= self._max_size:
+                    oldest_desc, oldest_id = self._desc_to_id.popitem(last=False)
+                    self._id_to_desc.pop(oldest_id, None)
+                
+                # Add new entry
+                self._desc_to_id[description] = desc_id
+                self._id_to_desc[desc_id] = description
+                result[description] = desc_id
+        
+        return result
+    
+    def resolve(self, desc_id: str) -> Optional[str]:
+        """Resolve ID back to description. Thread-safe."""
+        if not desc_id:
+            return None
+        with self._lock:
+            description = self._id_to_desc.get(desc_id)
+            if description and description in self._desc_to_id:
+                # Move to end on access
+                self._desc_to_id.move_to_end(description)
+            return description
+    
+    def __len__(self) -> int:
+        with self._lock:
+            return len(self._desc_to_id)
 
 
+# Singleton instance of the description cache
+_description_cache = _LRUDescriptionCache()
+
+
+@lru_cache(maxsize=10_000)
 def generate_description_id(description: str) -> str:
     """Generate a short, URL-safe ID from description using SHA256 hash.
     
     The ID is 12 characters long (base16), which gives us ~2.8 * 10^14 
     possible values - more than enough for our use case while keeping 
     URLs reasonably short.
+    
+    Note: This function is cached with LRU for performance.
     """
     if not description:
         return ""
-    # Use SHA256 and take first 12 hex chars (48 bits = plenty of uniqueness)
-    hash_bytes = hashlib.sha256(description.encode('utf-8')).hexdigest()[:12]
-    return hash_bytes
+    return hashlib.sha256(description.encode('utf-8')).hexdigest()[:12]
 
 
 def register_description(description: str) -> str:
-    """Register a description and return its ID. Thread-safe."""
-    if not description:
-        return ""
-    desc_id = generate_description_id(description)
-    with _desc_map_lock:
-        _description_id_map[description] = desc_id
-        _id_description_map[desc_id] = description
-    return desc_id
+    """Register a description and return its ID. Thread-safe with LRU eviction."""
+    return _description_cache.register(description)
+
+
+def register_descriptions_batch(descriptions: Sequence[str]) -> Dict[str, str]:
+    """Register multiple descriptions at once. More efficient than individual calls.
+    
+    Returns dict mapping description -> id.
+    """
+    return _description_cache.register_batch(descriptions)
 
 
 def resolve_description_id(desc_id: str) -> Optional[str]:
     """Resolve a description ID back to the original description string."""
-    if not desc_id:
-        return None
-    with _desc_map_lock:
-        return _id_description_map.get(desc_id)
+    return _description_cache.resolve(desc_id)
 
 
 def smeta_key_to_ids(smeta_key: str) -> Sequence[int]:
@@ -411,20 +503,28 @@ def _build_monthly_smeta_details_uncached(month_key: str, smeta_key: str):
 
     combined_rows = dashboard_repo.get_plan_fact_rows_by_smeta(month_key, plan_smeta_id, smeta_ids)
 
+    # Filter valid rows first
+    valid_rows = [
+        r for r in combined_rows
+        if (r.get("plan") or 0) > 1 or (r.get("fact") or 0) > 1
+    ]
+    
+    # Batch register all descriptions at once (optimization #8)
+    descriptions = [r.get("description", "") for r in valid_rows]
+    desc_id_map = register_descriptions_batch(descriptions)
+
     rows = []
-    for r in combined_rows:
+    for r in valid_rows:
+        description = r.get("description", "")
         plan_value = r.get("plan") or 0
         fact_value = r.get("fact") or 0
-        if plan_value > 1 or fact_value > 1:
-            row = {
-                "description": r.get("description"),
-                "plan": plan_value,
-                "fact": fact_value,
-                "delta": fact_value - plan_value,
-            }
-            # Register description and add description_id to the row
-            row["description_id"] = register_description(row["description"])
-            rows.append(row)
+        rows.append({
+            "description": description,
+            "description_id": desc_id_map.get(description, ""),
+            "plan": plan_value,
+            "fact": fact_value,
+            "delta": fact_value - plan_value,
+        })
 
     return {"month": month_key, "smeta_key": smeta_key, "rows": rows}
 
@@ -535,6 +635,10 @@ def _build_smeta_details_with_types_uncached(month_key: str, smeta_key: str):
     # For vnereglement, set plan to 0
     is_vnereg = smeta_key == "vnereglement"
     
+    # Batch register all descriptions at once (optimization #8)
+    descriptions = [r.get("description", "") for r in raw_rows]
+    desc_id_map = register_descriptions_batch(descriptions)
+    
     rows = []
     for r in raw_rows:
         plan = 0 if is_vnereg else r.get("plan", 0)
@@ -543,7 +647,7 @@ def _build_smeta_details_with_types_uncached(month_key: str, smeta_key: str):
         rows.append({
             "type_of_work": r.get("type_of_work"),
             "description": description,
-            "description_id": register_description(description),  # Add description_id
+            "description_id": desc_id_map.get(description, ""),
             "plan": plan,
             "fact": fact,
             "delta": fact - plan

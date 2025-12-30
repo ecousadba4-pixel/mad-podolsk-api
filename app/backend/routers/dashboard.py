@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Query
 from typing import Optional
 
 from app.backend.schemas.dashboard import (
@@ -74,11 +74,16 @@ def last_loaded():
 
 
 @router.get("/daily", response_model=DailyResponse)
-def daily(date: Optional[str] = Query(None, alias="date", description="YYYY-MM-DD"), day: Optional[str] = Query(None, alias="day", description="YYYY-MM-DD")):
-    date_value = date or day
-    if not date_value:
-        raise HTTPException(status_code=400, detail="date is required")
-    return dashboard_service.build_daily(date_value)
+def daily(
+    date: str = Query(
+        ...,
+        description="YYYY-MM-DD format date",
+        pattern=r"^\d{4}-\d{2}-\d{2}$",
+        examples=["2025-12-30"],
+    )
+):
+    """Get daily breakdown by date. Date parameter is required in YYYY-MM-DD format."""
+    return dashboard_service.build_daily(date)
 
 
 @router.get("/monthly/fact-by-type-of-work", response_model=TypeOfWorkResponse)

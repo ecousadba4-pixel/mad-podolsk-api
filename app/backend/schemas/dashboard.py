@@ -1,10 +1,19 @@
 from datetime import date, datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class SmetaCard(BaseModel):
+class _BaseSchema(BaseModel):
+    """Base schema with optimized serialization settings."""
+    model_config = ConfigDict(
+        extra="ignore",
+        from_attributes=True,
+        ser_json_inf_nan="constants",
+    )
+
+
+class SmetaCard(_BaseSchema):
     smeta_key: str
     label: str
     plan: int
@@ -12,41 +21,41 @@ class SmetaCard(BaseModel):
     delta: int
 
 
-class MonthlyBySmetaResponse(BaseModel):
+class MonthlyBySmetaResponse(_BaseSchema):
     month: str
     cards: List[SmetaCard]
 
 
-class ContractSummary(BaseModel):
+class ContractSummary(_BaseSchema):
     summa_contract: int
     fact_total: int
     contract_planfact_pct: Optional[float]
 
 
-class KpiSummary(BaseModel):
+class KpiSummary(_BaseSchema):
     plan_total: int
     fact_total: int
     delta: int
     avg_daily_revenue: int
 
 
-class MonthlySummaryResponse(BaseModel):
+class MonthlySummaryResponse(_BaseSchema):
     month: str
     contract: ContractSummary
     kpi: KpiSummary
 
 
-class MonthlyDailyRevenueRow(BaseModel):
+class MonthlyDailyRevenueRow(_BaseSchema):
     date: str
     amount: int
 
 
-class MonthlyDailyRevenueResponse(BaseModel):
+class MonthlyDailyRevenueResponse(_BaseSchema):
     month: str
     rows: List[MonthlyDailyRevenueRow]
 
 
-class SmetaDetailRow(BaseModel):
+class SmetaDetailRow(_BaseSchema):
     description: str
     description_id: str  # Short hash ID for URL-safe references
     plan: int
@@ -54,27 +63,27 @@ class SmetaDetailRow(BaseModel):
     delta: int
 
 
-class MonthlySmetaDetailsResponse(BaseModel):
+class MonthlySmetaDetailsResponse(_BaseSchema):
     month: str
     smeta_key: str
     rows: List[SmetaDetailRow]
 
 
-class SmetaDescriptionDailyRow(BaseModel):
+class SmetaDescriptionDailyRow(_BaseSchema):
     date: str
     volume: int
     unit: Optional[str]
     amount: int
 
 
-class MonthlySmetaDescriptionDailyResponse(BaseModel):
+class MonthlySmetaDescriptionDailyResponse(_BaseSchema):
     month: str
     smeta_key: str
     description: str
     rows: List[SmetaDescriptionDailyRow]
 
 
-class CombinedSummary(BaseModel):
+class CombinedSummary(_BaseSchema):
     planned_amount: Optional[float]
     fact_amount: Optional[float]
     completion_pct: Optional[float]
@@ -86,7 +95,7 @@ class CombinedSummary(BaseModel):
     daily_revenue: Optional[int]
 
 
-class CombinedDashboardResponse(BaseModel):
+class CombinedDashboardResponse(_BaseSchema):
     month: Optional[str]
     last_updated: Optional[str]
     summary: CombinedSummary
@@ -96,22 +105,22 @@ class CombinedDashboardResponse(BaseModel):
     available_months: List[str]
 
 
-class LoadedAtResponse(BaseModel):
+class LoadedAtResponse(_BaseSchema):
     loaded_at: Optional[str]
 
 
-class DailyRow(BaseModel):
+class DailyRow(_BaseSchema):
     description: str
     unit: Optional[str]
     volume: int
     amount: int
 
 
-class DailyTotal(BaseModel):
+class DailyTotal(_BaseSchema):
     amount: int
 
 
-class DailyResponse(BaseModel):
+class DailyResponse(_BaseSchema):
     date: str
     rows: List[DailyRow]
     total: DailyTotal
@@ -119,18 +128,18 @@ class DailyResponse(BaseModel):
 
 # --- Type of Work schemas ---
 
-class TypeOfWorkRow(BaseModel):
+class TypeOfWorkRow(_BaseSchema):
     type_of_work: Optional[str]
     amount: int
 
 
-class TypeOfWorkResponse(BaseModel):
+class TypeOfWorkResponse(_BaseSchema):
     month: str
     rows: List[TypeOfWorkRow]
     total: int
 
 
-class SmetaDetailWithTypeRow(BaseModel):
+class SmetaDetailWithTypeRow(_BaseSchema):
     type_of_work: Optional[str]
     description: str
     description_id: str  # Short hash ID for URL-safe references
@@ -139,7 +148,7 @@ class SmetaDetailWithTypeRow(BaseModel):
     delta: int
 
 
-class SmetaDetailsWithTypesResponse(BaseModel):
+class SmetaDetailsWithTypesResponse(_BaseSchema):
     month: str
     smeta_key: str
     rows: List[SmetaDetailWithTypeRow]

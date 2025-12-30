@@ -1,11 +1,30 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from app.backend.routers.dashboard import router as dashboard_router
-from app.backend import db
-from prometheus_fastapi_instrumentator import Instrumentator
+from contextlib import asynccontextmanager
 import os
 
-app = FastAPI(title="SKPDI Dashboard Backend")
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
+
+from app.backend.routers.dashboard import router as dashboard_router
+from app.backend import db
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Modern lifespan context manager for startup/shutdown events."""
+    # Startup
+    dsn = os.environ.get("DB_DSN")
+    if dsn:
+        db.init_db(dsn)
+    yield
+    # Shutdown
+    db.close_db()
+
+
+app = FastAPI(
+    title="SKPDI Dashboard Backend",
+    lifespan=lifespan,
+)
 
 # Подключаем роутер дашборда
 app.include_router(dashboard_router, prefix="/api/dashboard")
@@ -26,7 +45,7 @@ app.add_middleware(
 )
 
 # === Prometheus metrics ===
-# ВАЖНО: вызывать ИМЕННО ЗДЕСЬ, а не в startup_event
+# ВАЖНО: вызывать ИМЕННО ЗДЕСЬ, а не в lifespan
 Instrumentator().instrument(app).expose(
     app,
     endpoint="/metrics",
@@ -34,19 +53,13 @@ Instrumentator().instrument(app).expose(
 )
 
 
-@app.on_event("startup")
-def startup_event():
-    dsn = os.environ.get("DB_DSN")
-    if dsn:
-        db.init_db(dsn)
-
-
-@app.on_event("shutdown")
-def shutdown_event():
-    db.close_db()
-
-
 @app.get("/api/health")
 def health():
-    return {"status": "ok"}
+    """Health check endpoint with DB connectivity status."""
+    db_health = db.health_check()
+    overall_status = "ok" if db_health.get("status") == "healthy" else "degraded"
+    return {
+        "status": overall_status,
+        "database": db_health,
+    }
 
