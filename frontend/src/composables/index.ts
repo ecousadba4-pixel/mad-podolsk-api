@@ -37,3 +37,7 @@ export type { SmetaTotals, UseSmetaBreakdownReturn } from './useSmetaBreakdown'
 // Title expansion (text clamping)
 export { useTitleExpansion } from './useTitleExpansion'
 export type { TitleItem, UseTitleExpansionReturn } from './useTitleExpansion'
+
+// Calendar logic
+export { useCalendar, WEEKDAYS } from './useCalendar'
+export type { CalendarDay, UseCalendarOptions, UseCalendarReturn } from './useCalendar'

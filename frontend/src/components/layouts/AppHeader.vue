@@ -2,7 +2,7 @@
 import { useIsMobile } from '../../composables/useIsMobile'
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useDashboardStore } from '../../store/dashboardStore.js'
+import { useDashboardStore } from '../../store/dashboardStore'
 import { storeToRefs } from 'pinia'
 import { LastUpdatedBadge } from '../common'
 import { MonthPicker, DayPicker } from '../pickers'

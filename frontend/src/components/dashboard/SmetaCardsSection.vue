@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useDashboardStore } from '../../store/dashboardStore.js'
+import { useDashboardStore } from '../../store/dashboardStore'
 import { CardsGrid, PageSection } from '../layouts'
 import { formatNumber } from '../../utils/format'
 

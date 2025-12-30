@@ -44,7 +44,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { useDashboardStore } from '../../store/dashboardStore.js'
+import { useDashboardStore } from '../../store/dashboardStore'
 import { storeToRefs } from 'pinia'
 
 const props = defineProps({ modelValue: { type: String, default: '' } })
