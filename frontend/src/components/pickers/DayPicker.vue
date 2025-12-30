@@ -3,7 +3,7 @@
     <button
       type="button"
       class="day-picker__toggle control picker-toggle"
-      @click="openNative()"
+      @click="openCalendar"
       :aria-label="`Выбор даты, текущая: ${currentLabel}`"
     >
         <div class="day-picker__info">
@@ -16,8 +16,14 @@
         </span>
     </button>
 
-    <!-- native date input opened programmatically -->
-    <input ref="inputDate" class="day-picker__input" type="date" :value="value" @input="onInput" :min="monthStart" :max="monthEnd" />
+    <CalendarDropdown
+      v-model:isOpen="isCalendarOpen"
+      :modelValue="value"
+      :minDate="monthStart"
+      :maxDate="monthEnd"
+      :anchorRect="anchorRect"
+      @select="onDateSelect"
+    />
   </div>
 </template>
 
@@ -25,10 +31,13 @@
 import { ref, computed } from 'vue'
 import { useDashboardStore } from '../../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
+import CalendarDropdown from './CalendarDropdown.vue'
 
 const store = useDashboardStore()
 const { selectedDate } = storeToRefs(store)
-const inputDate = ref(null)
+const root = ref(null)
+const isCalendarOpen = ref(false)
+const anchorRect = ref(null)
 
 const value = computed(() => selectedDate.value)
 const currentLabel = computed(() => {
@@ -39,13 +48,9 @@ const currentLabel = computed(() => {
 })
 
 // Restrict picker to a 30-day range ending today (includes today)
-// NOTE: выбираем 30 дней назад от сегодня (включительно). Если нужно
-// другое поведение (например, 30 дней вперёд или диапазон по выбранному
-// месяцу), сообщите и я поменяю.
 const monthStart = computed(() => {
   const t = new Date()
   const s = new Date(t)
-  // 30 дней включая сегодня -> от сегодняшней даты минус 29 дней
   s.setDate(s.getDate() - 29)
   return s.toISOString().slice(0,10)
 })
@@ -54,18 +59,26 @@ const monthEnd = computed(() => {
   return t.toISOString().slice(0,10)
 })
 
-function openNative(){
-  try{ inputDate.value && inputDate.value.showPicker && inputDate.value.showPicker(); }catch(e){}
-  try{ inputDate.value && inputDate.value.focus(); }catch(e){}
+function openCalendar() {
+  if (root.value) {
+    const rect = root.value.getBoundingClientRect()
+    anchorRect.value = {
+      top: rect.top,
+      bottom: rect.bottom,
+      left: rect.left,
+      right: rect.right,
+      width: rect.width,
+      height: rect.height
+    }
+  }
+  isCalendarOpen.value = true
 }
 
-async function onInput(e){
-  const v = e.target.value
-  if (!v) return
-  // ignore selections outside current month
-  if (v < monthStart.value || v > monthEnd.value) return
-  store.setSelectedDate(v)
-  await store.fetchDaily(v)
+async function onDateSelect(dateStr) {
+  if (!dateStr) return
+  if (dateStr < monthStart.value || dateStr > monthEnd.value) return
+  store.setSelectedDate(dateStr)
+  await store.fetchDaily(dateStr)
 }
 </script>
 
