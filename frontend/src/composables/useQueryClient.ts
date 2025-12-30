@@ -1,46 +1,93 @@
-import { computed, inject, onScopeDispose, provide, reactive, ref, unref, watch } from 'vue'
+import { computed, inject, onScopeDispose, ref, unref, watch, type App, type ComputedRef, type Ref } from 'vue'
 
 const QUERY_CLIENT_KEY = Symbol('query-client')
 
 const now = () => Date.now()
-const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+const wait = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms))
 
-function normalizeKey(key) {
+type QueryKey = string | string[] | (() => string | string[])
+type QueryStatus = 'idle' | 'loading' | 'success' | 'error' | 'refetching'
+
+function normalizeKey(key: QueryKey): string {
   if (typeof key === 'function') return normalizeKey(key())
   if (Array.isArray(key)) return JSON.stringify(key)
   return String(key)
 }
 
-function createQueryClient(defaultOptions = {}) {
+interface CacheEntry<T = unknown> {
+  data: Ref<T | null>
+  error: Ref<Error | null>
+  status: Ref<QueryStatus>
+  updatedAt: Ref<number>
+  promise: Promise<T> | null
+}
+
+export interface QueryClientOptions {
+  staleTime?: number
+  retry?: number
+  retryDelay?: number | ((attempt: number) => number)
+  refetchOnWindowFocus?: boolean
+}
+
+export interface UseQueryOptions<T = unknown> {
+  queryKey: QueryKey
+  queryFn: () => Promise<T>
+  enabled?: boolean | Ref<boolean> | ComputedRef<boolean>
+  staleTime?: number
+  refetchOnWindowFocus?: boolean
+  keepPreviousData?: boolean
+}
+
+export interface UseQueryReturn<T = unknown> {
+  data: ComputedRef<T | null>
+  error: ComputedRef<Error | null>
+  isLoading: ComputedRef<boolean>
+  isFetching: ComputedRef<boolean>
+  isPreviousData: ComputedRef<boolean>
+  status: ComputedRef<QueryStatus>
+  refetch: () => Promise<T>
+}
+
+interface QueryClient {
+  cache: Map<string, CacheEntry>
+  useQuery: <T>(opts: UseQueryOptions<T>) => UseQueryReturn<T>
+  invalidateQueries: (matcher?: string | string[] | ((key: string) => boolean)) => void
+}
+
+function createQueryClient(defaultOptions: QueryClientOptions = {}): QueryClient {
   // Use a plain Map here. Using `reactive(new Map())` makes Vue unwrap
   // nested refs inside stored values, turning `status: ref('idle')`
-  // into the raw string `'idle'`. That causes attempts to access
-  // `status.value` to fail with "Cannot create property 'value' on string 'idle'".
-  // Storing refs inside a plain Map preserves them correctly.
-  const cache = new Map()
-  const defaults = {
+  // into the raw string `'idle'`. Storing refs inside a plain Map preserves them correctly.
+  const cache = new Map<string, CacheEntry>()
+  
+  const defaults: Required<QueryClientOptions> = {
     staleTime: 5 * 60 * 1000,
     retry: 2,
-    retryDelay: attempt => 500 * (attempt + 1),
+    retryDelay: (attempt: number) => 500 * (attempt + 1),
     refetchOnWindowFocus: true,
     ...defaultOptions
   }
 
-  function getEntry(key) {
+  function getEntry<T>(key: string): CacheEntry<T> {
     const id = normalizeKey(key)
     if (!cache.has(id)) {
       cache.set(id, {
         data: ref(null),
         error: ref(null),
-        status: ref('idle'),
+        status: ref<QueryStatus>('idle'),
         updatedAt: ref(0),
         promise: null
       })
     }
-    return cache.get(id)
+    return cache.get(id) as CacheEntry<T>
   }
 
-  async function execute(entry, key, queryFn, options) {
+  async function execute<T>(
+    entry: CacheEntry<T>, 
+    _key: string, 
+    queryFn: () => Promise<T>, 
+    options: Partial<QueryClientOptions>
+  ): Promise<T> {
     const retry = options.retry ?? defaults.retry
     const retryDelay = options.retryDelay ?? defaults.retryDelay
     entry.status.value = entry.status.value === 'success' ? 'refetching' : 'loading'
@@ -54,7 +101,7 @@ function createQueryClient(defaultOptions = {}) {
         entry.updatedAt.value = now()
         return result
       } catch (err) {
-        entry.error.value = err
+        entry.error.value = err as Error
         if (attempt >= retry) {
           entry.status.value = 'error'
           throw err
@@ -63,11 +110,11 @@ function createQueryClient(defaultOptions = {}) {
         await wait(delay || 0)
       }
     }
-    return entry.data.value
+    return entry.data.value as T
   }
 
-  function invalidateQueries(matcher) {
-    const match = (key) => {
+  function invalidateQueries(matcher?: string | string[] | ((key: string) => boolean)): void {
+    const match = (key: string): boolean => {
       if (!matcher) return true
       if (typeof matcher === 'string') return normalizeKey(key).startsWith(normalizeKey(matcher))
       if (Array.isArray(matcher)) return normalizeKey(key).startsWith(normalizeKey(matcher))
@@ -79,19 +126,21 @@ function createQueryClient(defaultOptions = {}) {
     }
   }
 
-  function useQuery({ queryKey, queryFn, enabled = true, staleTime, refetchOnWindowFocus, keepPreviousData = true }) {
+  function useQuery<T>(opts: UseQueryOptions<T>): UseQueryReturn<T> {
+    const { queryKey, queryFn, enabled = true, staleTime, refetchOnWindowFocus, keepPreviousData = true } = opts
+    
     const resolvedEnabled = computed(() => Boolean(unref(enabled)))
     const keyRef = computed(() => normalizeKey(unref(queryKey)))
-    const entry = computed(() => getEntry(keyRef.value))
-    const staleFor = computed(() => (staleTime ?? defaults.staleTime))
+    const entry = computed(() => getEntry<T>(keyRef.value))
+    const staleFor = computed(() => staleTime ?? defaults.staleTime)
 
     // Сохраняем предыдущие данные для плавного перехода между ключами
-    const previousData = ref(null)
-    const previousKey = ref(null)
+    const previousData = ref<T | null>(null)
+    const previousKey = ref<string | null>(null)
 
     const isStale = computed(() => (now() - entry.value.updatedAt.value) > staleFor.value)
 
-    const triggerFetch = () => {
+    const triggerFetch = (): Promise<T | null> => {
       if (!resolvedEnabled.value) return Promise.resolve(entry.value.data.value)
       if (entry.value.promise && !isStale.value) return entry.value.promise
       entry.value.promise = execute(entry.value, keyRef.value, queryFn, { staleTime, refetchOnWindowFocus })
@@ -103,17 +152,17 @@ function createQueryClient(defaultOptions = {}) {
     watch([keyRef, resolvedEnabled], ([newKey], [oldKey]) => {
       // Сохраняем предыдущие данные перед переключением на новый ключ
       if (keepPreviousData && oldKey && newKey !== oldKey) {
-        const oldEntry = cache.get(oldKey)
+        const oldEntry = cache.get(oldKey as string)
         if (oldEntry && oldEntry.data.value !== null) {
-          previousData.value = oldEntry.data.value
-          previousKey.value = oldKey
+          previousData.value = oldEntry.data.value as T
+          previousKey.value = oldKey as string
         }
       }
       triggerFetch()
     })
 
     if (refetchOnWindowFocus ?? defaults.refetchOnWindowFocus) {
-      const handler = () => {
+      const handler = (): void => {
         if (document.visibilityState === 'visible') triggerFetch()
       }
       window.addEventListener('visibilitychange', handler)
@@ -121,7 +170,7 @@ function createQueryClient(defaultOptions = {}) {
     }
 
     // Возвращаем актуальные данные или предыдущие (если текущие ещё загружаются)
-    const data = computed(() => {
+    const data = computed<T | null>(() => {
       const current = entry.value.data.value
       if (current !== null) {
         // Сбрасываем предыдущие данные, когда текущие загрузились
@@ -147,32 +196,38 @@ function createQueryClient(defaultOptions = {}) {
     const isLoading = computed(() => entry.value.status.value === 'loading' || entry.value.status.value === 'idle')
     const isFetching = computed(() => entry.value.status.value === 'loading' || entry.value.status.value === 'refetching')
 
-    const refetch = () => execute(entry.value, keyRef.value, queryFn, { staleTime, refetchOnWindowFocus })
+    const refetch = (): Promise<T> => execute(entry.value, keyRef.value, queryFn, { staleTime, refetchOnWindowFocus })
 
-    return { data, error, isLoading, isFetching, isPreviousData, status: computed(() => entry.value.status.value), refetch }
+    return { 
+      data, 
+      error, 
+      isLoading, 
+      isFetching, 
+      isPreviousData, 
+      status: computed(() => entry.value.status.value), 
+      refetch 
+    }
   }
 
   return { cache, useQuery, invalidateQueries }
 }
 
-export function installQueryClient(app, options = {}) {
+export function installQueryClient(app: App, options: QueryClientOptions = {}): QueryClient {
   const client = createQueryClient(options)
   app.provide(QUERY_CLIENT_KEY, client)
-  provide(QUERY_CLIENT_KEY, client)
   return client
 }
 
-export function useQueryClient() {
-  const client = inject(QUERY_CLIENT_KEY)
+export function useQueryClient(): QueryClient {
+  const client = inject<QueryClient>(QUERY_CLIENT_KEY)
   if (!client) throw new Error('Query client not found. Make sure installQueryClient() is used in main.js')
   return client
 }
 
-export function useQuery(opts) {
+export function useQuery<T = unknown>(opts: UseQueryOptions<T>): UseQueryReturn<T> {
   return useQueryClient().useQuery(opts)
 }
 
-export function useInvalidateQueries() {
+export function useInvalidateQueries(): QueryClient['invalidateQueries'] {
   return useQueryClient().invalidateQueries
 }
-

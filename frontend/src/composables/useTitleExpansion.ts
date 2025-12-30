@@ -1,28 +1,44 @@
-import { ref, nextTick, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, nextTick, onMounted, onBeforeUnmount, watch, type Ref, type ComputedRef } from 'vue'
+
+export interface TitleItem {
+  title?: string
+  description?: string
+  work_name?: string
+  [key: string]: unknown
+}
+
+export interface UseTitleExpansionReturn {
+  idFor: (item: TitleItem, idx: number) => string
+  registerTitleRef: (el: HTMLElement | null, id: string) => void
+  isExpanded: (id: string) => boolean
+  isClamped: (id: string) => boolean
+  toggleExpand: (id: string) => void
+  checkClamped: () => void
+  collapseAll: () => void
+}
 
 /**
  * Composable для управления раскрытием/сворачиванием обрезанного текста.
  * Автоматически определяет, какие элементы обрезаны (clamped) и позволяет их раскрывать.
- * 
- * @param {import('vue').Ref|import('vue').ComputedRef} itemsRef - реактивный список элементов для отслеживания изменений
- * @returns {Object}
  */
-export function useTitleExpansion(itemsRef) {
-  const expanded = ref(new Set())
-  const clamped = ref({})
-  const titleEls = new Map()
+export function useTitleExpansion(
+  itemsRef?: Ref<TitleItem[]> | ComputedRef<TitleItem[]>
+): UseTitleExpansionReturn {
+  const expanded = ref<Set<string>>(new Set())
+  const clamped = ref<Record<string, boolean>>({})
+  const titleEls = new Map<string, HTMLElement>()
 
   /**
    * Генерирует уникальный ID для элемента
    */
-  function idFor(item, idx) {
+  function idFor(item: TitleItem, idx: number): string {
     return `${idx}-${String(item.title || item.description || item.work_name || '')}`
   }
 
   /**
    * Регистрирует ref элемента для отслеживания
    */
-  function registerTitleRef(el, id) {
+  function registerTitleRef(el: HTMLElement | null, id: string): void {
     if (el) titleEls.set(id, el)
     else titleEls.delete(id)
   }
@@ -30,21 +46,21 @@ export function useTitleExpansion(itemsRef) {
   /**
    * Проверяет, раскрыт ли элемент
    */
-  function isExpanded(id) {
+  function isExpanded(id: string): boolean {
     return expanded.value.has(id)
   }
 
   /**
    * Проверяет, обрезан ли текст элемента
    */
-  function isClamped(id) {
-    return !!(clamped.value && clamped.value[id])
+  function isClamped(id: string): boolean {
+    return Boolean(clamped.value[id])
   }
 
   /**
    * Переключает состояние раскрытия элемента
    */
-  function toggleExpand(id) {
+  function toggleExpand(id: string): void {
     const s = new Set(expanded.value)
     if (s.has(id)) s.delete(id)
     else s.add(id)
@@ -54,9 +70,9 @@ export function useTitleExpansion(itemsRef) {
   /**
    * Проверяет все зарегистрированные элементы на обрезку текста
    */
-  function checkClamped() {
+  function checkClamped(): void {
     nextTick(() => {
-      const result = {}
+      const result: Record<string, boolean> = {}
       try {
         for (const [id, el] of titleEls.entries()) {
           if (!el) continue
@@ -65,7 +81,7 @@ export function useTitleExpansion(itemsRef) {
           const visibleH = el.clientHeight || el.offsetHeight || 0
           result[id] = fullH > (visibleH + tolerance)
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
       clamped.value = result
@@ -75,7 +91,7 @@ export function useTitleExpansion(itemsRef) {
   /**
    * Сбрасывает все раскрытые элементы
    */
-  function collapseAll() {
+  function collapseAll(): void {
     expanded.value = new Set()
   }
 
