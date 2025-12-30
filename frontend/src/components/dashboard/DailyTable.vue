@@ -58,60 +58,79 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { computed } from 'vue'
 import { useIsMobile } from '../../composables/useIsMobile.js'
-import MobileDailyFull from './MobileDailyFull.vue'
+import { formatMoney, formatDate } from '../../utils/format.js'
+
+/**
+ * @typedef {Object} DailyRow
+ * @property {string} [id]
+ * @property {string} name
+ * @property {string} unit
+ * @property {string|number} volume
+ * @property {number} amount
+ */
 
 const props = defineProps({
-  rows: { type: Array, default: () => [] },
-  totalAmount: { type: Number, default: null },
-  date: { type: [String, Date], default: '' }
-})
-
-const total = computed(() => {
-  if (props.totalAmount !== null && props.totalAmount !== undefined) return Number(props.totalAmount) || 0
-  return (props.rows || []).reduce((s, r) => s + (Number(r?.amount) || 0), 0)
-})
-
-const sortedRows = computed(() => {
-  const arr = (props.rows || []).slice()
-  arr.sort((a, b) => {
-    const va = Number(a?.amount || 0)
-    const vb = Number(b?.amount || 0)
-    if (vb !== va) return vb - va
-    return String(a?.name || '').localeCompare(String(b?.name || ''))
-  })
-  return arr.map((item, idx) => {
-    if (!item) return { id: `row-${idx}`, name: '-', unit: '', volume: '', amount: 0 }
-    if (item.id === null || item.id === undefined || item.id === '') {
-      return { ...item, id: `row-${idx}-${String(item.name || '').slice(0,20)}` }
-    }
-    return item
-  })
-})
-
-import { formatMoney } from '../../utils/format.js'
-
-function formatVolume(v) {
-  if (v === null || v === undefined) return ''
-  const s = String(v)
-  return s.replace(/\s*\([^)]*\)\s*$/, '')
-}
-
-const displayDate = computed(() => {
-  if (!props.date) return ''
-  try {
-    const d = typeof props.date === 'string' ? new Date(props.date) : props.date
-    if (!(d instanceof Date) || Number.isNaN(d.getTime())) return String(props.date)
-    return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
-  } catch (e) {
-    return String(props.date)
+  /** @type {import('vue').PropType<DailyRow[]>} */
+  rows: { 
+    type: Array, 
+    default: () => [],
+    validator: (v) => Array.isArray(v)
+  },
+  totalAmount: { 
+    type: Number, 
+    default: null 
+  },
+  date: { 
+    type: [String, Date], 
+    default: '' 
   }
 })
 
 const { isMobile } = useIsMobile()
 
-// No debug measurement in production.
+// Вычисляем итого с мемоизацией
+const total = computed(() => {
+  if (props.totalAmount != null) return Number(props.totalAmount) || 0
+  return props.rows.reduce((sum, row) => sum + (Number(row?.amount) || 0), 0)
+})
+
+// Сортированные строки с уникальными id
+const sortedRows = computed(() => {
+  const arr = [...props.rows]
+  
+  // Сортировка по amount (desc), затем по name (asc)
+  arr.sort((a, b) => {
+    const amountDiff = (Number(b?.amount) || 0) - (Number(a?.amount) || 0)
+    if (amountDiff !== 0) return amountDiff
+    return String(a?.name || '').localeCompare(String(b?.name || ''), 'ru')
+  })
+  
+  // Гарантируем уникальный id для v-for :key
+  return arr.map((item, idx) => {
+    if (!item) {
+      return { id: `row-empty-${idx}`, name: '-', unit: '', volume: '', amount: 0 }
+    }
+    const id = item.id ?? `row-${idx}-${String(item.name || '').slice(0, 20)}`
+    return { ...item, id }
+  })
+})
+
+// Форматирование даты через утилиту
+const displayDate = computed(() => {
+  if (!props.date) return ''
+  return formatDate(props.date, { day: 'numeric', month: 'long', year: 'numeric' })
+})
+
+/**
+ * Форматирует объём, убирая единицы в скобках
+ * @param {string|number|null|undefined} v 
+ */
+function formatVolume(v) {
+  if (v == null) return ''
+  return String(v).replace(/\s*\([^)]*\)\s*$/, '')
+}
 </script>
 
 <style scoped>

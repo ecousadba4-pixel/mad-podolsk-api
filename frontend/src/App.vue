@@ -1,29 +1,38 @@
 <script setup>
 import { AppHeader } from './components/layouts'
 import { useDashboardStore } from './store/dashboardStore.js'
-import { ref, nextTick } from 'vue'
+import { shallowRef, nextTick, onErrorCaptured } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
 
 const store = useDashboardStore()
 const { mode } = storeToRefs(store)
-const router = useRouter()
-const routerShell = ref(null)
+
+// shallowRef для DOM элемента - не нужна глубокая реактивность
+const routerShell = shallowRef(null)
+
+// Error boundary для дочерних компонентов
+onErrorCaptured((err, instance, info) => {
+  console.error('Error captured in App:', err, info)
+  // Возвращаем false чтобы ошибка не всплывала дальше
+  return false
+})
 
 function fixHeight(h) {
   if (!routerShell.value) return
-  routerShell.value.style.height = h + 'px'
+  routerShell.value.style.height = `${h}px`
   routerShell.value.style.overflow = 'hidden'
 }
 
 function clearHeight() {
   if (!routerShell.value) return
-  routerShell.value.style.height = 'auto'
-  routerShell.value.style.overflow = ''
-  routerShell.value.style.transition = ''
+  Object.assign(routerShell.value.style, {
+    height: 'auto',
+    overflow: '',
+    transition: ''
+  })
 }
 
-function beforeEnter(el) {
+function beforeEnter() {
   if (!routerShell.value) return
   const h = routerShell.value.getBoundingClientRect().height
   fixHeight(h)
@@ -31,20 +40,35 @@ function beforeEnter(el) {
 
 function enter(el, done) {
   nextTick(() => {
-    if (!routerShell.value) { done(); return }
+    if (!routerShell.value) { 
+      done()
+      return 
+    }
     const newH = el.getBoundingClientRect().height
     routerShell.value.style.transition = 'height 220ms ease'
-    // force reflow
+    // Force reflow для анимации
     void routerShell.value.offsetHeight
-    routerShell.value.style.height = newH + 'px'
+    routerShell.value.style.height = `${newH}px`
+    
+    // Используем событие transitionend вместо setTimeout
+    const onEnd = () => {
+      routerShell.value?.removeEventListener('transitionend', onEnd)
+      clearHeight()
+      done()
+    }
+    routerShell.value.addEventListener('transitionend', onEnd, { once: true })
+    
+    // Fallback на случай если transition не сработает
     setTimeout(() => {
       clearHeight()
       done()
-    }, 240)
+    }, 250)
   })
 }
 
-function afterEnter() { clearHeight() }
+function afterEnter() { 
+  clearHeight() 
+}
 </script>
 
 <template>
@@ -56,11 +80,17 @@ function afterEnter() { clearHeight() }
         <RouterView v-slot="{ Component }">
           <Suspense>
             <template #default>
-              <transition name="fade-slide" mode="out-in" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
-                <KeepAlive>
+              <Transition 
+                name="fade-slide" 
+                mode="out-in" 
+                @before-enter="beforeEnter" 
+                @enter="enter" 
+                @after-enter="afterEnter"
+              >
+                <KeepAlive :max="3">
                   <component :is="Component" />
                 </KeepAlive>
-              </transition>
+              </Transition>
             </template>
             <template #fallback>
               <div class="router-fallback">Загрузка экрана…</div>

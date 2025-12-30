@@ -9,8 +9,11 @@ const store = useDashboardStore()
 // use storeToRefs to subscribe only to specific refs, reducing re-renders
 const { smetaCards, smetaCardsLoading, selectedSmeta } = storeToRefs(store)
 
+/** @type {(key: string) => void} */
 const emit = defineEmits(['select'])
-const cards = computed(() => smetaCards.value || [])
+
+// Используем ?? вместо || для корректной обработки пустого массива
+const cards = computed(() => smetaCards.value ?? [])
 const isInitialLoading = computed(() => smetaCardsLoading.value && cards.value.length === 0)
 
 function onCardClick(key) {

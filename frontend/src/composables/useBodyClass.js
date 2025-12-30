@@ -1,24 +1,30 @@
-import { onMounted, onUnmounted, watch } from 'vue'
+import { onScopeDispose, watchEffect } from 'vue'
 
 /**
  * Добавляет/удаляет CSS-класс на <body>. Если передать реактивный флаг,
  * класс будет синхронизирован с его значением.
+ * 
+ * @param {string} className - имя CSS класса
+ * @param {import('vue').Ref<boolean>|null} activeRef - реактивный флаг
+ * @returns {{ set: (value: boolean) => void }}
  */
 export function useBodyClass(className, activeRef = null) {
   const apply = (value) => {
-    const body = typeof document !== 'undefined' ? document.body : null
+    if (typeof document === 'undefined') return
+    const { body } = document
     if (!body) return
-    if (value) body.classList.add(className)
-    else body.classList.remove(className)
+    body.classList.toggle(className, Boolean(value))
   }
 
   if (activeRef) {
-    watch(activeRef, apply, { immediate: true })
-  } else {
-    onMounted(() => apply(true))
+    // watchEffect автоматически отслеживает activeRef.value
+    watchEffect(() => {
+      apply(activeRef.value)
+    })
   }
 
-  onUnmounted(() => apply(false))
+  // Используем onScopeDispose вместо onUnmounted - работает и в setup, и в composables
+  onScopeDispose(() => apply(false))
 
   return { set: apply }
 }

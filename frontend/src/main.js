@@ -55,4 +55,18 @@ installQueryClient(app, {
   refetchOnWindowFocus: true
 })
 
+// Vue 3.4+: улучшенная производительность гидратации
+// Performance: отключаем devtools в production
+if (import.meta.env.PROD) {
+  app.config.performance = false
+}
+
+// Global error handler для production
+app.config.errorHandler = (err, instance, info) => {
+  console.error('Vue error:', err, info)
+  if (import.meta.env.DEV) {
+    showRuntimeError(`Vue Error [${info}]: ${err?.message || err}`)
+  }
+}
+
 app.mount('#app')
