@@ -137,14 +137,21 @@ select, input[type="date"] { border:none; background:transparent; font-size:var(
 /* Fallback for native option rendering */
 select option { font-family: var(--font-sans); }
 
+/* The .day-picker container must be positioned so the native date input
+   picker dropdown opens relative to the toggle, not the page corner. */
+.day-picker {
+  position: relative;
+}
+
 /* Ensure the native date input used by `DayPicker` is visually hidden
    — some browsers may render the native control; keep it off-screen and
-   non-interactive so only the custom toggle is visible. */
+   non-interactive so only the custom toggle is visible.
+   Position it at bottom of the toggle so the picker dropdown appears below. */
 .day-picker__input {
   position: absolute !important;
   left: 0 !important;
-  top: 0 !important;
-  width: 1px !important;
+  top: 100% !important;
+  width: 100% !important;
   height: 1px !important;
   opacity: 0 !important;
   pointer-events: none !important;
