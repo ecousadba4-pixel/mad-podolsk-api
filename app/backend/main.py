@@ -3,7 +3,6 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.backend.routers.dashboard import router as dashboard_router
 from app.backend import db
@@ -42,14 +41,6 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-)
-
-# === Prometheus metrics ===
-# ВАЖНО: вызывать ИМЕННО ЗДЕСЬ, а не в lifespan
-Instrumentator().instrument(app).expose(
-    app,
-    endpoint="/metrics",
-    include_in_schema=False,  # не светить /metrics в /docs
 )
 
 

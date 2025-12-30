@@ -4,4 +4,3 @@ psycopg2-binary
 python-dotenv
 pydantic-settings
 reportlab
-prometheus-fastapi-instrumentator==7.0.0
