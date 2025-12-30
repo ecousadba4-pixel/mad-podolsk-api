@@ -97,9 +97,26 @@ export interface SmetaTypeGroup {
   }
 }
 
+/** Row with type_of_work field (new flat format from API) */
+export interface SmetaDetailWithTypeRow {
+  type_of_work: string | null
+  description: string
+  title?: string
+  description_id: string
+  plan: number
+  fact: number
+  delta: number
+}
+
+/** Response from smeta-details-with-types endpoint */
 export interface SmetaDetailsWithTypesResponse {
-  groups: SmetaTypeGroup[]
-  total: {
+  month: string
+  smeta_key: string
+  // New format: flat rows array
+  rows?: SmetaDetailWithTypeRow[]
+  // Old format (deprecated): grouped structure
+  groups?: SmetaTypeGroup[]
+  total?: {
     plan: number
     fact: number
     delta: number

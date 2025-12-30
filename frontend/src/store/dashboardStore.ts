@@ -252,13 +252,16 @@ export const useDashboardStore = defineStore('dashboard', () => {
     queryFn: async () => {
       if (!selectedSmeta.value) return null
       const res = await getSmetaDetailsWithTypes(selectedMonth.value, selectedSmeta.value)
-      if (!res?.groups) return null
-      // Flatten groups to rows, preserving description_id
-      const rows: SmetaDetailsWithTypesRow[] = []
-      for (const group of res.groups) {
-        for (const r of group.rows) {
-          rows.push({
-            type_of_work: group.type_of_work || null,
+      
+      // API now returns flat rows with type_of_work field, not groups
+      // Support both old (groups) and new (rows) format
+      let resultRows: SmetaDetailsWithTypesRow[] = []
+      
+      if (res?.rows && Array.isArray(res.rows)) {
+        // New format: flat rows array with type_of_work field
+        for (const r of res.rows) {
+          resultRows.push({
+            type_of_work: r.type_of_work || null,
             description: r.description || r.title || '',
             description_id: r.description_id || '',
             plan: Number(r.plan || 0),
@@ -266,8 +269,23 @@ export const useDashboardStore = defineStore('dashboard', () => {
             delta: Number(r.delta ?? (Number(r.fact || 0) - Number(r.plan || 0)))
           })
         }
+      } else if (res?.groups && Array.isArray(res.groups)) {
+        // Old format: grouped structure (backward compatibility)
+        for (const group of res.groups) {
+          for (const r of group.rows) {
+            resultRows.push({
+              type_of_work: group.type_of_work || null,
+              description: r.description || r.title || '',
+              description_id: r.description_id || '',
+              plan: Number(r.plan || 0),
+              fact: Number(r.fact || 0),
+              delta: Number(r.delta ?? (Number(r.fact || 0) - Number(r.plan || 0)))
+            })
+          }
+        }
       }
-      return rows.length ? rows : null
+      
+      return resultRows.length ? resultRows : null
     },
     enabled: computed(() => Boolean(selectedSmeta.value) && Boolean(selectedMonth.value)),
     staleTime: 2 * 60 * 1000
