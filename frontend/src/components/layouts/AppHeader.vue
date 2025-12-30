@@ -1,5 +1,5 @@
 <script setup>
-import { useIsMobile } from '../../composables/useIsMobile.js'
+import { useIsMobile } from '../../composables/useIsMobile'
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDashboardStore } from '../../store/dashboardStore.js'

@@ -16,12 +16,12 @@ const compactFormatter = new Intl.NumberFormat('ru-RU', {
   maximumFractionDigits: 1
 })
 
+type Formattable = number | string | null | undefined
+
 /**
  * Форматирует число как денежную сумму в русской локали
- * @param {number|string|null|undefined} value - значение для форматирования
- * @returns {string} отформатированная строка или '-' если значение невалидно
  */
-export function formatMoney(value) {
+export function formatMoney(value: Formattable): string {
   if (value == null) return '-'
   const n = Number(value)
   if (Number.isNaN(n)) return '-'
@@ -29,11 +29,9 @@ export function formatMoney(value) {
 }
 
 /**
- * Форматирует число в русской локали (алиас для formatMoney)
- * @param {number|string|null|undefined} value - значение для форматирования
- * @returns {string} отформатированная строка или '-' если значение невалидно
+ * Форматирует число в русской локали
  */
-export function formatNumber(value) {
+export function formatNumber(value: Formattable): string {
   if (value == null) return '-'
   const n = Number(value)
   if (Number.isNaN(n)) return '-'
@@ -41,11 +39,9 @@ export function formatNumber(value) {
 }
 
 /**
- * Форматирует большие числа в компактном виде (1.2 млн, 500 тыс)
- * @param {number|string|null|undefined} value - значение для форматирования
- * @returns {string} отформатированная строка или '-'
+ * Форматирует большие числа в компактном виде (1.2 млн, 500 тыс)
  */
-export function formatCompact(value) {
+export function formatCompact(value: Formattable): string {
   if (value == null) return '-'
   const n = Number(value)
   if (Number.isNaN(n)) return '-'
@@ -54,11 +50,10 @@ export function formatCompact(value) {
 
 /**
  * Форматирует число как процент
- * @param {number|null|undefined} value - значение (0-1 или 0-100)
- * @param {boolean} isDecimal - если true, умножает на 100
- * @returns {string} отформатированный процент или '-'
+ * @param value - значение (0-1 или 0-100)
+ * @param isDecimal - если true, умножает на 100
  */
-export function formatPercent(value, isDecimal = true) {
+export function formatPercent(value: number | null | undefined, isDecimal = true): string {
   if (value == null) return '-'
   const n = isDecimal ? Math.round(value * 100) : Math.round(value)
   return `${n}\u00a0%` // Неразрывный пробел перед %
@@ -66,13 +61,29 @@ export function formatPercent(value, isDecimal = true) {
 
 /**
  * Форматирует дату в русской локали
- * @param {string|Date|null|undefined} value - дата
- * @param {Intl.DateTimeFormatOptions} [options] - опции форматирования
- * @returns {string} отформатированная дата или '-'
  */
-export function formatDate(value, options = { day: 'numeric', month: 'long', year: 'numeric' }) {
+export function formatDate(
+  value: string | Date | null | undefined, 
+  options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' }
+): string {
   if (value == null) return '-'
   const date = value instanceof Date ? value : new Date(value)
   if (Number.isNaN(date.getTime())) return '-'
   return date.toLocaleDateString('ru-RU', options)
+}
+
+/**
+ * Форматирует дату и время
+ */
+export function formatDateTime(value: string | Date | null | undefined): string {
+  if (value == null) return '-'
+  const date = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(date.getTime())) return '-'
+  return date.toLocaleString('ru-RU', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
 }

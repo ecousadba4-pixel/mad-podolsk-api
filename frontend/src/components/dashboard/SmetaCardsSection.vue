@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useDashboardStore } from '../../store/dashboardStore.js'
 import { CardsGrid, PageSection } from '../layouts'
-import { formatNumber } from '../../utils/format.js'
+import { formatNumber } from '../../utils/format'
 
 const store = useDashboardStore()
 // use storeToRefs to subscribe only to specific refs, reducing re-renders

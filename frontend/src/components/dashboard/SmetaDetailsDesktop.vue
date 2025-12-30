@@ -116,7 +116,7 @@
 
 <script setup>
 import { computed, ref, watch, reactive, onMounted, nextTick } from 'vue'
-import { formatMoney } from '../../utils/format.js'
+import { formatMoney } from '../../utils/format'
 
 const props = defineProps({
   items: { type: Array, default: () => [] },

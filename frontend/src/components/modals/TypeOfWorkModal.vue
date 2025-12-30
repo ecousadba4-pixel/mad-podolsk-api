@@ -45,9 +45,9 @@
 
 <script setup>
 import { computed, watch } from 'vue'
-import { useIsMobile } from '../../composables/useIsMobile.js'
+import { useIsMobile } from '../../composables/useIsMobile'
 import { useQuery } from '../../composables/useQueryClient.js'
-import { formatMoney } from '../../utils/format.js'
+import { formatMoney } from '../../utils/format'
 
 const props = defineProps({ visible: Boolean, month: String })
 const emit = defineEmits(['close'])

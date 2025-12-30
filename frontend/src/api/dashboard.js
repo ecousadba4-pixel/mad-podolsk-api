@@ -1,4 +1,4 @@
-import { request } from './client.js'
+import { request } from './client'
 
 // Функции API: пробуем старые конкретные пути, а при 404 фолбэчим на единый эндпойнт
 function normalizeMonth(month) {

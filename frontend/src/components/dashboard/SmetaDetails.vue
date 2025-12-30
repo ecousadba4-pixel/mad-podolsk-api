@@ -114,12 +114,12 @@ const props = defineProps({
 const emit = defineEmits(['select','sort-changed'])
 
 import { computed, watch } from 'vue'
-import { useIsMobile } from '../../composables/useIsMobile.js'
-import { useSort } from '../../composables/useSort.js'
+import { useIsMobile } from '../../composables/useIsMobile'
+import { useSort } from '../../composables/useSort'
 import { useTitleExpansion } from '../../composables/useTitleExpansion.js'
 import { useDashboardStore, isVneregKey } from '../../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
-import { formatMoney } from '../../utils/format.js'
+import { formatMoney } from '../../utils/format'
 import SmetaDetailsMobile from './SmetaDetailsMobile.vue'
 import SmetaDetailsDesktop from './SmetaDetailsDesktop.vue'
 

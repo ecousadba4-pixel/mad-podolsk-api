@@ -1,6 +1,5 @@
 /**
- * Типы данных для Dashboard
- * Этот файл обеспечивает типизацию для JavaScript файлов через JSDoc
+ * Типы данных для Dashboard API и компонентов
  */
 
 /** Данные контракта */
@@ -77,3 +76,31 @@ export type SmetaSortKey = 'plan' | 'fact' | 'delta' | 'title'
 
 /** Направление сортировки */
 export type SortDirection = 1 | -1
+
+/** API Response wrapper */
+export interface ApiResponse<T> {
+  data?: T
+  error?: string
+  status?: number
+}
+
+/** Query options для useQuery */
+export interface QueryOptions<T> {
+  queryKey: string | string[] | (() => string | string[])
+  queryFn: () => Promise<T>
+  enabled?: boolean | (() => boolean)
+  staleTime?: number
+  refetchOnWindowFocus?: boolean
+  keepPreviousData?: boolean
+}
+
+/** Query result */
+export interface QueryResult<T> {
+  data: T | null
+  error: Error | null
+  isLoading: boolean
+  isFetching: boolean
+  isPreviousData: boolean
+  status: 'idle' | 'loading' | 'success' | 'error' | 'refetching'
+  refetch: () => Promise<T>
+}

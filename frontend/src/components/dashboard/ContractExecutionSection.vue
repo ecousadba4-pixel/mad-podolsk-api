@@ -33,8 +33,8 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useIsMobile } from '../../composables/useIsMobile.js'
-import { formatMoney, formatPercent } from '../../utils/format.js'
+import { useIsMobile } from '../../composables/useIsMobile'
+import { formatMoney, formatPercent } from '../../utils/format'
 
 const props = defineProps({ contract: { type: Object, default: () => ({}) } })
 

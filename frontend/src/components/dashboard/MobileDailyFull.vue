@@ -94,7 +94,7 @@ const displayDateShort = computed(() => {
 
 const constrainRef = ref(null)
 
-import { formatMoney } from '../../utils/format.js'
+import { formatMoney } from '../../utils/format'
 
 function formatVolume(v) {
   if (v === null || v === undefined) return ''

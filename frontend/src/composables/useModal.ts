@@ -1,24 +1,37 @@
-import { onScopeDispose, ref, watchEffect } from 'vue'
-import { useBodyClass } from './useBodyClass.js'
+import { onScopeDispose, ref, watchEffect, type Ref } from 'vue'
+import { useBodyClass } from './useBodyClass'
+
+export interface UseModalOptions {
+  /** Блокировать скролл body при открытии */
+  lockScroll?: boolean
+  /** Закрывать по Escape */
+  closeOnEsc?: boolean
+}
+
+export interface UseModalReturn {
+  isOpen: Ref<boolean>
+  open: () => void
+  close: () => void
+  toggle: () => void
+}
 
 /**
- * Управление состоянием модального окна + побочные эффекты (esc, запрет скролла body).
- * @param {boolean} [initialVisible=false] - начальное состояние
- * @param {Object} [options] - опции
- * @param {boolean} [options.lockScroll=true] - блокировать скролл body
- * @param {boolean} [options.closeOnEsc=true] - закрывать по Escape
+ * Управление состоянием модального окна + побочные эффекты
  */
-export function useModal(initialVisible = false, options = {}) {
+export function useModal(
+  initialVisible = false, 
+  options: UseModalOptions = {}
+): UseModalReturn {
   const { lockScroll = true, closeOnEsc = true } = options
   const isOpen = ref(initialVisible)
   const { set: setBodyClass } = useBodyClass('modal-open', isOpen)
 
-  const close = () => { isOpen.value = false }
-  const open = () => { isOpen.value = true }
-  const toggle = () => { isOpen.value = !isOpen.value }
+  const close = (): void => { isOpen.value = false }
+  const open = (): void => { isOpen.value = true }
+  const toggle = (): void => { isOpen.value = !isOpen.value }
 
-  // Обработчик Escape - вынесен для корректного удаления
-  const handleKey = (e) => {
+  // Обработчик Escape
+  const handleKey = (e: KeyboardEvent): void => {
     if (!closeOnEsc || !isOpen.value) return
     if (e.key === 'Escape') {
       e.preventDefault()

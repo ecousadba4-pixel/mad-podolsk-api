@@ -67,7 +67,7 @@ const percentExecuted = computed(() => {
   return v
 })
 
-import { formatMoney } from '../../utils/format.js'
+import { formatMoney } from '../../utils/format'
 
 // Автоматическое уменьшение размера заголовков, чтобы все четыре метки помещались в одну строку
 const root = ref(null)

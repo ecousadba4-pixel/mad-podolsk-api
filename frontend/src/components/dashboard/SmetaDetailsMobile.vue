@@ -55,7 +55,7 @@
 
 <script setup>
 import { useTitleExpansion } from '../../composables/useTitleExpansion.js'
-import { formatMoney } from '../../utils/format.js'
+import { formatMoney } from '../../utils/format'
 
 const props = defineProps({
   sortedItems: { type: Array, default: () => [] },

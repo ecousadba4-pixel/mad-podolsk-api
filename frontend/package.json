@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vue-tsc --noEmit && vite build",
     "build:analyze": "ANALYZE=true vite build",
     "preview": "vite preview",
+    "type-check": "vue-tsc --noEmit",
     "lint:css": "stylelint \"src/**/*.{css,scss}\"",
     "lint:css:fix": "stylelint \"src/**/*.{css,scss}\" --fix",
     "check:tokens": "node ./scripts/check-tokens.cjs"
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^7.0.2",
     "@modyfi/vite-plugin-yaml": "^1.1.1",
+    "@types/node": "^25.0.3",
     "@vitejs/plugin-vue": "^6.0.2",
     "autoprefixer": "^10.4.22",
     "cssnano": "^7.1.2",
@@ -34,8 +36,10 @@
     "stylelint-config-standard-scss": "^13.1.0",
     "stylelint-order": "^7.0.0",
     "stylelint-scss": "^6.7.0",
+    "typescript": "^5.9.3",
     "vite": "^7.2.4",
     "vite-plugin-compression": "^0.5.1",
+    "vue-tsc": "^3.2.1",
     "vue-virtual-scroller": "^2.0.0-beta.3",
     "yaml": "^2.8.1"
   }

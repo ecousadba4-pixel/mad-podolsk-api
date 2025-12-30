@@ -59,8 +59,8 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useIsMobile } from '../../composables/useIsMobile.js'
-import { formatMoney, formatDate } from '../../utils/format.js'
+import { useIsMobile } from '../../composables/useIsMobile'
+import { formatMoney, formatDate } from '../../utils/format'
 
 /**
  * @typedef {Object} DailyRow

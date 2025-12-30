@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
-import { usePreferredTheme } from './composables/usePreferredTheme.js'
+import { usePreferredTheme } from './composables/usePreferredTheme'
 import { installQueryClient } from './composables/useQueryClient.js'
 
 // глобальные стили (объединены и структурированы в layers: tokens->foundations->components->overrides)

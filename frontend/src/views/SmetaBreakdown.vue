@@ -27,7 +27,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useDashboardStore } from '../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
 import { PageSection } from '../components/layouts'
-import { useIsMobile } from '../composables/useIsMobile.js'
+import { useIsMobile } from '../composables/useIsMobile'
 import { useSmetaBreakdown } from '../composables/useSmetaBreakdown.js'
 import { SmetaDetails } from '../components/dashboard'
 
