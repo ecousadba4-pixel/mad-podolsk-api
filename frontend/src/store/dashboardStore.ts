@@ -217,9 +217,8 @@ export const useDashboardStore = defineStore('dashboard', () => {
   })
 
   const lastLoadedQuery = useQuery<{ loaded_at: string | null }>({
-    queryKey: () => ['last-loaded', selectedMonth.value],
-    queryFn: () => getLastLoaded(selectedMonth.value),
-    enabled: computed(() => Boolean(selectedMonth.value)),
+    queryKey: () => ['last-loaded'],
+    queryFn: () => getLastLoaded(),
     staleTime: 60 * 1000
   })
 
@@ -258,7 +257,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
       let resultRows: SmetaDetailsWithTypesRow[] = []
       
       if (res?.rows && Array.isArray(res.rows)) {
-        // New format: flat rows array with type_of_work field
+        // API v1: flat rows array with type_of_work field
         for (const r of res.rows) {
           resultRows.push({
             type_of_work: r.type_of_work || null,
@@ -268,20 +267,6 @@ export const useDashboardStore = defineStore('dashboard', () => {
             fact: Number(r.fact || 0),
             delta: Number(r.delta ?? (Number(r.fact || 0) - Number(r.plan || 0)))
           })
-        }
-      } else if (res?.groups && Array.isArray(res.groups)) {
-        // Old format: grouped structure (backward compatibility)
-        for (const group of res.groups) {
-          for (const r of group.rows) {
-            resultRows.push({
-              type_of_work: group.type_of_work || null,
-              description: r.description || r.title || '',
-              description_id: r.description_id || '',
-              plan: Number(r.plan || 0),
-              fact: Number(r.fact || 0),
-              delta: Number(r.delta ?? (Number(r.fact || 0) - Number(r.plan || 0)))
-            })
-          }
         }
       }
       
