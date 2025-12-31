@@ -22,7 +22,7 @@
 
       <article class="summary-card p-md">
         <UiLabel class="summary-label type-label">Отклонение, ₽</UiLabel>
-        <UiText tag="div" variant="body" :color="kpi && kpi.delta < 0 ? 'danger' : 'main'" class="summary-value">{{ formatMoney(kpi?.delta) }}</UiText>
+        <UiText tag="div" variant="h2" weight="semibold" :color="kpi && kpi.delta < 0 ? 'danger' : 'main'" class="summary-kpi-value">{{ formatMoney(kpi?.delta) }}</UiText>
       </article>
 
             <article class="summary-card summary-card-interactive daily-average p-md" @click="$emit('open-daily')" :class="{ 'current-month': isCurrentMonth }">

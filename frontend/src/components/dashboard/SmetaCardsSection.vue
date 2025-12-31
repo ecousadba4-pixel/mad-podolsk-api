@@ -43,15 +43,15 @@ function onCardClick(key) {
           <div class="smeta-card__numbers">
             <div class="smeta-card__col card-col">
               <UiLabel class="smeta-card__label">ПЛАН</UiLabel>
-              <UiText variant="body" weight="bold" class="smeta-card__value">{{ formatNumber(c.plan) }}</UiText>
+              <UiText variant="body" weight="bold">{{ formatNumber(c.plan) }}</UiText>
             </div>
             <div class="smeta-card__col card-col">
               <UiLabel class="smeta-card__label">ФАКТ</UiLabel>
-              <UiText variant="body" weight="bold" class="smeta-card__value">{{ formatNumber(c.fact) }}</UiText>
+              <UiText variant="body" weight="bold">{{ formatNumber(c.fact) }}</UiText>
             </div>
             <div class="smeta-card__col card-col">
               <UiLabel class="smeta-card__label">ОТКЛОНЕНИЕ</UiLabel>
-              <UiText variant="body" weight="bold" :color="c.delta < 0 ? 'danger' : 'main'" class="smeta-card__value">{{ formatNumber(c.delta) }}</UiText>
+              <UiText variant="body" weight="bold" :color="c.delta < 0 ? 'danger' : 'main'">{{ formatNumber(c.delta) }}</UiText>
             </div>
           </div>
 

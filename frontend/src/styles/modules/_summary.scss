@@ -108,6 +108,18 @@
 .summary-value.positive { color: var(--success); }
 .summary-value.negative { color: var(--danger); }
 
+/* Новый класс для KPI-значений с UiText — не перезаписывает цвет */
+.summary-kpi-value {
+  text-align: left;
+  padding-left: var(--card-inner-indent);
+  word-break: break-word;
+  width: 100%;
+  margin-top: var(--gap-md);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+@media (max-width: 640px) { .summary-kpi-value { margin-top: var(--gap-sm); } }
+
 .summary-progress { margin-top: auto; display:flex; flex-direction:column; gap:var(--gap-xs); padding-top:var(--gap-xs); padding-inline:var(--card-inner-gap); padding-right: calc(var(--hint-size) + var(--gap-md) + var(--gap-xs)); }
 /* .summary-progress-labels and .summary-progress-bar/fill are now unified in _cards.scss */
 }
