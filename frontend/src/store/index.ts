@@ -1,0 +1,28 @@
+/**
+ * Store module exports
+ * 
+ * Модульная архитектура:
+ * - dashboardStore: главный координатор (обратная совместимость)
+ * - monthlyStore: данные месячного дашборда
+ * - dailyStore: данные дневного дашборда  
+ * - smetaStore: данные смет
+ * - helpers: общие утилиты и типы
+ */
+
+// Main store (backward compatible API)
+export { useDashboardStore, isVneregKey } from './dashboardStore'
+export type { DashboardMode, NormalizedDailyRow, DailyData, SmetaDetailsWithTypesRow } from './dashboardStore'
+
+// Feature stores (for direct access when needed)
+export { useMonthlyStore } from './monthlyStore'
+export { useDailyStore } from './dailyStore'
+export { useSmetaStore } from './smetaStore'
+
+// Shared helpers
+export {
+  fallbackMonths,
+  normalizeSmetaCards,
+  normalizeSmetaDetails,
+  normalizeDailyRows,
+  SMETA_LABELS
+} from './helpers'

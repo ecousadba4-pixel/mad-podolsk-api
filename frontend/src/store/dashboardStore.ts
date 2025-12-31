@@ -1,324 +1,89 @@
+/**
+ * Dashboard Store - координатор модулей и UI state
+ * 
+ * Этот store:
+ * - Координирует работу monthlyStore, dailyStore, smetaStore
+ * - Управляет общим UI state (режим, выбранный месяц)
+ * - Предоставляет единый API для компонентов (обратная совместимость)
+ * 
+ * Модульная архитектура:
+ * - monthlyStore: данные месячного дашборда (summary, months)
+ * - dailyStore: данные дневного дашборда (daily rows, dates)
+ * - smetaStore: данные смет (cards, details)
+ */
+
 import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
 import { defineStore } from 'pinia'
-import { useQuery, useInvalidateQueries } from '../composables/useQueryClient'
-import {
-  getAvailableDates,
-  getAvailableMonths,
-  getBySmeta,
-  getDaily,
-  getLastLoaded,
-  getMonthlySummary,
-  getSmetaDetails,
-  getSmetaDetailsWithTypes
-} from '../api/dashboard'
-import type {
-  MonthlySummary,
-  SmetaCard,
-  SmetaDetailRow
-} from '@/types/dashboard'
+import type { MonthlySummary } from '@/types/dashboard'
 
-// ============================================================================
-// TYPES
-// ============================================================================
+// Import sub-stores
+import { useMonthlyStore } from './monthlyStore'
+import { useDailyStore } from './dailyStore'
+import { useSmetaStore, isVneregKey } from './smetaStore'
+import type { NormalizedDailyRow, DailyData, SmetaDetailsWithTypesRow } from './helpers'
+
+// Re-export types for convenience
+export type { NormalizedDailyRow, DailyData, SmetaDetailsWithTypesRow }
+export { isVneregKey }
 
 export type DashboardMode = 'monthly' | 'daily'
 
-export interface NormalizedDailyRow {
-  date: string
-  name: string
-  unit: string
-  volume: string
-  amount: number
-}
-
-export interface DailyData {
-  rows: NormalizedDailyRow[]
-  total: number
-  date: string
-}
-
-export interface SmetaDetailsWithTypesRow {
-  type_of_work: string | null
-  description: string
-  description_id: string
-  plan: number
-  fact: number
-  delta: number
-}
-
 // ============================================================================
-// HELPERS
-// ============================================================================
-
-function fallbackMonths(): string[] {
-  const list: string[] = []
-  const now = new Date()
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-    list.push(d.toISOString().slice(0, 7))
-  }
-  return list
-}
-
-/**
- * Проверяет, является ли ключ сметы "внерегламентом"
- */
-export function isVneregKey(key: string | null | undefined): boolean {
-  if (!key) return false
-  const k = String(key).toLowerCase()
-  return k.includes('vne') || k === 'vnereg' || k === 'vner1' || k === 'vner2' || k === 'vnereglement'
-}
-
-/**
- * Маппинг ключей смет на человекочитаемые названия
- */
-const SMETA_LABELS: Record<string, string> = {
-  leto: 'Лето',
-  zima: 'Зима',
-  vnereg: 'Внерегламент',
-  vner1: 'Внерегламент',
-  vner2: 'Внерегламент',
-  vnereglement: 'Внерегламент'
-}
-
-/**
- * Нормализует данные сметных карточек.
- * API уже возвращает все вычисленные поля (delta, progress_percent).
- * Здесь только сортировка и маппинг snake_case -> camelCase.
- */
-function normalizeSmetaCards(raw: SmetaCard[]): SmetaCard[] {
-  const mapped = raw.map(c => ({
-    ...c,
-    // API возвращает progress_percent, маппим в progressPercent для совместимости
-    progressPercent: (c as unknown as { progress_percent?: number }).progress_percent ?? c.progressPercent ?? 0
-  }))
-  // Сортировка по факту (убывание)
-  mapped.sort((a, b) => (Number(b.fact) || 0) - (Number(a.fact) || 0))
-  return mapped
-}
-
-interface RawSmetaDetailRow {
-  title?: string
-  description?: string
-  description_id?: string
-  work_name?: string
-  name?: string
-  plan?: number
-  fact?: number
-  delta?: number
-  progress_percent?: number
-  progressPercent?: number
-  type_of_work?: string | null
-}
-
-/**
- * Нормализует данные деталей сметы.
- * API уже возвращает все вычисленные поля (delta, progress_percent).
- * Здесь только маппинг названий полей для совместимости.
- */
-function normalizeSmetaDetails(raw: RawSmetaDetailRow[]): SmetaDetailRow[] {
-  return raw.map(r => ({
-    title: r.title || r.description || r.work_name || r.name || '',
-    description: r.description,
-    description_id: r.description_id,
-    plan: Number(r.plan ?? 0),
-    fact: Number(r.fact ?? 0),
-    delta: Number(r.delta ?? 0),
-    progressPercent: r.progress_percent ?? r.progressPercent ?? 0,
-    type_of_work: r.type_of_work
-  }))
-}
-
-interface RawDailyRow {
-  description?: string
-  name?: string
-  work_name?: string
-  unit?: string
-  volume?: number | string
-  amount?: number | string
-}
-
-/**
- * Нормализует данные дневной таблицы
- */
-function normalizeDailyRows(rawRows: RawDailyRow[], dateValue: string): NormalizedDailyRow[] {
-  return rawRows.map(r => {
-    const unit = r.unit || ''
-    const volumeNumber = Number(r.volume || 0)
-    const amount = Number(r.amount || 0)
-    return {
-      date: dateValue,
-      name: r.description || r.name || r.work_name || '',
-      unit,
-      volume: `${volumeNumber}${unit ? ` (${unit})` : ''}`,
-      amount
-    }
-  })
-}
-
-// ============================================================================
-// STORE
+// MAIN STORE
 // ============================================================================
 
 export const useDashboardStore = defineStore('dashboard', () => {
-  const invalidateQueries = useInvalidateQueries()
+  // --------------------------------------------------------------------------
+  // SUB-STORES
+  // --------------------------------------------------------------------------
+  const monthlyStore = useMonthlyStore()
+  const dailyStore = useDailyStore()
+  const smetaStore = useSmetaStore()
 
   // --------------------------------------------------------------------------
-  // UI STATE (режим, выбранные значения)
+  // UI STATE (режим, выбранный месяц)
   // --------------------------------------------------------------------------
   const mode: Ref<DashboardMode> = ref('monthly')
   const selectedMonth = ref(new Date().toISOString().slice(0, 7))
-  const selectedDate = ref(new Date().toISOString().slice(0, 10))
-  const selectedSmeta: Ref<string | null> = ref(null)
-  const selectedDescription: Ref<string | null> = ref(null)
-  const selectedDescriptionId: Ref<string | null> = ref(null)
 
   // --------------------------------------------------------------------------
-  // MONTHLY QUERIES (summary, smeta cards, smeta details)
+  // INITIALIZE QUERIES (с привязкой к selectedMonth)
   // --------------------------------------------------------------------------
-  const availableMonthsQuery = useQuery<string[]>({
-    queryKey: ['available-months'],
-    queryFn: async () => {
-      const res = await getAvailableMonths()
-      if (!res) return fallbackMonths()
-      if (Array.isArray(res)) {
-        const mapped = res.map((r): string | null => {
-          if (!r) return null
-          if (typeof r === 'string') return r.slice(0, 7)
-          // Handle object responses
-          const obj = r as { month?: string; value?: string }
-          if (obj.month) return String(obj.month).slice(0, 7)
-          if (obj.value) return String(obj.value).slice(0, 7)
-          const s = JSON.stringify(r)
-          const m = s.match(/\d{4}-\d{2}/)
-          return m ? m[0] : null
-        }).filter((x): x is string => Boolean(x))
-        return mapped
-      }
-      return []
-    },
-    staleTime: 60 * 60 * 1000
-  })
-
-  const monthlySummaryQuery = useQuery<MonthlySummary>({
-    queryKey: () => ['monthly-summary', selectedMonth.value],
-    queryFn: () => getMonthlySummary(selectedMonth.value),
-    enabled: computed(() => Boolean(selectedMonth.value)),
-    staleTime: 5 * 60 * 1000
-  })
-
-  const lastLoadedQuery = useQuery<{ loaded_at: string | null }>({
-    queryKey: () => ['last-loaded'],
-    queryFn: () => getLastLoaded(),
-    staleTime: 60 * 1000
-  })
-
-  const smetaCardsQuery = useQuery<SmetaCard[]>({
-    queryKey: () => ['smeta-cards', selectedMonth.value],
-    queryFn: async () => {
-      const res = await getBySmeta(selectedMonth.value)
-      const raw = res?.cards || []
-      return normalizeSmetaCards(raw)
-    },
-    enabled: computed(() => Boolean(selectedMonth.value)),
-    staleTime: 3 * 60 * 1000,
-    refetchOnWindowFocus: true
-  })
-
-  const smetaDetailsQuery = useQuery<SmetaDetailRow[]>({
-    queryKey: () => ['smeta-details', selectedMonth.value, selectedSmeta.value ?? ''],
-    queryFn: async () => {
-      if (!selectedSmeta.value) return []
-      const res = await getSmetaDetails(selectedMonth.value, selectedSmeta.value)
-      const raw = res?.rows || []
-      return normalizeSmetaDetails(raw)
-    },
-    enabled: computed(() => Boolean(selectedSmeta.value) && Boolean(selectedMonth.value)),
-    staleTime: 2 * 60 * 1000
-  })
-
-  const smetaDetailsWithTypesQuery = useQuery<SmetaDetailsWithTypesRow[] | null>({
-    queryKey: () => ['smeta-details-with-types', selectedMonth.value, selectedSmeta.value ?? ''],
-    queryFn: async () => {
-      if (!selectedSmeta.value) return null
-      const res = await getSmetaDetailsWithTypes(selectedMonth.value, selectedSmeta.value)
-      
-      // API returns flat rows with all calculated fields (delta, progress_percent)
-      if (!res?.rows || !Array.isArray(res.rows)) return null
-      
-      const resultRows: SmetaDetailsWithTypesRow[] = res.rows.map(r => ({
-        type_of_work: r.type_of_work || null,
-        description: r.description || r.title || '',
-        description_id: r.description_id || '',
-        plan: Number(r.plan || 0),
-        fact: Number(r.fact || 0),
-        delta: Number(r.delta || 0)
-      }))
-      
-      return resultRows.length ? resultRows : null
-    },
-    enabled: computed(() => Boolean(selectedSmeta.value) && Boolean(selectedMonth.value)),
-    staleTime: 2 * 60 * 1000
-  })
-
-  // --------------------------------------------------------------------------
-  // DAILY QUERIES (dates, daily data)
-  // --------------------------------------------------------------------------
-  const availableDatesQuery = useQuery<string[]>({
-    queryKey: () => ['available-dates', selectedMonth.value],
-    queryFn: () => getAvailableDates(selectedMonth.value),
-    enabled: computed(() => Boolean(selectedMonth.value)),
-    staleTime: 60 * 1000
-  })
-
-  interface RawDailyResponse {
-    rows?: RawDailyRow[]
-    date?: string
-    total?: { amount?: number } | number
-  }
-
-  const dailyQuery = useQuery<DailyData>({
-    queryKey: () => ['daily', selectedDate.value],
-    queryFn: async () => {
-      const res = await getDaily(selectedDate.value) as RawDailyResponse
-      const rawRows = res?.rows || []
-      const dateValue = res?.date || selectedDate.value
-      const rows = normalizeDailyRows(rawRows, dateValue)
-      const totalFromApi = typeof res?.total === 'object' ? res.total?.amount : res?.total
-      const total = Number(totalFromApi !== undefined ? totalFromApi : rows.reduce((s, r) => s + (Number(r.amount) || 0), 0))
-      return { rows, total, date: dateValue }
-    },
-    enabled: computed(() => Boolean(selectedDate.value)),
-    staleTime: 2 * 60 * 1000
-  })
+  const monthlySummaryQuery = monthlyStore.createSummaryQuery(() => selectedMonth.value)
+  const availableDatesQuery = dailyStore.createAvailableDatesQuery(() => selectedMonth.value)
+  const smetaCardsQuery = smetaStore.createSmetaCardsQuery(() => selectedMonth.value)
+  const smetaDetailsQuery = smetaStore.createSmetaDetailsQuery(() => selectedMonth.value)
+  const smetaDetailsWithTypesQuery = smetaStore.createSmetaDetailsWithTypesQuery(() => selectedMonth.value)
 
   // --------------------------------------------------------------------------
   // WATCHERS (автоматические реакции на изменения)
   // --------------------------------------------------------------------------
+  
+  // Auto-select first smeta when cards change
   watch(smetaCardsQuery.data, (cards) => {
     const list = cards || []
-    const hasSelected = list.some(c => c && c.smeta_key === selectedSmeta.value)
+    const hasSelected = list.some(c => c && c.smeta_key === smetaStore.selectedSmeta)
     if (!hasSelected) {
       const first = list[0]
-      selectedSmeta.value = first ? first.smeta_key : null
+      smetaStore.setSelectedSmeta(first ? first.smeta_key : null)
     }
   }, { immediate: true })
 
+  // Clear description when month changes
   watch(selectedMonth, () => {
-    selectedDescription.value = null
-    selectedDescriptionId.value = null
-    invalidateQueries(['smeta-details'])
+    smetaStore.clearDescription()
+    smetaStore.invalidateSmetaDetails()
   })
 
   // --------------------------------------------------------------------------
-  // COMPUTED GETTERS (derived state)
+  // COMPUTED GETTERS (объединяем данные из под-сторов)
   // --------------------------------------------------------------------------
   
   // Monthly
   const monthlySummary: ComputedRef<MonthlySummary | null> = computed(() => monthlySummaryQuery.data.value)
   const monthlyLoading = computed(() => monthlySummaryQuery.isLoading.value || monthlySummaryQuery.isFetching.value)
   const monthlyError = computed(() => monthlySummaryQuery.error.value ? (monthlySummaryQuery.error.value.message || 'Не удалось загрузить summary') : null)
-  const availableMonths = computed(() => availableMonthsQuery.data.value || [])
+  const availableMonths = computed(() => monthlyStore.availableMonths)
   
   // Smeta
   const smetaCards = computed(() => smetaCardsQuery.data.value || [])
@@ -328,35 +93,47 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const smetaDetailsWithTypes = computed(() => smetaDetailsWithTypesQuery.data.value || null)
   const smetaDetailsWithTypesLoading = computed(() => smetaDetailsWithTypesQuery.isLoading.value || smetaDetailsWithTypesQuery.isFetching.value)
 
-  // Centralized smeta label - derives label from cards or SMETA_LABELS
-  const selectedSmetaLabel = computed(() => {
-    const key = selectedSmeta.value
-    if (!key) return ''
-    if (SMETA_LABELS[key]) return SMETA_LABELS[key]
-    const found = (smetaCards.value || []).find(c => c.smeta_key === key)
-    return found?.label || key
+  // Proxy refs from smetaStore
+  const selectedSmeta = computed({
+    get: () => smetaStore.selectedSmeta,
+    set: (v) => smetaStore.setSelectedSmeta(v)
+  })
+  const selectedDescription = computed({
+    get: () => smetaStore.selectedDescription,
+    set: (v) => smetaStore.setSelectedDescription(v)
+  })
+  const selectedDescriptionId = computed({
+    get: () => smetaStore.selectedDescriptionId,
+    set: (v) => smetaStore.setSelectedDescription(smetaStore.selectedDescription, v)
   })
 
+  // Centralized smeta label - derives label from cards or SMETA_LABELS
+  const selectedSmetaLabel = computed(() => 
+    smetaStore.getSmetaLabel(smetaStore.selectedSmeta, smetaCards.value)
+  )
+
   // Check if selected smeta is vnereg type
-  const isSelectedSmetaVnereg = computed(() => isVneregKey(selectedSmeta.value))
+  const isSelectedSmetaVnereg = computed(() => smetaStore.isSelectedSmetaVnereg)
 
   // Default sort key based on smeta type (plan for regular, fact for vnereg)
-  const defaultSmetaSortKey = computed(() => isSelectedSmetaVnereg.value ? 'fact' : 'plan')
+  const defaultSmetaSortKey = computed(() => smetaStore.defaultSmetaSortKey)
 
-  // Available dates for daily mode
+  // Daily - proxy from dailyStore
+  const selectedDate = computed({
+    get: () => dailyStore.selectedDate,
+    set: (v) => dailyStore.setSelectedDate(v)
+  })
   const availableDates = computed(() => availableDatesQuery.data.value || [])
+  const dailyRows = computed(() => dailyStore.dailyRows)
+  const dailyTotal = computed(() => dailyStore.dailyTotal)
+  const dailyLoading = computed(() => dailyStore.dailyLoading)
 
   // Meta
   const loadedAt = computed(() => {
-    const fromLastLoaded = lastLoadedQuery.data.value?.loaded_at
+    const fromLastLoaded = monthlyStore.lastLoadedAt
     const fromSummary = monthlySummary.value || {} as Partial<MonthlySummary>
     return fromLastLoaded || fromSummary.loaded_at || fromSummary.last_updated || fromSummary.updated_at || null
   })
-
-  // Daily
-  const dailyRows = computed(() => dailyQuery.data.value?.rows || [])
-  const dailyTotal = computed(() => dailyQuery.data.value?.total || 0)
-  const dailyLoading = computed(() => dailyQuery.isLoading.value || dailyQuery.isFetching.value)
 
   // --------------------------------------------------------------------------
   // ACTIONS (setters и методы)
@@ -365,33 +142,30 @@ export const useDashboardStore = defineStore('dashboard', () => {
   // UI setters
   function setMode(m: DashboardMode): void { mode.value = m }
   function setSelectedMonth(month: string): void { if (month) selectedMonth.value = month }
-  function setSelectedDate(date: string): void { if (date) selectedDate.value = date }
-  function setSelectedSmeta(key: string | null): void { selectedSmeta.value = key }
+  function setSelectedDate(date: string): void { dailyStore.setSelectedDate(date) }
+  function setSelectedSmeta(key: string | null): void { smetaStore.setSelectedSmeta(key) }
   function setSelectedDescription(desc: string | null, descId: string | null = null): void {
-    selectedDescription.value = desc
-    selectedDescriptionId.value = descId
+    smetaStore.setSelectedDescription(desc, descId)
   }
-  function setLoadedAt(ts: string | null): string | null { if (ts) invalidateQueries(['last-loaded']); return ts }
+  function setLoadedAt(ts: string | null): string | null { 
+    if (ts) monthlyStore.invalidateLastLoaded()
+    return ts 
+  }
 
   // Data fetchers
   const fetchMonthlySummary = () => monthlySummaryQuery.refetch()
   const fetchSmetaCards = () => smetaCardsQuery.refetch()
   const fetchSmetaDetails = (key?: string) => {
-    if (key) selectedSmeta.value = key
+    if (key) smetaStore.setSelectedSmeta(key)
     return smetaDetailsQuery.refetch()
   }
-  const fetchDaily = (date?: string) => {
-    if (date) selectedDate.value = date
-    return dailyQuery.refetch()
-  }
-  const fetchAvailableMonths = () => availableMonthsQuery.refetch()
+  const fetchDaily = (date?: string) => dailyStore.fetchDaily(date)
+  const fetchAvailableMonths = () => monthlyStore.fetchAvailableMonths()
 
   /**
    * Находит ближайшую дату с данными в текущем месяце
    */
   async function findNearestDateWithData(): Promise<string> {
-    const today = new Date()
-    const start = new Date(today.getFullYear(), today.getMonth(), 1)
     let available = availableDatesQuery.data.value
     
     if (!available || !available.length) {
@@ -399,45 +173,11 @@ export const useDashboardStore = defineStore('dashboard', () => {
       available = availableDatesQuery.data.value
     }
     
-    if (available && available.length) {
-      const startIso = start.toISOString().slice(0, 10)
-      const todayIso = today.toISOString().slice(0, 10)
-      const candidates = available
-        .map(d => String(d).slice(0, 10))
-        .filter(d => d >= startIso && d <= todayIso)
-        .sort()
-      const nearest = candidates[candidates.length - 1]
-      if (nearest) {
-        selectedDate.value = nearest
-        await dailyQuery.refetch()
-        return nearest
-      }
-    }
-
-    // Fallback: перебор дат
-    for (let d = new Date(today); d >= start; d.setDate(d.getDate() - 1)) {
-      const iso = d.toISOString().slice(0, 10)
-      try {
-        const res = await getDaily(iso)
-        const rows = res?.rows || []
-        if (rows.length) {
-          selectedDate.value = iso
-          await dailyQuery.refetch()
-          return iso
-        }
-      } catch {
-        /* continue */
-      }
-    }
-
-    const td = new Date().toISOString().slice(0, 10)
-    selectedDate.value = td
-    await dailyQuery.refetch()
-    return td
+    return dailyStore.findNearestDateWithData(available)
   }
 
   // --------------------------------------------------------------------------
-  // PUBLIC API
+  // PUBLIC API (сохраняем обратную совместимость)
   // --------------------------------------------------------------------------
   return {
     // UI State
@@ -489,6 +229,11 @@ export const useDashboardStore = defineStore('dashboard', () => {
     findNearestDateWithData,
     
     // Utilities (re-export for convenience)
-    isVneregKey
+    isVneregKey,
+    
+    // Sub-stores (для прямого доступа при необходимости)
+    $monthlyStore: monthlyStore,
+    $dailyStore: dailyStore,
+    $smetaStore: smetaStore
   }
 })

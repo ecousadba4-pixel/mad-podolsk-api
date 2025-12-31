@@ -26,6 +26,7 @@
     "@vitejs/plugin-vue": "^6.0.2",
     "autoprefixer": "^10.4.22",
     "cssnano": "^7.1.2",
+    "eslint": "^9.39.2",
     "playwright": "^1.57.0",
     "postcss-scss": "^4.0.9",
     "rollup-plugin-visualizer": "^6.0.5",
