@@ -22,11 +22,12 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="SKPDI Dashboard Backend",
+    version="1.0.0",
     lifespan=lifespan,
 )
 
-# Подключаем роутер дашборда
-app.include_router(dashboard_router, prefix="/api/dashboard")
+# API v1 - фиксированный контракт
+app.include_router(dashboard_router, prefix="/api/v1/dashboard", tags=["dashboard"])
 
 # CORS: читаем разрешённые origin'ы из переменной окружения ALLOWED_ORIGINS (comma-separated)
 allowed = os.environ.get("ALLOWED_ORIGINS", "*")

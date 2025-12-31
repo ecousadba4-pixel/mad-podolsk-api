@@ -1,37 +1,56 @@
 # Backend (FastAPI) для SKPDI Dashboard
 
-Эта папка содержит минимальный FastAPI-сервер, реализующий mock-эндпойнты, описанные в `docs/frontend-spec.md`.
+Эта папка содержит FastAPI-сервер для Dashboard SKPDI.
 
-Как запустить локально (в dev):
+## API Version
 
+**Текущая версия: v1**
+
+API использует версионирование через URL-префикс `/api/v1/`. Это обеспечивает:
+- Строгий контракт без fallback на устаревшие форматы
+- Возможность безопасных миграций в будущем
+- Чёткое разделение между версиями API
+
+## Как запустить локально
 
 1) Установите зависимости (рекомендуется в venv):
 
-```
+```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r ../../requirements.txt
 ```
 
-2) Перед запуском задайте переменную окружения `DB_DSN` (пример):
+2) Перед запуском задайте переменную окружения `DB_DSN`:
 
-```
+```bash
 export DB_DSN="postgresql://USER:PASSWORD@HOST:5432/DBNAME?sslmode=require"
 ```
 
-3) Запустить uvicorn:
+3) Запустите uvicorn:
 
-```
+```bash
 uvicorn app.backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-3) Доступные эндпойнты (пример):
-- `GET /api/dashboard/monthly/summary?month=2025-05`
-- `GET /api/dashboard/monthly/daily-revenue?month=2025-05`
-- `GET /api/dashboard/monthly/by-smeta?month=2025-05`
-- `GET /api/dashboard/monthly/smeta-details?month=2025-05&smeta_key=leto`
-- `GET /api/dashboard/monthly/smeta-description-daily?month=2025-05&smeta_key=leto&description_id=abc123def456`
-- `GET /api/dashboard/daily?date=2025-05-01`
+## API Endpoints (v1)
+
+Базовый путь: `/api/v1/dashboard`
+
+| Endpoint | Описание |
+|----------|----------|
+| `GET /monthly/summary?month=YYYY-MM` | Сводка по контракту и KPI |
+| `GET /monthly/by-smeta?month=YYYY-MM` | Карточки смет |
+| `GET /monthly/daily-revenue?month=YYYY-MM` | Выручка по дням |
+| `GET /monthly/dates?month=YYYY-MM` | Доступные даты |
+| `GET /monthly/smeta-details?month=YYYY-MM&smeta_key=KEY` | Детализация сметы |
+| `GET /monthly/smeta-details-with-types?month=YYYY-MM&smeta_key=KEY` | Детализация с типами работ |
+| `GET /monthly/smeta-description-daily?month=YYYY-MM&smeta_key=KEY&description_id=ID` | Дневная разбивка описания |
+| `GET /monthly/fact-by-type-of-work?month=YYYY-MM` | Факт по типам работ |
+| `GET /daily?date=YYYY-MM-DD` | Дневной отчёт |
+| `GET /months?limit=N` | Доступные месяцы |
+| `GET /last-loaded` | Время последней загрузки |
+| `POST /invalidate-cache` | Инвалидация кэша (требует X-Invalidation-Token) |
 
 ### О description_id
 
@@ -40,6 +59,21 @@ uvicorn app.backend.main:app --reload --host 0.0.0.0 --port 8000
 - `description_id` возвращается в ответах `/smeta-details` и `/smeta-details-with-types`
 - Фронтенд использует `description_id` для запросов к `/smeta-description-daily`
 
-Замена mock-данных на реальные запросы к Postgres:
-- Используйте `DB_DSN` из переменных окружения (amvera.yml задаёт `DB_DSN`).
-- Реализуйте SQL-агрегации согласно `docs/бизнес логика дашборда.md`.
+## Миграция с устаревшего API
+
+Комбинированный эндпоинт `GET /api/dashboard` удалён в v1. Используйте специализированные эндпоинты:
+
+| Старый формат | Новый эндпоинт v1 |
+|--------------|-------------------|
+| `GET /api/dashboard` | Используйте комбинацию: `/monthly/summary`, `/monthly/by-smeta`, `/months` |
+| `summary.contract_amount` | `contract.summa_contract` |
+| `summary.fact_amount` | `kpi.fact_total` |
+| `summary.planned_amount` | `kpi.plan_total` |
+
+## Переменные окружения
+
+| Переменная | Описание |
+|------------|----------|
+| `DB_DSN` | PostgreSQL connection string |
+| `CACHE_INVALIDATION_TOKEN` | Токен для эндпоинта инвалидации кэша |
+| `ALLOWED_ORIGINS` | CORS origins (comma-separated) |

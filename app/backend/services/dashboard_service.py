@@ -443,6 +443,11 @@ async def build_monthly_by_smeta(month: str, plan_fact: Optional[dict] = None):
     return {"month": plan_fact["month_key"], "cards": cards}
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# DEPRECATED: Combined dashboard endpoint removed in API v1
+# Kept for potential internal use only. Do not expose via API.
+# ─────────────────────────────────────────────────────────────────────────────
+
 async def _build_combined_dashboard_uncached(month_key: Optional[str]):
     """Internal uncached implementation of combined dashboard builder."""
     summary = {

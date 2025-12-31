@@ -4,7 +4,6 @@ import os
 
 from app.backend.schemas.dashboard import (
     CacheInvalidationResponse,
-    CombinedDashboardResponse,
     DailyResponse,
     LoadedAtResponse,
     MonthlyBySmetaResponse,
@@ -41,9 +40,8 @@ async def invalidate_cache(
     return {"success": True, "message": "All caches invalidated successfully"}
 
 
-@router.get("", response_model=CombinedDashboardResponse)
-async def combined_dashboard(month: Optional[str] = Query(None, description="YYYY-MM or YYYY-MM-DD (optional)")):
-    return await dashboard_service.build_combined_dashboard(month)
+# NOTE: Combined /api/dashboard endpoint removed in API v1
+# Use specific endpoints for better performance and clearer contract
 
 
 @router.get("/monthly/summary", response_model=MonthlySummaryResponse)

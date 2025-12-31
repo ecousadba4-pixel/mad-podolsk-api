@@ -83,27 +83,11 @@ class MonthlySmetaDescriptionDailyResponse(_BaseSchema):
     rows: List[SmetaDescriptionDailyRow]
 
 
-class CombinedSummary(_BaseSchema):
-    planned_amount: Optional[float]
-    fact_amount: Optional[float]
-    completion_pct: Optional[float]
-    delta_amount: Optional[float]
-    contract_amount: Optional[int]
-    contract_executed: Optional[int]
-    contract_completion_pct: Optional[float]
-    average_daily_revenue: Optional[int]
-    daily_revenue: Optional[int]
-
-
-class CombinedDashboardResponse(_BaseSchema):
-    month: Optional[str]
-    last_updated: Optional[str]
-    summary: CombinedSummary
-    items: list
-    cards: Optional[List[SmetaCard]]
-    has_data: bool
-    available_months: List[str]
-
+# NOTE: CombinedDashboardResponse removed in API v1
+# Use specific endpoints instead:
+# - /monthly/summary for contract and KPI data
+# - /monthly/by-smeta for smeta cards
+# - /months for available months
 
 class LoadedAtResponse(_BaseSchema):
     loaded_at: Optional[str]

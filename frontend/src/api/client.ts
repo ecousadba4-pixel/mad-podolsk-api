@@ -1,10 +1,14 @@
 /**
  * HTTP клиент с retry логикой и обработкой ошибок
+ * API Version: v1
  */
 
 const DEFAULT_BASE = 'https://api.podolsk.mad.moclean.ru'
 
 const BASE: string = import.meta.env.VITE_API_BASE ?? DEFAULT_BASE
+
+/** Текущая версия API */
+export const API_VERSION = 'v1'
 
 const RETRY_ATTEMPTS = 3
 const RETRY_BASE_DELAY_MS = 500
