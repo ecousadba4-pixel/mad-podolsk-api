@@ -22,7 +22,7 @@
 
       <article class="summary-card p-md">
         <UiLabel class="summary-label type-label">Отклонение, ₽</UiLabel>
-        <UiText tag="div" variant="h2" weight="semibold" :color="kpi && kpi.delta < 0 ? 'danger' : 'main'" class="summary-kpi-value">{{ formatMoney(kpi?.delta) }}</UiText>
+        <div class="summary-value" :class="{ 'negative': kpi && kpi.delta < 0 }">{{ formatMoney(kpi?.delta) }}</div>
       </article>
 
             <article class="summary-card summary-card-interactive daily-average p-md" @click="$emit('open-daily')" :class="{ 'current-month': isCurrentMonth }">
@@ -38,7 +38,7 @@
 import { computed, onMounted, onBeforeUnmount, watch, nextTick, ref } from 'vue'
 import { useDashboardStore } from '../../store/dashboardStore'
 import { storeToRefs } from 'pinia'
-import { UiLabel, UiText, UiProgress } from '../ui'
+import { UiLabel, UiProgress } from '../ui'
 
 const props = defineProps({ kpi: { type: Object, default: () => ({}) } })
 const emit = defineEmits(['open-daily', 'open-fact-types'])

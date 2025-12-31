@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useDashboardStore } from '../../store/dashboardStore'
 import { CardsGrid, PageSection } from '../layouts'
 import { formatNumber } from '../../utils/format'
-import { UiText, UiLabel, UiBadge, UiProgress } from '../ui'
+import { UiLabel, UiBadge, UiProgress } from '../ui'
 
 const store = useDashboardStore()
 // use storeToRefs to subscribe only to specific refs, reducing re-renders
@@ -36,22 +36,22 @@ function onCardClick(key) {
 
         <div class="smeta-card__body">
           <header class="smeta-card__head">
-            <UiText tag="h3" variant="body" weight="bold" class="smeta-card__title">{{ c.label }}</UiText>
+            <h3 class="smeta-card__title">{{ c.label }}</h3>
             <UiBadge v-if="c.count" variant="muted" size="sm">{{ c.count }} работ</UiBadge>
           </header>
 
           <div class="smeta-card__numbers">
             <div class="smeta-card__col card-col">
               <UiLabel class="smeta-card__label">ПЛАН</UiLabel>
-              <UiText variant="body" weight="bold">{{ formatNumber(c.plan) }}</UiText>
+              <div class="smeta-card__value">{{ formatNumber(c.plan) }}</div>
             </div>
             <div class="smeta-card__col card-col">
               <UiLabel class="smeta-card__label">ФАКТ</UiLabel>
-              <UiText variant="body" weight="bold">{{ formatNumber(c.fact) }}</UiText>
+              <div class="smeta-card__value">{{ formatNumber(c.fact) }}</div>
             </div>
             <div class="smeta-card__col card-col">
               <UiLabel class="smeta-card__label">ОТКЛОНЕНИЕ</UiLabel>
-              <UiText variant="body" weight="bold" :color="c.delta < 0 ? 'danger' : 'main'">{{ formatNumber(c.delta) }}</UiText>
+              <div class="smeta-card__value" :class="{ 'delta-negative': c.delta < 0 }">{{ formatNumber(c.delta) }}</div>
             </div>
           </div>
 
