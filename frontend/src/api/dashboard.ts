@@ -71,6 +71,7 @@ export interface SmetaDetailWithTypeRow {
   plan: number
   fact: number
   delta: number
+  progress_percent: number
 }
 
 /** Response from smeta-details-with-types endpoint */

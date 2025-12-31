@@ -19,6 +19,7 @@ class SmetaCard(_BaseSchema):
     plan: int
     fact: int
     delta: int
+    progress_percent: int
 
 
 class MonthlyBySmetaResponse(_BaseSchema):
@@ -61,6 +62,7 @@ class SmetaDetailRow(_BaseSchema):
     plan: int
     fact: int
     delta: int
+    progress_percent: int
 
 
 class MonthlySmetaDetailsResponse(_BaseSchema):
@@ -130,6 +132,7 @@ class SmetaDetailWithTypeRow(_BaseSchema):
     plan: int
     fact: int
     delta: int
+    progress_percent: int
 
 
 class SmetaDetailsWithTypesResponse(_BaseSchema):

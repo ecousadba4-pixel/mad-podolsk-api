@@ -431,13 +431,17 @@ async def build_monthly_by_smeta(month: str, plan_fact: Optional[dict] = None):
         "vnereglement": ("plan_vnereglament", "fact_vnereglament"),
     }
     for smeta_key, (plan_key, fact_key) in plan_keys.items():
+        plan_value = plan_fact[plan_key]
+        fact_value = plan_fact[fact_key]
+        progress_percent = round((fact_value / plan_value) * 100) if plan_value else 0
         cards.append(
             {
                 "smeta_key": smeta_key,
                 "label": SMETA_LABELS[smeta_key],
-                "plan": plan_fact[plan_key],
-                "fact": plan_fact[fact_key],
-                "delta": plan_fact[fact_key] - plan_fact[plan_key],
+                "plan": plan_value,
+                "fact": fact_value,
+                "delta": fact_value - plan_value,
+                "progress_percent": progress_percent,
             }
         )
     return {"month": plan_fact["month_key"], "cards": cards}
@@ -553,12 +557,14 @@ async def _build_monthly_smeta_details_uncached(month_key: str, smeta_key: str):
         description = r.get("description", "")
         plan_value = r.get("plan") or 0
         fact_value = r.get("fact") or 0
+        progress_percent = round((fact_value / plan_value) * 100) if plan_value else 0
         rows.append({
             "description": description,
             "description_id": desc_id_map.get(description, ""),
             "plan": plan_value,
             "fact": fact_value,
             "delta": fact_value - plan_value,
+            "progress_percent": progress_percent,
         })
 
     return {"month": month_key, "smeta_key": smeta_key, "rows": rows}
@@ -671,13 +677,15 @@ async def _build_smeta_details_with_types_uncached(month_key: str, smeta_key: st
         plan = 0 if is_vnereg else r.get("plan", 0)
         fact = r.get("fact", 0)
         description = r.get("description", "")
+        progress_percent = round((fact / plan) * 100) if plan else 0
         rows.append({
             "type_of_work": r.get("type_of_work"),
             "description": description,
             "description_id": desc_id_map.get(description, ""),
             "plan": plan,
             "fact": fact,
-            "delta": fact - plan
+            "delta": fact - plan,
+            "progress_percent": progress_percent,
         })
     
     return {

@@ -82,16 +82,17 @@ const SMETA_LABELS: Record<string, string> = {
 }
 
 /**
- * Нормализует данные сметных карточек
+ * Нормализует данные сметных карточек.
+ * API уже возвращает все вычисленные поля (delta, progress_percent).
+ * Здесь только сортировка и маппинг snake_case -> camelCase.
  */
 function normalizeSmetaCards(raw: SmetaCard[]): SmetaCard[] {
-  const mapped = raw.map(c => {
-    const plan = Number(c.plan) || 0
-    const fact = Number(c.fact) || 0
-    const pct = plan ? Math.round((fact / plan) * 100) : 0
-    const delta = Number(c.delta ?? (fact - plan))
-    return { ...c, delta, progressPercent: c.progressPercent ?? pct }
-  })
+  const mapped = raw.map(c => ({
+    ...c,
+    // API возвращает progress_percent, маппим в progressPercent для совместимости
+    progressPercent: (c as unknown as { progress_percent?: number }).progress_percent ?? c.progressPercent ?? 0
+  }))
+  // Сортировка по факту (убывание)
   mapped.sort((a, b) => (Number(b.fact) || 0) - (Number(a.fact) || 0))
   return mapped
 }
@@ -103,39 +104,29 @@ interface RawSmetaDetailRow {
   work_name?: string
   name?: string
   plan?: number
-  planned_amount?: number
-  planned?: number
-  planned_amount_month?: number
   fact?: number
-  fact_amount?: number
-  fact_amount_done?: number
-  fact_amount_month?: number
   delta?: number
+  progress_percent?: number
   progressPercent?: number
   type_of_work?: string | null
 }
 
 /**
- * Нормализует данные деталей сметы
+ * Нормализует данные деталей сметы.
+ * API уже возвращает все вычисленные поля (delta, progress_percent).
+ * Здесь только маппинг названий полей для совместимости.
  */
 function normalizeSmetaDetails(raw: RawSmetaDetailRow[]): SmetaDetailRow[] {
-  return raw.map(r => {
-    const title = r.title || r.description || r.work_name || r.name || ''
-    const plan = Number(r.plan ?? r.planned_amount ?? r.planned ?? r.planned_amount_month ?? 0)
-    const fact = Number(r.fact ?? r.fact_amount ?? r.fact_amount_done ?? r.fact_amount_month ?? 0)
-    const delta = Number(r.delta ?? (fact - plan))
-    const progressPercent = r.progressPercent ?? (plan ? Math.round((fact / plan) * 100) : 0)
-    return {
-      title,
-      description: r.description,
-      description_id: r.description_id,
-      plan,
-      fact,
-      delta,
-      progressPercent,
-      type_of_work: r.type_of_work
-    }
-  })
+  return raw.map(r => ({
+    title: r.title || r.description || r.work_name || r.name || '',
+    description: r.description,
+    description_id: r.description_id,
+    plan: Number(r.plan ?? 0),
+    fact: Number(r.fact ?? 0),
+    delta: Number(r.delta ?? 0),
+    progressPercent: r.progress_percent ?? r.progressPercent ?? 0,
+    type_of_work: r.type_of_work
+  }))
 }
 
 interface RawDailyRow {
@@ -252,23 +243,17 @@ export const useDashboardStore = defineStore('dashboard', () => {
       if (!selectedSmeta.value) return null
       const res = await getSmetaDetailsWithTypes(selectedMonth.value, selectedSmeta.value)
       
-      // API now returns flat rows with type_of_work field, not groups
-      // Support both old (groups) and new (rows) format
-      let resultRows: SmetaDetailsWithTypesRow[] = []
+      // API returns flat rows with all calculated fields (delta, progress_percent)
+      if (!res?.rows || !Array.isArray(res.rows)) return null
       
-      if (res?.rows && Array.isArray(res.rows)) {
-        // API v1: flat rows array with type_of_work field
-        for (const r of res.rows) {
-          resultRows.push({
-            type_of_work: r.type_of_work || null,
-            description: r.description || r.title || '',
-            description_id: r.description_id || '',
-            plan: Number(r.plan || 0),
-            fact: Number(r.fact || 0),
-            delta: Number(r.delta ?? (Number(r.fact || 0) - Number(r.plan || 0)))
-          })
-        }
-      }
+      const resultRows: SmetaDetailsWithTypesRow[] = res.rows.map(r => ({
+        type_of_work: r.type_of_work || null,
+        description: r.description || r.title || '',
+        description_id: r.description_id || '',
+        plan: Number(r.plan || 0),
+        fact: Number(r.fact || 0),
+        delta: Number(r.delta || 0)
+      }))
       
       return resultRows.length ? resultRows : null
     },

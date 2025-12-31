@@ -34,6 +34,8 @@ export interface SmetaCard {
   plan: number
   fact: number
   delta: number
+  /** API возвращает как progress_percent, стор мапит в progressPercent */
+  progress_percent?: number
   progressPercent: number
   count?: number
 }
@@ -47,6 +49,8 @@ export interface SmetaDetailRow {
   plan: number
   fact: number
   delta: number
+  /** API возвращает как progress_percent, стор мапит в progressPercent */
+  progress_percent?: number
   progressPercent: number
   type_of_work?: string | null
 }
