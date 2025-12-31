@@ -1,5 +1,11 @@
 @layer components {
-/* Cards and panel surfaces — extracted from components.css */
+/* Cards and panel surfaces — extracted from components.css
+
+   @deprecated (partial) — Consider using UI-kit components for new code:
+   - .card, .card--* → <UiCard variant="...">
+   - .progress-*, .smeta-progress-* → <UiProgress>
+   Domain-specific card classes (smeta-card__*, summary-*, category-*) remain in use.
+*/
 
 .card {
   background: var(--bg-card);

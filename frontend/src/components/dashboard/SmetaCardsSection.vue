@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useDashboardStore } from '../../store/dashboardStore'
 import { CardsGrid, PageSection } from '../layouts'
 import { formatNumber } from '../../utils/format'
+import { UiText, UiLabel, UiBadge, UiProgress } from '../ui'
 
 const store = useDashboardStore()
 // use storeToRefs to subscribe only to specific refs, reducing re-renders
@@ -35,34 +36,30 @@ function onCardClick(key) {
 
         <div class="smeta-card__body">
           <header class="smeta-card__head">
-            <h3 class="smeta-card__title text-h3">{{ c.label }}</h3>
-            <div class="smeta-card__meta-pill" v-if="c.count">{{ c.count }} работ</div>
+            <UiText tag="h3" variant="body" weight="bold" class="smeta-card__title">{{ c.label }}</UiText>
+            <UiBadge v-if="c.count" variant="muted" size="sm">{{ c.count }} работ</UiBadge>
           </header>
 
           <div class="smeta-card__numbers">
             <div class="smeta-card__col card-col">
-              <div class="smeta-card__label text-label">ПЛАН</div>
-              <div class="smeta-card__value text-body">{{ formatNumber(c.plan) }}</div>
+              <UiLabel class="smeta-card__label">ПЛАН</UiLabel>
+              <UiText variant="body" weight="bold" class="smeta-card__value">{{ formatNumber(c.plan) }}</UiText>
             </div>
             <div class="smeta-card__col card-col">
-              <div class="smeta-card__label text-label">ФАКТ</div>
-              <div class="smeta-card__value text-body">{{ formatNumber(c.fact) }}</div>
+              <UiLabel class="smeta-card__label">ФАКТ</UiLabel>
+              <UiText variant="body" weight="bold" class="smeta-card__value">{{ formatNumber(c.fact) }}</UiText>
             </div>
             <div class="smeta-card__col card-col">
-              <div class="smeta-card__label text-label">ОТКЛОНЕНИЕ</div>
-              <div class="smeta-card__value text-body" :class="{'delta-negative': c.delta < 0}">{{ formatNumber(c.delta) }}</div>
+              <UiLabel class="smeta-card__label">ОТКЛОНЕНИЕ</UiLabel>
+              <UiText variant="body" weight="bold" :color="c.delta < 0 ? 'danger' : 'main'" class="smeta-card__value">{{ formatNumber(c.delta) }}</UiText>
             </div>
           </div>
 
-          <div class="smeta-card__progress">
-            <div class="smeta-progress-labels">
-              <span>ИСПОЛНЕНИЕ</span>
-              <strong>{{ c.progressPercent || 0 }}%</strong>
-            </div>
-            <div class="smeta-progress__bar">
-              <div class="smeta-progress__fill progress__fill" :style="{ '--progress': (c.progressPercent || 0) + '%' }"></div>
-            </div>
-          </div>
+          <UiProgress
+            :value="c.progressPercent || 0"
+            :labels="{ left: 'ИСПОЛНЕНИЕ', right: `${c.progressPercent || 0}%` }"
+            class="smeta-card__progress"
+          />
         </div>
       </article>
     </CardsGrid>

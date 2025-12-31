@@ -2,33 +2,31 @@
   <section class="summary-grid" ref="root">
     <div class="summary-cards">
       <article class="summary-card p-md">
-        <div class="summary-label type-label">План, ₽</div>
+        <UiLabel class="summary-label type-label">План, ₽</UiLabel>
         <div class="summary-value">{{ formatMoney(kpi?.plan_total) }}</div>
       </article>
 
       <article class="summary-card summary-card-interactive p-md" @click="$emit('open-fact-types')">
-        <div class="summary-label type-label">Факт, ₽</div>
+        <UiLabel class="summary-label type-label">Факт, ₽</UiLabel>
         <div class="summary-value">{{ formatMoney(kpi?.fact_total) }}</div>
 
-        <div class="summary-progress" v-if="kpi">
-          <div class="summary-progress-labels">
-            <span>ИСПОЛНЕНИЕ</span>
-            <strong>{{ percentExecuted }}%</strong>
-          </div>
-          <div class="summary-progress-bar" role="progressbar" :aria-valuenow="percentExecuted" aria-valuemin="0" aria-valuemax="100">
-            <div class="summary-progress-fill progress__fill" :style="{ '--progress': percentExecuted + '%' }" :class="{ overflow: rawPercent > 100 }"></div>
-          </div>
-        </div>
+        <UiProgress
+          v-if="kpi"
+          :value="rawPercent"
+          :color="rawPercent > 100 ? 'success' : 'accent'"
+          :labels="{ left: 'ИСПОЛНЕНИЕ', right: `${percentExecuted}%` }"
+          class="summary-progress"
+        />
         <div class="summary-card-hint" aria-hidden="true">i</div>
       </article>
 
       <article class="summary-card p-md">
-        <div class="summary-label type-label">Отклонение, ₽</div>
-        <div class="summary-value" :class="{'negative': kpi && kpi.delta < 0}">{{ formatMoney(kpi?.delta) }}</div>
+        <UiLabel class="summary-label type-label">Отклонение, ₽</UiLabel>
+        <UiText tag="div" variant="body" :color="kpi && kpi.delta < 0 ? 'danger' : 'main'" class="summary-value">{{ formatMoney(kpi?.delta) }}</UiText>
       </article>
 
             <article class="summary-card summary-card-interactive daily-average p-md" @click="$emit('open-daily')" :class="{ 'current-month': isCurrentMonth }">
-              <div class="summary-label daily-average type-label">СР.ДНЕВ. ВЫРУЧКА, ₽</div>
+              <UiLabel class="summary-label daily-average type-label">СР.ДНЕВ. ВЫРУЧКА, ₽</UiLabel>
               <div class="summary-value">{{ formatMoney(kpi?.avg_daily_revenue) }}</div>
               <div class="summary-card-hint" aria-hidden="true" v-if="isCurrentMonth">i</div>
             </article>
@@ -40,6 +38,7 @@
 import { computed, onMounted, onBeforeUnmount, watch, nextTick, ref } from 'vue'
 import { useDashboardStore } from '../../store/dashboardStore'
 import { storeToRefs } from 'pinia'
+import { UiLabel, UiText, UiProgress } from '../ui'
 
 const props = defineProps({ kpi: { type: Object, default: () => ({}) } })
 const emit = defineEmits(['open-daily', 'open-fact-types'])

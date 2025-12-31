@@ -5,28 +5,24 @@
   >
     <div class="panel-header row-between">
       <div class="panel-title-group">
-        <h3 class="panel-title">Исполнение контракта</h3>
+        <UiText tag="h3" variant="h3" class="panel-title">Исполнение контракта</UiText>
       </div>
       <div class="panel-meta">
         <div class="panel-meta-row panel-meta-labels">
-          <div class="panel-meta-item"><div class="panel-meta-label">Контракт</div></div>
-          <div class="panel-meta-item"><div class="panel-meta-label">Выполнено</div></div>
-          <div class="panel-meta-item"><div class="panel-meta-label">Исполнение</div></div>
+          <div class="panel-meta-item"><UiLabel class="panel-meta-label">Контракт</UiLabel></div>
+          <div class="panel-meta-item"><UiLabel class="panel-meta-label">Выполнено</UiLabel></div>
+          <div class="panel-meta-item"><UiLabel class="panel-meta-label">Исполнение</UiLabel></div>
         </div>
         <div class="panel-meta-row panel-meta-values">
-          <div class="panel-meta-item"><div class="panel-meta-value">{{ formatMoney(contract?.summa_contract) }}</div></div>
-          <div class="panel-meta-item"><div class="panel-meta-value">{{ formatMoney(contract?.fact_total) }}</div></div>
-          <div class="panel-meta-item"><div class="panel-meta-value">{{ percent(contract?.contract_planfact_pct) }}</div></div>
+          <div class="panel-meta-item"><UiText weight="bold" class="panel-meta-value">{{ formatMoney(contract?.summa_contract) }}</UiText></div>
+          <div class="panel-meta-item"><UiText weight="bold" class="panel-meta-value">{{ formatMoney(contract?.fact_total) }}</UiText></div>
+          <div class="panel-meta-item"><UiText weight="bold" class="panel-meta-value">{{ percent(contract?.contract_planfact_pct) }}</UiText></div>
         </div>
       </div>
     </div>
 
     <div class="contract-execution__body">
-      <div class="contract-progress">
-        <div class="contract-progress__bar">
-          <div class="contract-progress__fill progress__fill" :style="{ '--progress': progressPercent + '%' }" />
-        </div>
-      </div>
+      <UiProgress :value="progressPercent" class="contract-progress" />
     </div>
   </section>
 </template>
@@ -35,6 +31,7 @@
 import { computed } from 'vue'
 import { useIsMobile } from '../../composables/useIsMobile'
 import { formatMoney, formatPercent } from '../../utils/format'
+import { UiText, UiLabel, UiProgress } from '../ui'
 
 const props = defineProps({ contract: { type: Object, default: () => ({}) } })
 

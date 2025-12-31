@@ -2,7 +2,7 @@
   <section class="panel smeta-panel panel--full-bleed page-content-panel daily-table">
     <div class="panel-header row-between">
       <div class="panel-title-group">
-        <h3 class="panel-title text-h3">Данные по выручке<span v-if="displayDate" class="panel-title-date"> — {{ displayDate }}</span></h3>
+        <UiText tag="h3" variant="h3" class="panel-title">Данные по выручке<span v-if="displayDate" class="panel-title-date"> — {{ displayDate }}</span></UiText>
       </div>
     </div>
 
@@ -61,6 +61,7 @@
 import { computed } from 'vue'
 import { useIsMobile } from '../../composables/useIsMobile'
 import { formatMoney, formatDate } from '../../utils/format'
+import { UiText } from '../ui'
 
 /**
  * @typedef {Object} DailyRow

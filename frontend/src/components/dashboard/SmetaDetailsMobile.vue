@@ -25,29 +25,29 @@
           </button>
         </div>
       </div>
-      <div class="smeta-mobile-row smeta-mobile-row-labels text-label">
-        <div class="lbl">План</div>
-        <div class="lbl">Факт</div>
-        <div class="lbl">Отклонение</div>
+      <div class="smeta-mobile-row smeta-mobile-row-labels">
+        <UiLabel class="lbl">План</UiLabel>
+        <UiLabel class="lbl">Факт</UiLabel>
+        <UiLabel class="lbl">Отклонение</UiLabel>
       </div>
       <div class="smeta-mobile-row smeta-mobile-row-values">
-        <div class="val text-body">{{ formatMoney(item.plan) }}</div>
-        <div class="val text-body">{{ formatMoney(item.fact) }}</div>
-        <div class="val text-body" :class="{'negative': (Number(item.fact || 0) - Number(item.plan || 0)) < 0}">{{ formatMoney(Number(item.fact || 0) - Number(item.plan || 0)) }}</div>
+        <UiText variant="body-sm" class="val">{{ formatMoney(item.plan) }}</UiText>
+        <UiText variant="body-sm" class="val">{{ formatMoney(item.fact) }}</UiText>
+        <UiText variant="body-sm" :color="(Number(item.fact || 0) - Number(item.plan || 0)) < 0 ? 'danger' : 'main'" class="val">{{ formatMoney(Number(item.fact || 0) - Number(item.plan || 0)) }}</UiText>
       </div>
     </div>
 
     <!-- Mobile totals (single block after list) -->
     <div class="smeta-mobile-totals p-sm smeta-mobile-totals--highlight">
-      <div class="smeta-mobile-row smeta-mobile-row-labels text-label">
-        <div class="lbl">План</div>
-        <div class="lbl">Факт</div>
-        <div class="lbl">Отклонение</div>
+      <div class="smeta-mobile-row smeta-mobile-row-labels">
+        <UiLabel class="lbl">План</UiLabel>
+        <UiLabel class="lbl">Факт</UiLabel>
+        <UiLabel class="lbl">Отклонение</UiLabel>
       </div>
       <div class="smeta-mobile-row smeta-mobile-row-values">
-        <div class="val text-body">{{ formatMoney(totalsPlan) }}</div>
-        <div class="val text-body">{{ formatMoney(totalsFact) }}</div>
-        <div class="val text-body" :class="{'negative': totalsDelta < 0}">{{ formatMoney(totalsDelta) }}</div>
+        <UiText variant="body-sm" class="val">{{ formatMoney(totalsPlan) }}</UiText>
+        <UiText variant="body-sm" class="val">{{ formatMoney(totalsFact) }}</UiText>
+        <UiText variant="body-sm" :color="totalsDelta < 0 ? 'danger' : 'main'" class="val">{{ formatMoney(totalsDelta) }}</UiText>
       </div>
     </div>
   </div>
@@ -56,6 +56,7 @@
 <script setup>
 import { useTitleExpansion } from '../../composables/useTitleExpansion'
 import { formatMoney } from '../../utils/format'
+import { UiText, UiLabel } from '../ui'
 
 const props = defineProps({
   sortedItems: { type: Array, default: () => [] },

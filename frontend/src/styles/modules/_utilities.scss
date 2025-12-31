@@ -95,7 +95,9 @@
   }
 }
 
-/* Typography helpers (map to tokens) */
+/* Typography helpers (map to tokens)
+   @deprecated — Use <UiText variant="..."> component from @/components/ui instead.
+   These classes are kept for backward compatibility and will be removed in future. */
 .text-h1 { font-size: var(--font-size-h1); }
 .text-h2 { font-size: var(--font-size-h2); }
 .text-h3 { font-size: var(--font-size-h3); }
@@ -173,11 +175,14 @@
 /* Small button baseline */
 .btn { display:inline-flex; align-items:center; justify-content:center; gap:var(--gap-xs); cursor:pointer; border:none; background:transparent; padding:0; }
 
-/* Transitions and skeletons */
+/* Transitions */
 .transition-lift { transition: var(--transition-lift); }
 .transition-lift-fade { transition: var(--transition-lift), var(--transition-fade); }
 .transition-lift-border { transition: var(--transition-lift), var(--transition-border); }
 
+/* Skeleton utilities
+   @deprecated — Use <UiSkeleton> component from @/components/ui instead.
+   These classes are kept for backward compatibility. */
 .skeleton { position: relative; overflow: hidden; background: var(--gradient-skeleton); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: var(--radius-sm); will-change: background-position; }
 .skeleton-line { height: 12px; width: 100%; margin-bottom: 10px; }
 .skeleton-line-sm { width: 60%; }

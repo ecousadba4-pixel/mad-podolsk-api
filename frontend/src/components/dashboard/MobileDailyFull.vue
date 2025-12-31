@@ -3,7 +3,7 @@
     <div class="mobile-daily__constrain" ref="constrainRef">
       <div class="mobile-daily__card">
         <header class="mobile-daily__header">
-          <h3 class="panel-title text-h3">Выручка<span v-if="displayDateShort"> — {{ displayDateShort }}</span></h3>
+          <UiText tag="h3" variant="h3" class="panel-title">Выручка<span v-if="displayDateShort"> — {{ displayDateShort }}</span></UiText>
         </header>
         <!-- Mobile table content rendered here -->
         <div class="smeta-details-mobile">
@@ -33,22 +33,22 @@
                 </button>
               </div>
             </div>
-            <div class="smeta-mobile-row smeta-mobile-row-labels text-label">
-              <div class="lbl">Ед.</div>
-              <div class="lbl">Объем</div>
-              <div class="lbl">Сумма</div>
+            <div class="smeta-mobile-row smeta-mobile-row-labels">
+              <UiLabel class="lbl">Ед.</UiLabel>
+              <UiLabel class="lbl">Объем</UiLabel>
+              <UiLabel class="lbl">Сумма</UiLabel>
             </div>
             <div class="smeta-mobile-row smeta-mobile-row-values">
-              <div class="val text-body">{{ item.unit }}</div>
-              <div class="val text-body">{{ formatVolume(item.volume) }}</div>
-              <div class="val text-body">{{ formatMoney(item.amount) }}</div>
+              <UiText variant="body-sm" class="val">{{ item.unit }}</UiText>
+              <UiText variant="body-sm" class="val">{{ formatVolume(item.volume) }}</UiText>
+              <UiText variant="body-sm" class="val">{{ formatMoney(item.amount) }}</UiText>
             </div>
           </div>
 
           <div v-if="sortedRows && sortedRows.length" class="smeta-mobile-totals p-sm">
             <div class="smeta-mobile-row-values totals-grid">
-              <div class="totals-label">ИТОГО</div>
-              <div class="val text-body totals-value"><strong>{{ formatMoney(total) }}</strong></div>
+              <UiLabel class="totals-label">ИТОГО</UiLabel>
+              <UiText variant="body-sm" weight="bold" class="val totals-value">{{ formatMoney(total) }}</UiText>
             </div>
           </div>
         </div>
@@ -59,6 +59,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick, computed, watch } from 'vue'
+import { UiText, UiLabel } from '../ui'
 
 const props = defineProps({
   rows: { type: Array, default: () => [] },

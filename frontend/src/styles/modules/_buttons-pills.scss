@@ -1,6 +1,11 @@
 @layer components {
 /* Buttons, mode-switch and pill components consolidated
    Central source for small control appearance: pills, mode buttons, picker-toggle.
+
+   @deprecated (partial) — Consider using UI-kit components:
+   - .pill → <UiBadge> for simple labels
+   - .btn  → <UiButton> for interactive buttons
+   New code should prefer UI-kit components from @/components/ui.
 */
 
 .pill {

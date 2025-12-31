@@ -2,8 +2,8 @@
   <div class="last-updated items-center p-sm" v-if="display">
     <span class="last-updated__dot" aria-hidden="true"></span>
     <div class="last-updated__text">
-      <div class="last-updated__label text-label">ОБНОВЛЕНИЕ</div>
-      <div class="last-updated__time text-body">{{ formatted }}</div>
+      <UiLabel class="last-updated__label">ОБНОВЛЕНИЕ</UiLabel>
+      <UiText variant="body-sm" weight="semibold" class="last-updated__time">{{ formatted }}</UiText>
     </div>
   </div>
 </template>
@@ -12,6 +12,7 @@
 import { computed } from 'vue'
 import { useDashboardStore } from '../../store/dashboardStore'
 import { storeToRefs } from 'pinia'
+import { UiLabel, UiText } from '../ui'
 
 const props = defineProps({ loadedAt: { type: [String, Date], default: null } })
 
