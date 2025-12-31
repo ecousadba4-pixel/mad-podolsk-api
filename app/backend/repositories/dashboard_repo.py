@@ -3,26 +3,26 @@ from typing import List, Optional, Sequence
 from app.backend import db
 
 
-def get_months_from_plan_vs_fact_monthly() -> List[dict]:
-    return db.query(
+async def get_months_from_plan_vs_fact_monthly() -> List[dict]:
+    return await db.query_async(
         "SELECT DISTINCT to_char(month_start, 'YYYY-MM') AS month FROM mv_plan_vs_fact_monthly_ids ORDER BY month DESC"
     )
 
 
-def get_months_from_plan_fact_backend() -> List[dict]:
-    return db.query(
+async def get_months_from_plan_fact_backend() -> List[dict]:
+    return await db.query_async(
         "SELECT DISTINCT month_key AS month FROM mv_plan_fact_monthly_backend_ids ORDER BY month DESC"
     )
 
 
-def get_months_from_fact_with_money() -> List[dict]:
-    return db.query(
+async def get_months_from_fact_with_money() -> List[dict]:
+    return await db.query_async(
         "SELECT DISTINCT to_char(date_done, 'YYYY-MM') AS month FROM mv_fact_daily_amounts WHERE id_status = 3 ORDER BY month DESC"
     )
 
 
-def get_plan_fact_month(month_key: str) -> Optional[dict]:
-    return db.query_one(
+async def get_plan_fact_month(month_key: str) -> Optional[dict]:
+    return await db.query_one_async(
         """
         SELECT month_key,
                COALESCE(plan_leto, 0)::int AS plan_leto,
@@ -40,7 +40,7 @@ def get_plan_fact_month(month_key: str) -> Optional[dict]:
     )
 
 
-def get_month_summary_bundle(month_key: str) -> Optional[dict]:
+async def get_month_summary_bundle(month_key: str) -> Optional[dict]:
     """Return monthly plan/fact along with contract, total fact aggregates, and items.
     
     Also includes sum_fact_vnereglament calculated from mv_plan_vs_fact_monthly_ids
@@ -48,7 +48,7 @@ def get_month_summary_bundle(month_key: str) -> Optional[dict]:
     
     Returns items as JSON array to avoid separate get_monthly_items query.
     """
-    return db.query_one(
+    return await db.query_one_async(
         """
         WITH plan_fact AS (
             SELECT month_key,
@@ -112,8 +112,8 @@ def get_month_summary_bundle(month_key: str) -> Optional[dict]:
     )
 
 
-def sum_fact_vnereglament(month_key: str) -> Optional[dict]:
-    return db.query_one(
+async def sum_fact_vnereglament(month_key: str) -> Optional[dict]:
+    return await db.query_one_async(
         """
         SELECT COALESCE(SUM(fact_amount_done),0)::int AS s
         FROM mv_plan_vs_fact_monthly_ids
@@ -125,13 +125,13 @@ def sum_fact_vnereglament(month_key: str) -> Optional[dict]:
     )
 
 
-def get_contract_amount_sum(month_key: Optional[str] = None) -> Optional[dict]:
+async def get_contract_amount_sum(month_key: Optional[str] = None) -> Optional[dict]:
     """Return total contract amount choosing table by month.
 
     If month_key is provided and is earlier than 2026-01, use 2025 table; otherwise use 2026 1st half table.
     """
     if month_key:
-        return db.query_one(
+        return await db.query_one_async(
             """
             SELECT CASE
                 WHEN DATE %s < DATE '2026-01-01' THEN COALESCE(
@@ -144,22 +144,21 @@ def get_contract_amount_sum(month_key: Optional[str] = None) -> Optional[dict]:
             """,
             (month_key + '-01',),
         )
-    # Fallback: default to 2025 table if no month provided
-    return db.query_one(
+    return await db.query_one_async(
         "SELECT COALESCE(SUM(contract_amount),0)::int AS sum FROM podolsk_mad_2025_contract_amount"
     )
 
 
-def get_total_fact_amount() -> Optional[dict]:
+async def get_total_fact_amount() -> Optional[dict]:
     """Return total fact amount aggregated across all months.
 
     Uses the plan_fact backend table which contains monthly fact_total values.
     """
-    return db.query_one("SELECT COALESCE(SUM(fact_total),0)::int AS sum FROM mv_plan_fact_monthly_backend_ids")
+    return await db.query_one_async("SELECT COALESCE(SUM(fact_total),0)::int AS sum FROM mv_plan_fact_monthly_backend_ids")
 
 
-def get_monthly_items(month_key: str) -> List[dict]:
-    return db.query(
+async def get_monthly_items(month_key: str) -> List[dict]:
+    return await db.query_async(
         """
         SELECT to_char(month_start, 'YYYY-MM-DD') AS month_start, smeta_code AS smeta, description AS work_name, planned_amount, fact_amount_done AS fact_amount
         FROM mv_plan_vs_fact_monthly_ids
@@ -171,8 +170,8 @@ def get_monthly_items(month_key: str) -> List[dict]:
     )
 
 
-def get_last_loaded_row() -> Optional[dict]:
-    return db.query_one(
+async def get_last_loaded_row() -> Optional[dict]:
+    return await db.query_one_async(
         """
         SELECT last_loaded AS loaded_at
         FROM last_loaded
@@ -181,20 +180,18 @@ def get_last_loaded_row() -> Optional[dict]:
     )
 
 
-def get_plan_fact_rows_by_smeta(month_key: str, plan_smeta_id: Optional[int], smeta_ids: Sequence[int]) -> List[dict]:
+async def get_plan_fact_rows_by_smeta(month_key: str, plan_smeta_id: Optional[int], smeta_ids: Sequence[int]) -> List[dict]:
     """Return plan and fact rows for the given smeta IDs in a single query.
 
     The query performs a single pass over ``mv_plan_vs_fact_monthly_ids`` and uses
-    ``FULL JOIN`` to combine plan and fact aggregates by description, mirroring the
-    approach used in ``get_smeta_details_with_type_of_work``.
+    ``FULL JOIN`` to combine plan and fact aggregates by description.
     """
-
     month_start = month_key + '-01'
     smeta_ids_for_monthly = list(smeta_ids)
     if plan_smeta_id and plan_smeta_id not in smeta_ids_for_monthly:
         smeta_ids_for_monthly.append(plan_smeta_id)
 
-    return db.query(
+    return await db.query_async(
         """
         WITH monthly AS (
             SELECT description, id_smeta, planned_amount, fact_amount_done
@@ -234,8 +231,8 @@ def get_plan_fact_rows_by_smeta(month_key: str, plan_smeta_id: Optional[int], sm
     )
 
 
-def get_description_daily_rows(month_key: str, description: str, smeta_ids: Sequence[int]) -> List[dict]:
-    return db.query(
+async def get_description_daily_rows(month_key: str, description: str, smeta_ids: Sequence[int]) -> List[dict]:
+    return await db.query_async(
         """
         SELECT to_char(date_done, 'YYYY-MM-DD') AS date, COALESCE(SUM(total_volume),0)::int AS volume,
                MIN(unit) AS unit, COALESCE(SUM(total_amount),0)::int AS amount
@@ -252,8 +249,8 @@ def get_description_daily_rows(month_key: str, description: str, smeta_ids: Sequ
     )
 
 
-def get_monthly_daily_revenue_rows(month_key: str) -> List[dict]:
-    return db.query(
+async def get_monthly_daily_revenue_rows(month_key: str) -> List[dict]:
+    return await db.query_async(
         """
         SELECT to_char(date_done, 'YYYY-MM-DD') AS date, COALESCE(SUM(total_amount),0)::int AS amount
         FROM mv_fact_daily_amounts
@@ -267,8 +264,8 @@ def get_monthly_daily_revenue_rows(month_key: str) -> List[dict]:
     )
 
 
-def get_daily_rows(date_value: str) -> List[dict]:
-    return db.query(
+async def get_daily_rows(date_value: str) -> List[dict]:
+    return await db.query_async(
         """
         SELECT description, MIN(unit) AS unit, COALESCE(SUM(total_volume),0)::int AS volume, COALESCE(SUM(total_amount),0)::int AS amount
         FROM mv_fact_daily_amounts
@@ -281,8 +278,8 @@ def get_daily_rows(date_value: str) -> List[dict]:
     )
 
 
-def get_daily_total(date_value: str) -> Optional[dict]:
-    return db.query_one(
+async def get_daily_total(date_value: str) -> Optional[dict]:
+    return await db.query_one_async(
         """
         SELECT COALESCE(SUM(total_amount),0)::int AS total
         FROM mv_fact_daily_amounts
@@ -293,9 +290,9 @@ def get_daily_total(date_value: str) -> Optional[dict]:
     )
 
 
-def get_monthly_dates(month_key: str) -> List[str]:
+async def get_monthly_dates(month_key: str) -> List[str]:
     """Return list of distinct YYYY-MM-DD dates in the given month from fact_with_money (id_status=3)."""
-    rows = db.query(
+    rows = await db.query_async(
         """
         SELECT DISTINCT to_char(date_done, 'YYYY-MM-DD') AS date
         FROM mv_fact_daily_amounts
@@ -309,12 +306,12 @@ def get_monthly_dates(month_key: str) -> List[str]:
     return [r.get('date') for r in rows] if rows else []
 
 
-def get_fact_by_type_of_work(month_key: str) -> List[dict]:
+async def get_fact_by_type_of_work(month_key: str) -> List[dict]:
     """Return aggregated fact amounts by type_of_work for the given month.
 
     Joins mv_fact_daily_amounts, which already contains type_of_work resolved from dimensions.
     """
-    return db.query(
+    return await db.query_async(
         """
         SELECT
             COALESCE(f.type_of_work, 'Не указано') AS type_of_work,
@@ -330,14 +327,14 @@ def get_fact_by_type_of_work(month_key: str) -> List[dict]:
     )
 
 
-def get_smeta_details_with_type_of_work(month_key: str, smeta_ids: Sequence[int]) -> List[dict]:
+async def get_smeta_details_with_type_of_work(month_key: str, smeta_ids: Sequence[int]) -> List[dict]:
     """Return smeta details grouped by type_of_work for the given month and smeta codes.
 
     Returns rows with: type_of_work, description, plan, fact.
     Uses type_of_work from the materialized views instead of joining per-request.
     """
     month_start = month_key + '-01'
-    return db.query(
+    return await db.query_async(
         """
         WITH plan_with_type AS (
             SELECT

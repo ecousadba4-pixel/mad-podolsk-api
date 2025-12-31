@@ -45,9 +45,9 @@ app.add_middleware(
 
 
 @app.get("/api/health")
-def health():
+async def health():
     """Health check endpoint with DB connectivity status."""
-    db_health = db.health_check()
+    db_health = await db.health_check()
     overall_status = "ok" if db_health.get("status") == "healthy" else "degraded"
     return {
         "status": overall_status,

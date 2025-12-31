@@ -144,10 +144,10 @@ async def query_one_async(sql: str, params: tuple = ()) -> Optional[Dict[str, An
     return await loop.run_in_executor(_executor, query_one, sql, params)
 
 
-def health_check() -> Dict[str, Any]:
-    """Check database connectivity. Returns status dict."""
+async def health_check() -> Dict[str, Any]:
+    """Async check database connectivity. Returns status dict."""
     try:
-        result = query_one("SELECT 1 AS ok")
+        result = await query_one_async("SELECT 1 AS ok")
         if result and result.get("ok") == 1:
             return {"status": "healthy", "pool": pool_status()}
         return {"status": "unhealthy", "error": "unexpected query result"}
