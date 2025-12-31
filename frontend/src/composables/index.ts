@@ -41,3 +41,11 @@ export type { TitleItem, UseTitleExpansionReturn } from './useTitleExpansion'
 // Calendar logic
 export { useCalendar, WEEKDAYS } from './useCalendar'
 export type { CalendarDay, UseCalendarOptions, UseCalendarReturn } from './useCalendar'
+
+// Toast notifications
+export { useToast, provideToast, toast } from './useToast'
+export type { Toast, ToastType, ToastOptions, ToastContext } from './useToast'
+
+// Error handling
+export { useErrorHandler, handleError, clearErrors, withErrorHandling } from './useErrorHandler'
+export type { AppError, ErrorHandlerOptions, UseErrorHandlerReturn } from './useErrorHandler'
