@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Header, HTTPException
 from typing import Optional
+import os
 
 from app.backend.schemas.dashboard import (
+    CacheInvalidationResponse,
     CombinedDashboardResponse,
     DailyResponse,
     LoadedAtResponse,
@@ -16,6 +18,27 @@ from app.backend.schemas.dashboard import (
 from app.backend.services import dashboard_service
 
 router = APIRouter()
+
+# Secret token for cache invalidation (set via environment variable)
+CACHE_INVALIDATION_TOKEN = os.environ.get("CACHE_INVALIDATION_TOKEN", "")
+
+
+@router.post("/invalidate-cache", response_model=CacheInvalidationResponse)
+async def invalidate_cache(
+    x_invalidation_token: Optional[str] = Header(None, alias="X-Invalidation-Token")
+):
+    """Invalidate all dashboard caches.
+    
+    Call this endpoint after data loading to ensure fresh data is served.
+    Requires X-Invalidation-Token header for authentication.
+    """
+    # Validate token if configured
+    if CACHE_INVALIDATION_TOKEN:
+        if not x_invalidation_token or x_invalidation_token != CACHE_INVALIDATION_TOKEN:
+            raise HTTPException(status_code=401, detail="Invalid or missing invalidation token")
+    
+    await dashboard_service.invalidate_all_caches()
+    return {"success": True, "message": "All caches invalidated successfully"}
 
 
 @router.get("", response_model=CombinedDashboardResponse)

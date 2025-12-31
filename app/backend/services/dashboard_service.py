@@ -96,13 +96,60 @@ class _AsyncKeyedTTLCache:
                 del self._cache[key]
 
 
-# Async caches
-_MONTHS_CACHE = _AsyncTTLCache(ttl_seconds=300)
-_LAST_LOADED_CACHE = _AsyncTTLCache(ttl_seconds=60)
-_COMBINED_DASHBOARD_CACHE = _AsyncKeyedTTLCache(ttl_seconds=120, max_entries=24)
-_DAILY_REVENUE_CACHE = _AsyncKeyedTTLCache(ttl_seconds=120, max_entries=24)
-_SMETA_DETAILS_CACHE = _AsyncKeyedTTLCache(ttl_seconds=120, max_entries=50)
-_SMETA_DETAILS_TYPES_CACHE = _AsyncKeyedTTLCache(ttl_seconds=120, max_entries=50)
+# Async caches with optimized TTLs for data freshness
+# Short TTL (30s) for frequently changing data
+# Medium TTL (60s) for dashboard data that should be relatively fresh
+# Long TTL (120s) for reference data like available months
+_MONTHS_CACHE = _AsyncTTLCache(ttl_seconds=120)  # Reference data, less sensitive
+_LAST_LOADED_CACHE = _AsyncTTLCache(ttl_seconds=15)  # Very short TTL to detect changes quickly
+_COMBINED_DASHBOARD_CACHE = _AsyncKeyedTTLCache(ttl_seconds=30, max_entries=24)  # Main dashboard - needs freshness
+_DAILY_REVENUE_CACHE = _AsyncKeyedTTLCache(ttl_seconds=30, max_entries=24)  # Daily data - needs freshness
+_SMETA_DETAILS_CACHE = _AsyncKeyedTTLCache(ttl_seconds=60, max_entries=50)  # Detail views
+_SMETA_DETAILS_TYPES_CACHE = _AsyncKeyedTTLCache(ttl_seconds=60, max_entries=50)  # Detail views
+
+# Track last known loaded_at for change detection
+_last_known_loaded_at: Optional[str] = None
+_last_known_loaded_at_lock = asyncio.Lock()
+
+
+async def invalidate_all_caches():
+    """Invalidate all data caches. Call this when data is updated."""
+    await asyncio.gather(
+        _MONTHS_CACHE.invalidate(),
+        _LAST_LOADED_CACHE.invalidate(),
+        _COMBINED_DASHBOARD_CACHE.invalidate(),
+        _DAILY_REVENUE_CACHE.invalidate(),
+        _SMETA_DETAILS_CACHE.invalidate(),
+        _SMETA_DETAILS_TYPES_CACHE.invalidate(),
+    )
+
+
+async def _check_and_invalidate_on_data_change():
+    """Check if last_loaded changed and invalidate caches if needed.
+    
+    This provides automatic cache invalidation when new data is loaded.
+    """
+    global _last_known_loaded_at
+    
+    # Direct DB query to avoid cache
+    row = await dashboard_repo.get_last_loaded_row()
+    if not row:
+        return
+    
+    loaded = row.get("loaded_at")
+    if loaded is None:
+        return
+    
+    try:
+        current_loaded_at = loaded.isoformat() if hasattr(loaded, 'isoformat') else str(loaded)
+    except Exception:
+        current_loaded_at = str(loaded)
+    
+    async with _last_known_loaded_at_lock:
+        if _last_known_loaded_at is not None and _last_known_loaded_at != current_loaded_at:
+            # Data has been updated - invalidate all caches
+            await invalidate_all_caches()
+        _last_known_loaded_at = current_loaded_at
 
 
 # ============================================================================
@@ -465,7 +512,10 @@ async def _build_combined_dashboard_uncached(month_key: Optional[str]):
 
 
 async def build_combined_dashboard(month: Optional[str]):
-    """Build combined dashboard with TTL caching."""
+    """Build combined dashboard with TTL caching and automatic invalidation."""
+    # Check for data changes and invalidate if needed
+    await _check_and_invalidate_on_data_change()
+    
     month_key = normalize_month(month) if month else None
     cache_key = (month_key,)
     return await _COMBINED_DASHBOARD_CACHE.get_or_set(

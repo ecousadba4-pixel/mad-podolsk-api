@@ -152,3 +152,8 @@ class SmetaDetailsWithTypesResponse(_BaseSchema):
     month: str
     smeta_key: str
     rows: List[SmetaDetailWithTypeRow]
+
+
+class CacheInvalidationResponse(_BaseSchema):
+    success: bool
+    message: str
