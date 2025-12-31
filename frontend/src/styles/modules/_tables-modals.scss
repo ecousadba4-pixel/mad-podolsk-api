@@ -43,7 +43,7 @@
 
 /* Compact table tweaks used by both page and modal contexts */
 .smeta-breakdown-table thead th { text-align: center; }
-.smeta-breakdown-table tr:hover { background: rgb(0 0 0 / 2%); }
+.smeta-breakdown-table tr:hover { background: var(--overlay-hover); }
 .smeta-breakdown-table { margin-top: 1px; }
 
 /* Provide a hook for modal-specific overrides (modal.css keeps modal-scoped rules) */
@@ -55,7 +55,7 @@
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgb(15 23 42 / 35%);
+  background: var(--overlay-backdrop);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -215,17 +215,17 @@
 
 .smeta-breakdown-table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; background: transparent; font-size: var(--font-size-body); }
 .smeta-breakdown-table thead th { text-align: left; font-size: var(--font-size-label); color: var(--text-muted); text-transform: uppercase; padding: 12px; vertical-align: middle; background: color-mix(in srgb, var(--accent) 8%, var(--surface-base) 92%); font-weight: 700; }
-.smeta-breakdown-table td, .smeta-breakdown-table th { padding: var(--gap-sm) var(--gap-md); border-bottom: 1px solid rgb(15 23 42 / 4%); vertical-align: middle; }
+.smeta-breakdown-table td, .smeta-breakdown-table th { padding: var(--gap-sm) var(--gap-md); border-bottom: 1px solid var(--border-faint); vertical-align: middle; }
 .smeta-breakdown-table td:first-child { word-break: break-word; overflow-wrap: anywhere; }
-.smeta-breakdown-table tbody tr:hover { background: rgb(0 0 0 / 2%); }
+.smeta-breakdown-table tbody tr:hover { background: var(--overlay-dark-hover); }
 .smeta-breakdown-table colgroup col:nth-child(2), .smeta-breakdown-table colgroup col:nth-child(3), .smeta-breakdown-table colgroup col:nth-child(4) { width: var(--smeta-col-unit); }
 .smeta-breakdown-table colgroup col:nth-child(3) { width: var(--smeta-col-volume); }
 .smeta-breakdown-table colgroup col:nth-child(4) { width: var(--smeta-col-amount); }
-.smeta-breakdown-table tbody tr:nth-child(odd) { background: rgb(15 23 42 / 2%); }
-.smeta-breakdown-table tbody tr:hover { background: rgb(15 23 42 / 4%); }
+.smeta-breakdown-table tbody tr:nth-child(odd) { background: var(--overlay-dark-faint); }
+.smeta-breakdown-table tbody tr:hover { background: var(--overlay-dark-hover); }
 .smeta-breakdown-table thead th:first-child { border-top-left-radius: 10px }
 .smeta-breakdown-table thead th:last-child { border-top-right-radius: 10px }
-.smeta-breakdown-table thead th { box-shadow: inset 0 -1px 0 rgb(15 23 42 / 2%) }
+.smeta-breakdown-table thead th { box-shadow: inset 0 -1px 0 var(--overlay-dark-faint) }
 .smeta-breakdown-table tbody tr, .smeta-breakdown-table td, .smeta-breakdown-table th { transition: background-color 140ms ease, color 140ms ease }
 .smeta-breakdown-table__row--interactive { cursor: pointer; }
 .smeta-breakdown-table__total-label { font-weight: 700; text-align: right; padding-right: var(--card-inner-gap); }

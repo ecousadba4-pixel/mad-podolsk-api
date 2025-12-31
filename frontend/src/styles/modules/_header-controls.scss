@@ -145,7 +145,7 @@
 }
 
 .mode-btn:not(.mode-btn--active):hover {
-  background: rgb(15 23 42 / 4%);
+  background: var(--overlay-dark-hover);
 }
 
 .mode-btn--active {

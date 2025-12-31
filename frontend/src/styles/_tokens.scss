@@ -3,6 +3,7 @@
 */
 @layer tokens {
 :root {
+  color-scheme: light;
   --font-sans: "Manrope", system-ui, -apple-system, blinkmacsystemfont, "Segoe UI", sans-serif;
 
   /* Основной семейство для заголовков и специальных DIN-подобных мест. */
@@ -34,6 +35,26 @@
   --danger: #c0342b;
   --success: #0f9d58;
   --chevron-color: rgb(94 100 115 / 50%);
+
+  /* Overlay / transparent colors for components */
+  --overlay-accent-light: rgb(47 111 237 / 12%);
+  --overlay-accent-soft: rgb(47 111 237 / 8%);
+  --overlay-accent-zebra: rgb(47 111 237 / 3%);
+  --overlay-accent-zebra-strong: rgb(47 111 237 / 5%);
+  --overlay-dark: rgb(15 23 42 / 6%);
+  --overlay-dark-hover: rgb(15 23 42 / 4%);
+  --overlay-dark-faint: rgb(15 23 42 / 2%);
+  --overlay-success: rgb(15 157 88 / 18%);
+  --overlay-success-soft: rgb(15 157 88 / 8%);
+  --overlay-success-strong: rgb(34 197 94 / 25%);
+  --overlay-hover: rgb(0 0 0 / 2%);
+  --overlay-backdrop: rgb(15 23 42 / 35%);
+  --overlay-white: rgb(255 255 255 / 95%);
+  --overlay-white-soft: rgb(255 255 255 / 50%);
+  --border-skeleton: rgb(209 214 229 / 80%);
+  --border-category-mobile: rgb(184 193 216 / 60%);
+  --icon-calendar: %236B77F4;
+  --focus-ring: rgb(11 116 222 / 18%);
 
   /* Typography scale */
   --font-size-h1: 1.75rem;
@@ -212,6 +233,26 @@
   --shadow-category-active: 0 18px 28px rgb(92 131 255 / 24%);
   --shadow-category-indicator: 0 6px 16px rgb(92 131 255 / 45%);
   --shadow-summary-hover: 0 10px 24px rgb(92 131 255 / 26%);
+
+  /* Overlay / transparent colors for dark theme */
+  --overlay-accent-light: rgb(92 131 255 / 18%);
+  --overlay-accent-soft: rgb(92 131 255 / 12%);
+  --overlay-accent-zebra: rgb(92 131 255 / 5%);
+  --overlay-accent-zebra-strong: rgb(92 131 255 / 8%);
+  --overlay-dark: rgb(230 236 255 / 8%);
+  --overlay-dark-hover: rgb(230 236 255 / 6%);
+  --overlay-dark-faint: rgb(230 236 255 / 3%);
+  --overlay-success: rgb(43 179 143 / 22%);
+  --overlay-success-soft: rgb(43 179 143 / 10%);
+  --overlay-success-strong: rgb(43 179 143 / 30%);
+  --overlay-hover: rgb(255 255 255 / 4%);
+  --overlay-backdrop: rgb(0 0 0 / 55%);
+  --overlay-white: rgb(20 28 46 / 95%);
+  --overlay-white-soft: rgb(20 28 46 / 50%);
+  --border-skeleton: rgb(38 49 74 / 80%);
+  --border-category-mobile: rgb(61 79 115 / 60%);
+  --icon-calendar: %235c83ff;
+  --focus-ring: rgb(92 131 255 / 22%);
 }
 
 /* Явное включение тёмной темы через атрибут/класс */

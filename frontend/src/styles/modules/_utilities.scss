@@ -184,7 +184,7 @@
 .skeleton-line-lg { height: 20px; }
 .skeleton-line-xs { width: 40%; margin-bottom: 0; }
 
-.summary-card-skeleton, .category-card-skeleton, .work-row-skeleton { background: var(--bg-card); border: 1px solid rgb(209 214 229 / 80%); border-radius: var(--radius-lg); padding: var(--card-padding); box-shadow: var(--shadow-card); }
+.summary-card-skeleton, .category-card-skeleton, .work-row-skeleton { background: var(--bg-card); border: 1px solid var(--border-skeleton); border-radius: var(--radius-lg); padding: var(--card-padding); box-shadow: var(--shadow-card); }
 
 .category-card-skeleton { display: flex; flex-direction: column; gap: var(--gap-md); border-radius: 20px; }
 .work-row-skeleton { display: grid; grid-template-columns: minmax(0, 3.4fr) repeat(3, minmax(0, 0.9fr)); gap: var(--gap-md); margin-bottom: var(--gap-md); }
@@ -198,7 +198,7 @@
 .table-skeleton__header{display:grid;grid-template-columns:1fr 120px 120px 120px;gap:12px;margin-bottom:6px}
 .table-skeleton__body{display:flex;flex-direction:column;gap:10px}
 .tr{display:grid;grid-template-columns:1fr 120px 120px 120px;gap:12px;align-items:center}
-.th,.td{height:18px;border-radius:6px;background:linear-gradient(90deg, rgb(0 0 0 / 6%) 0%, rgb(0 0 0 / 4%) 50%, rgb(0 0 0 / 6%) 100%);} 
+.th,.td{height:18px;border-radius:6px;background:linear-gradient(90deg, var(--overlay-dark) 0%, var(--overlay-dark-hover) 50%, var(--overlay-dark) 100%);} 
 .th.name,.td.name{height:20px;width:100%}
 .th.numeric,.td.numeric{height:18px;width:100%;justify-self:end}
 .table-skeleton__body .tr .td{opacity:0.9}
@@ -206,7 +206,7 @@
 /* small helpers moved from components */
 .smeta-title-wrapper { display: flex; align-items: flex-start; gap: 8px; position: relative; }
 .smeta-title-toggle { background: transparent; border: none; color: #9aa0a6; padding: 4px; margin-left: 6px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex: 0 0 auto; }
-.smeta-title-toggle:focus { outline: 2px solid rgb(11 116 222 / 18%); border-radius: 6px; }
+.smeta-title-toggle:focus { outline: 2px solid var(--focus-ring); border-radius: 6px; }
 .smeta-title-toggle .chev { transition: transform .18s ease, color .12s ease; font-size: 14px; }
 .smeta-title-toggle .chev.rotated { transform: rotate(180deg); color: #6b7280; }
 td .smeta-title-wrapper { align-items: center; }
