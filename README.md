@@ -8,7 +8,7 @@
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │    Frontend     │────▶│     Backend     │────▶│   PostgreSQL    │
 │   Vue 3 + Vite  │     │     FastAPI     │     │                 │
-│    (Coolify)    │     │    (Amvera)     │     │                 │
+│    (Coolify)    │     │    (Coolify)    │     │                 │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
 ```
 
@@ -33,37 +33,33 @@
 - **PostgreSQL** — хранение данных
 - Materialized Views для агрегации
 
-## 🚀 Деплой
+## 🚀 Деплой (Coolify на VPS)
 
-### Backend (Amvera)
-Деплой бэкенда на [Amvera Cloud](https://amvera.ru):
+Оба сервиса деплоятся через [Coolify](https://coolify.io) на VPS.
 
-```bash
-# Dockerfile в корне проекта
-docker build -t skpdi-backend .
-```
+### Backend
+1. Подключить репозиторий в Coolify
+2. Указать путь к Dockerfile: `Dockerfile` (в корне)
+3. Задать переменные окружения:
 
-Переменные окружения в Amvera:
 | Переменная | Описание |
 |------------|----------|
 | `DB_DSN` | PostgreSQL connection string |
 | `CACHE_INVALIDATION_TOKEN` | Токен для инвалидации кэша |
 | `ALLOWED_ORIGINS` | CORS origins (через запятую) |
 
-### Frontend (Coolify на VPS)
-Деплой фронтенда через [Coolify](https://coolify.io):
-
+### Frontend
 1. Подключить репозиторий в Coolify
 2. Указать путь к Dockerfile: `frontend/Dockerfile`
-3. Задать переменные окружения сборки:
+3. Задать переменные окружения сборки (Build Arguments):
 
 | Переменная | Описание |
 |------------|----------|
 | `VITE_API_BASE` | URL бэкенда (например `https://api.podolsk.mad.moclean.ru`) |
 
 Coolify автоматически:
-- Собирает Docker-образ при пуше в main
-- Выкатывает на VPS с nginx
+- Собирает Docker-образы при пуше в main
+- Выкатывает на VPS
 - Настраивает SSL через Let's Encrypt
 
 ## 🛠️ Локальная разработка
