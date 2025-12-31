@@ -1,4 +1,5 @@
 import { computed, inject, onScopeDispose, ref, unref, watch, type App, type ComputedRef, type Ref } from 'vue'
+import { handleError } from './useErrorHandler'
 
 const QUERY_CLIENT_KEY = Symbol('query-client')
 
@@ -27,6 +28,8 @@ export interface QueryClientOptions {
   retry?: number
   retryDelay?: number | ((attempt: number) => number)
   refetchOnWindowFocus?: boolean
+  /** Показывать toast при ошибках запросов */
+  showErrorToasts?: boolean
 }
 
 export interface UseQueryOptions<T = unknown> {
@@ -36,6 +39,10 @@ export interface UseQueryOptions<T = unknown> {
   staleTime?: number
   refetchOnWindowFocus?: boolean
   keepPreviousData?: boolean
+  /** Показывать toast при ошибке (переопределяет глобальную настройку) */
+  showErrorToast?: boolean
+  /** Callback при ошибке */
+  onError?: (error: Error) => void
 }
 
 export interface UseQueryReturn<T = unknown> {
@@ -60,11 +67,12 @@ function createQueryClient(defaultOptions: QueryClientOptions = {}): QueryClient
   // into the raw string `'idle'`. Storing refs inside a plain Map preserves them correctly.
   const cache = new Map<string, CacheEntry>()
   
-  const defaults: Required<QueryClientOptions> = {
+  const defaults: Required<Omit<QueryClientOptions, 'showErrorToasts'>> & { showErrorToasts: boolean } = {
     staleTime: 5 * 60 * 1000,
     retry: 2,
     retryDelay: (attempt: number) => 500 * (attempt + 1),
     refetchOnWindowFocus: true,
+    showErrorToasts: true,
     ...defaultOptions
   }
 
@@ -127,12 +135,24 @@ function createQueryClient(defaultOptions: QueryClientOptions = {}): QueryClient
   }
 
   function useQuery<T>(opts: UseQueryOptions<T>): UseQueryReturn<T> {
-    const { queryKey, queryFn, enabled = true, staleTime, refetchOnWindowFocus, keepPreviousData = true } = opts
+    const { 
+      queryKey, 
+      queryFn, 
+      enabled = true, 
+      staleTime, 
+      refetchOnWindowFocus, 
+      keepPreviousData = true,
+      showErrorToast,
+      onError 
+    } = opts
     
     const resolvedEnabled = computed(() => Boolean(unref(enabled)))
     const keyRef = computed(() => normalizeKey(unref(queryKey)))
     const entry = computed(() => getEntry<T>(keyRef.value))
     const staleFor = computed(() => staleTime ?? defaults.staleTime)
+    
+    // Определяем показывать ли toast (опция запроса имеет приоритет)
+    const shouldShowToast = showErrorToast ?? defaults.showErrorToasts
 
     // Сохраняем предыдущие данные для плавного перехода между ключами
     const previousData = ref<T | null>(null)
@@ -144,6 +164,15 @@ function createQueryClient(defaultOptions: QueryClientOptions = {}): QueryClient
       if (!resolvedEnabled.value) return Promise.resolve(entry.value.data.value)
       if (entry.value.promise && !isStale.value) return entry.value.promise
       entry.value.promise = execute(entry.value, keyRef.value, queryFn, { staleTime, refetchOnWindowFocus })
+        .catch((err: Error) => {
+          // Вызываем callback если задан
+          onError?.(err)
+          // Показываем toast если включено
+          if (shouldShowToast) {
+            handleError(err, { showToast: true, logToConsole: false })
+          }
+          return null as T
+        })
       return entry.value.promise
     }
 

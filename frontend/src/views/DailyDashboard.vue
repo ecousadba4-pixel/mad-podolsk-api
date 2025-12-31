@@ -1,10 +1,20 @@
 <template>
   <main class="page">
     <section class="page-content">
+      <!-- Состояние загрузки -->
       <div v-if="dailyLoading && !dailyRows.length" class="loading-state">
         Загрузка...
       </div>
       
+      <!-- Пустое состояние -->
+      <EmptyState 
+        v-else-if="!dailyRows.length && !dailyLoading"
+        variant="default"
+        title="Нет данных за эту дату"
+        description="Выберите другую дату или дождитесь загрузки данных"
+      />
+      
+      <!-- Данные -->
       <template v-else>
         <div :class="{ 'is-loading': dailyLoading }">
           <MobileDailyFull 
@@ -30,6 +40,7 @@ import { computed, onMounted } from 'vue'
 import { useDashboardStore } from '../store/dashboardStore.js'
 import { storeToRefs } from 'pinia'
 import { DailyTable, MobileDailyFull } from '../components/dashboard'
+import { EmptyState } from '../components/common'
 import { useBodyClass, useIsMobile } from '../composables'
 
 const store = useDashboardStore()

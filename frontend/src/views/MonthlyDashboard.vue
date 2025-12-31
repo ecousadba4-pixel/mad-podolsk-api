@@ -2,7 +2,7 @@
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useIsMobile } from '../composables/useIsMobile'
 import { useModal } from '../composables/useModal'
-import { useDashboardStore } from '../store/dashboardStore.js'
+import { useDashboardStore } from '../store/dashboardStore'
 import { storeToRefs } from 'pinia'
 import { TableSkeleton } from '../components/common'
 import { DailyRevenueModal, SmetaDescriptionDailyModal, TypeOfWorkModal } from '../components/modals'
