@@ -44,7 +44,7 @@
 <script setup>
 import { computed, watch } from 'vue'
 import { useIsMobile } from '../../composables/useIsMobile'
-import { useQuery } from '../../composables/useQueryClient.js'
+import { useQuery } from '../../composables/useQueryClient'
 import { formatMoney } from '../../utils/format'
 
 const props = defineProps({ 
@@ -64,12 +64,12 @@ const smetaDescriptionQuery = useQuery({
   queryFn: async () => {
     if (!props.month || !props.smeta_key || (!props.description_id && !props.description)) return []
     try {
-      const api = await import('../../api/dashboard.js')
+      const api = await import('../../api/dashboard')
       // Use description_id for API call (shorter URL)
       const res = await api.getSmetaDescriptionDaily(props.month, props.smeta_key, props.description_id)
       return res.rows || []
     } catch (err) {
-      const api2 = await import('../../api/dashboard.js')
+      const api2 = await import('../../api/dashboard')
       const r = await api2.getSmetaDetails(props.month, props.smeta_key)
       return (r && r.rows) || []
     }

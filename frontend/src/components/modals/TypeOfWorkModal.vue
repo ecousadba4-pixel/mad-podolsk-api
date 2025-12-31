@@ -46,7 +46,7 @@
 <script setup>
 import { computed, watch } from 'vue'
 import { useIsMobile } from '../../composables/useIsMobile'
-import { useQuery } from '../../composables/useQueryClient.js'
+import { useQuery } from '../../composables/useQueryClient'
 import { formatMoney } from '../../utils/format'
 
 const props = defineProps({ visible: Boolean, month: String })
@@ -58,7 +58,7 @@ const typeOfWorkQuery = useQuery({
   queryKey: () => ['fact-by-type-of-work', props.month],
   queryFn: async () => {
     if (!props.month) return { rows: [], total: 0 }
-    const api = await import('../../api/dashboard.js')
+    const api = await import('../../api/dashboard')
     const res = await api.getFactByTypeOfWork(props.month)
     return res || { rows: [], total: 0 }
   },

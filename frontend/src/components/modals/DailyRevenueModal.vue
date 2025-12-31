@@ -39,7 +39,7 @@
 <script setup>
 import { computed, watch } from 'vue'
 import { useIsMobile } from '../../composables/useIsMobile'
-import { useQuery } from '../../composables/useQueryClient.js'
+import { useQuery } from '../../composables/useQueryClient'
 import { formatMoney } from '../../utils/format'
 
 const props = defineProps({ visible: Boolean, month: String })
@@ -51,7 +51,7 @@ const dailyRevenueQuery = useQuery({
   queryKey: () => ['monthly-daily-revenue', props.month],
   queryFn: async () => {
     if (!props.month) return []
-    const api = await import('../../api/dashboard.js')
+    const api = await import('../../api/dashboard')
     const res = await api.getMonthlyDailyRevenue(props.month)
     return res.rows || []
   },

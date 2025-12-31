@@ -11,7 +11,8 @@
     "type-check": "vue-tsc --noEmit",
     "lint:css": "stylelint \"src/**/*.{css,scss}\"",
     "lint:css:fix": "stylelint \"src/**/*.{css,scss}\" --fix",
-    "check:tokens": "node ./scripts/check-tokens.cjs"
+    "check:tokens": "node ./scripts/check-tokens.cjs",
+    "generate:api-types": "python3 ../scripts/generate-api-types.py || python ../app/backend/scripts/generate-api-types.py || echo 'Run from project root: python scripts/generate-api-types.py'"
   },
   "dependencies": {
     "@tanstack/vue-virtual": "*",

@@ -116,7 +116,7 @@ const emit = defineEmits(['select','sort-changed'])
 import { computed, watch } from 'vue'
 import { useIsMobile } from '../../composables/useIsMobile'
 import { useSort } from '../../composables/useSort'
-import { useTitleExpansion } from '../../composables/useTitleExpansion.js'
+import { useTitleExpansion } from '../../composables/useTitleExpansion'
 import { useDashboardStore, isVneregKey } from '../../store/dashboardStore'
 import { storeToRefs } from 'pinia'
 import { formatMoney } from '../../utils/format'

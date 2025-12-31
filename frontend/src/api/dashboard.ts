@@ -3,22 +3,29 @@ import type {
   MonthlySummary,
   SmetaCard,
   SmetaDetailRow,
-  DailyRow
+  DailyRow,
 } from '@/types/dashboard'
 
+// Строгие API типы доступны через:
+// import type { Api* } from '@/types/api.generated'
+
 // ─────────────────────────────────────────────────────────────────────────────
-// API v1 Types - Фиксированный контракт
+// API v1 Types - Строгий контракт
+// Для миграции на автогенерированные типы см. @/types/api.generated.d.ts
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** @deprecated Используйте ApiLoadedAtResponse из types/api.generated.d.ts */
 export interface LastLoadedResponse {
   loaded_at: string | null
 }
 
+/** @deprecated Используйте ApiMonthlyBySmetaResponse из types/api.generated.d.ts */
 export interface BySmetaResponse {
   month: string
   cards: SmetaCard[]
 }
 
+/** @deprecated Используйте ApiMonthlySmetaDetailsResponse из types/api.generated.d.ts */
 export interface SmetaDetailsResponse {
   month: string
   smeta_key: string
@@ -30,11 +37,13 @@ export interface DailyRevenueRow {
   amount: number
 }
 
+/** @deprecated Используйте ApiMonthlyDailyRevenueResponse из types/api.generated.d.ts */
 export interface DailyRevenueResponse {
   month: string
   rows: DailyRevenueRow[]
 }
 
+/** @deprecated Используйте ApiDailyResponse из types/api.generated.d.ts */
 export interface DailyResponse {
   rows: DailyRow[]
   total: number
@@ -47,6 +56,7 @@ export interface FactByTypeRow {
   percentage?: number
 }
 
+/** @deprecated Используйте ApiTypeOfWorkResponse из types/api.generated.d.ts */
 export interface FactByTypeResponse {
   rows: FactByTypeRow[]
   total: number

@@ -1,15 +1,41 @@
 /**
  * Типы данных для Dashboard API и компонентов
+ * 
+ * Эти типы используются в store и компонентах.
+ * Для строгих API контрактов см. api.generated.d.ts
  */
 
-/** Данные контракта */
+// Re-export API types для удобства
+export type {
+  ApiSmetaCard,
+  ApiMonthlyBySmetaResponse,
+  ApiSmetaDetailRow,
+  ApiMonthlySmetaDetailsResponse,
+  ApiSmetaDetailWithTypeRow,
+  ApiSmetaDetailsWithTypesResponse,
+  ApiContractSummary,
+  ApiKpiSummary,
+  ApiMonthlySummaryResponse,
+  ApiMonthlyDailyRevenueRow,
+  ApiMonthlyDailyRevenueResponse,
+  ApiSmetaDescriptionDailyRow,
+  ApiMonthlySmetaDescriptionDailyResponse,
+  ApiDailyRow,
+  ApiDailyTotal,
+  ApiDailyResponse,
+  ApiTypeOfWorkRow,
+  ApiTypeOfWorkResponse,
+  ApiLoadedAtResponse,
+} from './api.generated'
+
+/** Данные контракта (frontend-адаптированный тип) */
 export interface ContractData {
   summa_contract: number | null
   fact_total: number | null
   contract_planfact_pct: number | null
 }
 
-/** KPI показатели */
+/** KPI показатели (frontend-адаптированный тип) */
 export interface KpiData {
   plan_total: number | null
   fact_total: number | null

@@ -24,11 +24,11 @@
 <script setup>
 import { onMounted, computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useDashboardStore } from '../store/dashboardStore.js'
+import { useDashboardStore } from '../store/dashboardStore'
 import { storeToRefs } from 'pinia'
 import { PageSection } from '../components/layouts'
 import { useIsMobile } from '../composables/useIsMobile'
-import { useSmetaBreakdown } from '../composables/useSmetaBreakdown.js'
+import { useSmetaBreakdown } from '../composables/useSmetaBreakdown'
 import { SmetaDetails } from '../components/dashboard'
 
 const route = useRoute()

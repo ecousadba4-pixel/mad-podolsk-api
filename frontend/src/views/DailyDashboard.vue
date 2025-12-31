@@ -37,7 +37,7 @@
 
 <script setup>
 import { computed, onMounted } from 'vue'
-import { useDashboardStore } from '../store/dashboardStore.js'
+import { useDashboardStore } from '../store/dashboardStore'
 import { storeToRefs } from 'pinia'
 import { DailyTable, MobileDailyFull } from '../components/dashboard'
 import { EmptyState } from '../components/common'

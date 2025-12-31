@@ -12,7 +12,11 @@ import './styles/main.scss'
 usePreferredTheme()
 
 // Debug helpers: show runtime errors on the page to help diagnose blank screen
+// ТОЛЬКО для development - в production отключено для лучшего UX
 function showRuntimeError(message: string): void {
+  // Не показываем overlay в production
+  if (import.meta.env.PROD) return
+  
   try {
     const id = '__runtime_error_overlay__'
     let el = document.getElementById(id)
@@ -41,17 +45,22 @@ function showRuntimeError(message: string): void {
   }
 }
 
+// Глобальные слушатели ошибок: в dev показываем overlay, в prod только логируем
 window.addEventListener('error', (ev: ErrorEvent) => {
   const msg = 'Error: ' + (ev.error?.stack ? ev.error.stack : ev.message || ev.toString())
   console.error(msg)
-  showRuntimeError(msg)
+  if (import.meta.env.DEV) {
+    showRuntimeError(msg)
+  }
 })
 
 window.addEventListener('unhandledrejection', (ev: PromiseRejectionEvent) => {
   const reason = ev.reason?.stack ? ev.reason.stack : String(ev.reason)
   const msg = 'UnhandledRejection: ' + reason
   console.error(msg)
-  showRuntimeError(msg)
+  if (import.meta.env.DEV) {
+    showRuntimeError(msg)
+  }
 })
 
 const app = createApp(App)

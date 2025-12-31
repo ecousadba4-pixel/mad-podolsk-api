@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { useTitleExpansion } from '../../composables/useTitleExpansion.js'
+import { useTitleExpansion } from '../../composables/useTitleExpansion'
 import { formatMoney } from '../../utils/format'
 
 const props = defineProps({

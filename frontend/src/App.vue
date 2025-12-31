@@ -1,7 +1,7 @@
 <script setup>
 import { AppHeader } from './components/layouts'
 import { ToastContainer, ErrorBoundary } from './components/common'
-import { useDashboardStore } from './store/dashboardStore.js'
+import { useDashboardStore } from './store/dashboardStore'
 import { shallowRef, nextTick, onErrorCaptured } from 'vue'
 import { storeToRefs } from 'pinia'
 import { provideToast, handleError } from './composables'
