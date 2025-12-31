@@ -10,6 +10,7 @@ build/
 dist/
 
 # Virtualenv
+frontend/node_modules/
 .venv/
 venv/
 ENV/
