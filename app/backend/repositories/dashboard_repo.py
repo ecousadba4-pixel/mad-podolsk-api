@@ -74,8 +74,14 @@ async def get_month_summary_bundle(month_key: str) -> Optional[dict]:
             END AS contract_amount
         ),
         total_fact AS (
-            SELECT COALESCE(SUM(fact_total), 0)::int AS fact_total_all_months
-            FROM mv_plan_fact_monthly_backend_ids
+            SELECT CASE
+                WHEN DATE %s < DATE '2026-01-01' THEN COALESCE(
+                    (SELECT SUM(fact_total) FROM mv_plan_fact_monthly_backend_ids WHERE month_key < '2026-01'), 0
+                )::int
+                ELSE COALESCE(
+                    (SELECT SUM(fact_total) FROM mv_plan_fact_monthly_backend_ids WHERE month_key >= '2026-01' AND month_key <= %s), 0
+                )::int
+            END AS fact_total_all_months
         ),
         vnereglament_fact AS (
             SELECT COALESCE(SUM(fact_amount_done), 0)::int AS sum_fact_vnereglament
@@ -108,7 +114,7 @@ async def get_month_summary_bundle(month_key: str) -> Optional[dict]:
         CROSS JOIN monthly_items mi
         LEFT JOIN plan_fact pf ON TRUE
         """,
-        (month_key, month_key + '-01', month_key + '-01', month_key + '-01', month_key + '-01', month_key + '-01'),
+        (month_key, month_key + '-01', month_key + '-01', month_key, month_key + '-01', month_key + '-01', month_key + '-01', month_key + '-01'),
     )
 
 
@@ -149,11 +155,27 @@ async def get_contract_amount_sum(month_key: Optional[str] = None) -> Optional[d
     )
 
 
-async def get_total_fact_amount() -> Optional[dict]:
-    """Return total fact amount aggregated across all months.
+async def get_total_fact_amount(month_key: Optional[str] = None) -> Optional[dict]:
+    """Return total fact amount aggregated by period.
 
     Uses the plan_fact backend table which contains monthly fact_total values.
+    If month_key is before 2026-01, sums all months up to 2025-12.
+    If month_key is 2026-01 or later, sums months from 2026-01 to the given month.
     """
+    if month_key:
+        return await db.query_one_async(
+            """
+            SELECT CASE
+                WHEN DATE %s < DATE '2026-01-01' THEN COALESCE(
+                    (SELECT SUM(fact_total) FROM mv_plan_fact_monthly_backend_ids WHERE month_key < '2026-01'), 0
+                )::int
+                ELSE COALESCE(
+                    (SELECT SUM(fact_total) FROM mv_plan_fact_monthly_backend_ids WHERE month_key >= '2026-01' AND month_key <= %s), 0
+                )::int
+            END AS sum
+            """,
+            (month_key + '-01', month_key),
+        )
     return await db.query_one_async("SELECT COALESCE(SUM(fact_total),0)::int AS sum FROM mv_plan_fact_monthly_backend_ids")
 
 

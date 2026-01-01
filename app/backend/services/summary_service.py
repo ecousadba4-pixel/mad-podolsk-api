@@ -149,7 +149,7 @@ async def build_monthly_summary(month_key: str, bundle: Optional[dict] = None) -
         total_fact_all_months = 0
     
     if not total_fact_all_months and not bundle:
-        total_fact_row = await dashboard_repo.get_total_fact_amount()
+        total_fact_row = await dashboard_repo.get_total_fact_amount(month_key)
         total_fact_all_months = total_fact_row["sum"] if total_fact_row else 0
     
     contract_planfact_pct = float(total_fact_all_months / summa_contract) if summa_contract else None
