@@ -60,6 +60,14 @@ export default defineConfig({
     warmup: {
       // Pre-transform часто используемые модули
       clientFiles: ['./src/main.js', './src/App.vue', './src/views/*.vue']
+    },
+    // Прокси для API в dev режиме (обход CORS)
+    proxy: {
+      '/api': {
+        target: 'https://api.podolsk.mad.moclean.ru',
+        changeOrigin: true,
+        secure: true
+      }
     }
   },
   // Оптимизация зависимостей

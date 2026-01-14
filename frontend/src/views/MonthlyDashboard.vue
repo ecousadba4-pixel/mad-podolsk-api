@@ -5,7 +5,7 @@ import { useModal } from '../composables/useModal'
 import { useDashboardStore } from '../store/dashboardStore'
 import { storeToRefs } from 'pinia'
 import { TableSkeleton } from '../components/common'
-import { DailyRevenueModal, SmetaDescriptionDailyModal, TypeOfWorkModal } from '../components/modals'
+import { DailyRevenueChartModal, SmetaDescriptionDailyModal, TypeOfWorkModal } from '../components/modals'
 import { PageSection } from '../components/layouts'
 
 const ContractExecutionSection = defineAsyncComponent(() => import('../components/dashboard/ContractExecutionSection.vue'))
@@ -126,7 +126,7 @@ function onSmetaSelect(key){
                   <!-- Дневная таблица теперь показывается в отдельном режиме "По дням" -->
 
                   <!-- Модальные окна -->
-                  <DailyRevenueModal :visible="isDailyModalOpen" :month="selectedMonth" @close="closeDailyRevenue()" />
+                  <DailyRevenueChartModal :visible="isDailyModalOpen" :month="selectedMonth" @close="closeDailyRevenue()" />
                   <SmetaDescriptionDailyModal :visible="isSmetaDescOpen" :month="selectedMonth" :smeta_key="selectedSmeta" :description="selectedDescription" :description_id="selectedDescriptionId" @close="closeSmetaDescription()" />
                   <TypeOfWorkModal :visible="isTypeOfWorkModalOpen" :month="selectedMonth" @close="closeTypeOfWorkModal()" />
                 </div>
