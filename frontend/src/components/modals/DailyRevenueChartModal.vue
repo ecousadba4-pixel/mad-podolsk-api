@@ -41,8 +41,8 @@
               />
               <text 
                 v-if="goalY !== null"
-                :x="chartWidth - padding.right + 8"
-                :y="goalY + 4"
+                :x="chartWidth - padding.right - 35"
+                :y="goalY - 6"
                 class="goal-label"
               >Цель</text>
 
@@ -94,8 +94,9 @@
                 >{{ label.text }}</text>
               </g>
 
-              <!-- Y axis title -->
+              <!-- Y axis title (desktop only) -->
               <text 
+                v-if="!isMobile"
                 :x="14"
                 :y="chartHeight / 2"
                 class="axis-title"
@@ -103,8 +104,9 @@
                 :transform="`rotate(-90, 14, ${chartHeight / 2})`"
               >Стоимость</text>
 
-              <!-- X axis title -->
+              <!-- X axis title (desktop only) -->
               <text 
+                v-if="!isMobile"
                 :x="chartWidth / 2"
                 :y="chartHeight - 5"
                 class="axis-title"
@@ -161,10 +163,13 @@ const emit = defineEmits<{
 
 const { isMobile } = useIsMobile()
 
-// Chart dimensions
-const chartWidth = computed(() => isMobile.value ? 600 : 800)
-const chartHeight = computed(() => isMobile.value ? 300 : 350)
-const padding = { top: 30, right: 70, bottom: 50, left: 80 }
+// Chart dimensions - optimized for mobile
+const chartWidth = computed(() => isMobile.value ? 500 : 800)
+const chartHeight = computed(() => isMobile.value ? 280 : 350)
+const padding = computed(() => isMobile.value 
+  ? { top: 25, right: 10, bottom: 35, left: 55 }  // Compact for mobile
+  : { top: 30, right: 70, bottom: 50, left: 80 }  // Spacious for desktop
+)
 
 // Hover state
 const hoveredPoint = ref<ChartPoint | null>(null)
@@ -227,13 +232,14 @@ const minValue = computed(() => 0)
 const chartPoints = computed<ChartPoint[]>(() => {
   if (rowsList.value.length === 0) return []
   
-  const plotWidth = chartWidth.value - padding.left - padding.right
-  const plotHeight = chartHeight.value - padding.top - padding.bottom
+  const p = padding.value
+  const plotWidth = chartWidth.value - p.left - p.right
+  const plotHeight = chartHeight.value - p.top - p.bottom
   const range = maxValue.value - minValue.value || 1
   
   return rowsList.value.map((row, i) => {
-    const x = padding.left + (i / Math.max(rowsList.value.length - 1, 1)) * plotWidth
-    const y = padding.top + plotHeight - ((row.amount - minValue.value) / range) * plotHeight
+    const x = p.left + (i / Math.max(rowsList.value.length - 1, 1)) * plotWidth
+    const y = p.top + plotHeight - ((row.amount - minValue.value) / range) * plotHeight
     
     return {
       x,
@@ -248,9 +254,10 @@ const chartPoints = computed<ChartPoint[]>(() => {
 // Goal line Y position
 const goalY = computed(() => {
   if (rowsList.value.length === 0) return null
-  const plotHeight = chartHeight.value - padding.top - padding.bottom
+  const p = padding.value
+  const plotHeight = chartHeight.value - p.top - p.bottom
   const range = maxValue.value - minValue.value || 1
-  return padding.top + plotHeight - ((DAILY_REVENUE_GOAL - minValue.value) / range) * plotHeight
+  return p.top + plotHeight - ((DAILY_REVENUE_GOAL - minValue.value) / range) * plotHeight
 })
 
 // Generate smooth curve path using Catmull-Rom spline
@@ -270,12 +277,13 @@ const yTicks = computed(() => {
   const range = maxValue.value - minValue.value
   const step = tickStep.value
   const tickCount = Math.round(range / step)
-  const plotHeight = chartHeight.value - padding.top - padding.bottom
+  const p = padding.value
+  const plotHeight = chartHeight.value - p.top - p.bottom
   
   const ticks = []
   for (let i = 0; i <= tickCount; i++) {
     const value = minValue.value + step * i
-    const y = padding.top + plotHeight - (value / range) * plotHeight
+    const y = p.top + plotHeight - (value / range) * plotHeight
     ticks.push({
       value,
       y,
@@ -291,10 +299,11 @@ const xLabels = computed(() => {
   
   const points = chartPoints.value
   const totalDays = points.length
+  const p = padding.value
   
   // Calculate optimal step to show ~7-10 labels without overlap
   // Each label needs ~50px minimum space
-  const plotWidth = chartWidth.value - padding.left - padding.right
+  const plotWidth = chartWidth.value - p.left - p.right
   const maxLabels = Math.floor(plotWidth / 55)
   const step = Math.max(1, Math.ceil(totalDays / maxLabels))
   
@@ -366,7 +375,7 @@ function generateSmoothPath(points: ChartPoint[], closed: boolean): string {
   
   if (closed) {
     // Close the area path by going down to baseline and back
-    const plotBottom = chartHeight.value - padding.bottom
+    const plotBottom = chartHeight.value - padding.value.bottom
     const lastPoint = points[points.length - 1]
     if (lastPoint && firstPoint) {
       path += ` L ${lastPoint.x} ${plotBottom} L ${firstPoint.x} ${plotBottom} Z`
