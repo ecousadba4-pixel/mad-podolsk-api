@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict RtZI9UWzHL40IQcf2ce0hRL4mtd58kp2y2aOqg5ZAx2uhce4XJpsythkHQAATzx
+\restrict 7Nh10c0bFkiu7L5PZFvN4wgstpuIjAIiRO31v6nkC13Qo93jeINBRyVrLRYKepO
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -251,6 +251,30 @@ CREATE TABLE public.etl_load_state (
 ALTER TABLE public.etl_load_state OWNER TO dima_admin;
 
 --
+-- Name: v_work_item_price_by_date; Type: VIEW; Schema: public; Owner: dima_admin
+--
+
+CREATE VIEW public.v_work_item_price_by_date AS
+ SELECT fp.work_item_id,
+    fp.estimate_id,
+    fp.estimate_section_id,
+    fp.unit_price,
+    '1900-01-01'::date AS start_date,
+    '2025-12-31'::date AS end_date
+   FROM initial_data.fact_price_2025 fp
+UNION ALL
+ SELECT fp.work_item_id,
+    fp.estimate_id,
+    fp.estimate_section_id,
+    fp.unit_price,
+    '2026-01-01'::date AS start_date,
+    '2026-05-31'::date AS end_date
+   FROM initial_data.fact_price_2026_upto_may fp;
+
+
+ALTER VIEW public.v_work_item_price_by_date OWNER TO dima_admin;
+
+--
 -- Name: mv_work_actual_daily_value_rows; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
 --
 
@@ -268,15 +292,9 @@ CREATE MATERIALIZED VIEW public.mv_work_actual_daily_value_rows AS
             WHEN (fb.work_report_id IS NOT NULL) THEN true
             ELSE false
         END AS done_by_subcontractor,
-    (r.quantity_done *
-        CASE
-            WHEN (r.work_date <= '2025-12-31'::date) THEN p25.unit_price
-            WHEN ((r.work_date >= '2026-01-01'::date) AND (r.work_date <= '2026-05-31'::date)) THEN p26.unit_price
-            ELSE NULL::numeric
-        END) AS actual_value
-   FROM (((initial_data.fact_work_skpdi_report r
-     LEFT JOIN initial_data.fact_price_2025 p25 ON ((p25.work_item_id = r.work_item_id)))
-     LEFT JOIN initial_data.fact_price_2026_upto_may p26 ON ((p26.work_item_id = r.work_item_id)))
+    (r.quantity_done * p.unit_price) AS actual_value
+   FROM ((initial_data.fact_work_skpdi_report r
+     LEFT JOIN public.v_work_item_price_by_date p ON (((p.work_item_id = r.work_item_id) AND (r.work_date >= p.start_date) AND (r.work_date <= p.end_date))))
      LEFT JOIN initial_data.fact_work_by_subcontractor fb ON (((fb.work_report_id)::numeric = r.work_report_id)))
   WITH NO DATA;
 
@@ -497,18 +515,6 @@ CREATE MATERIALIZED VIEW public.mv_excess_monthly_by_work AS
             dwi.work_item_id
            FROM (agg a
              JOIN public.dim_work_item dwi ON ((dwi.work_name = a.work_name)))
-        ), prices AS (
-         SELECT fp.work_item_id,
-            fp.unit_price,
-            '1900-01-01'::date AS start_date,
-            '2025-12-31'::date AS end_date
-           FROM initial_data.fact_price_2025 fp
-        UNION ALL
-         SELECT fp.work_item_id,
-            fp.unit_price,
-            '2026-01-01'::date AS start_date,
-            '2026-05-31'::date AS end_date
-           FROM initial_data.fact_price_2026_upto_may fp
         ), price_pick AS (
          SELECT wm.month_start_date,
             wm.excess_type,
@@ -518,7 +524,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_monthly_by_work AS
             wm.excess_volume_sum,
             max(p.unit_price) AS unit_price
            FROM (work_map wm
-             LEFT JOIN prices p ON (((p.work_item_id = wm.work_item_id) AND (wm.month_start_date >= p.start_date) AND (wm.month_start_date <= p.end_date))))
+             LEFT JOIN public.v_work_item_price_by_date p ON (((p.work_item_id = wm.work_item_id) AND (wm.month_start_date >= p.start_date) AND (wm.month_start_date <= p.end_date))))
           GROUP BY wm.month_start_date, wm.excess_type, wm.work_name, wm.work_item_id, wm.done_work_id_count, wm.excess_volume_sum
         )
  SELECT month_start_date,
@@ -560,19 +566,13 @@ CREATE MATERIALIZED VIEW public.mv_work_actual_daily_value AS
             wd.work_type_id,
             wt.work_type_name,
             COALESCE(sum(sr.quantity_done), (0)::numeric) AS quantity_done,
-            COALESCE(sum((sr.quantity_done *
-                CASE
-                    WHEN (d.date_day <= '2025-12-31'::date) THEN p25.unit_price
-                    WHEN ((d.date_day >= '2026-01-01'::date) AND (d.date_day <= '2026-05-31'::date)) THEN p26.unit_price
-                    ELSE NULL::numeric
-                END)), (0)::numeric) AS actual_value
-           FROM (((((((((initial_data.fact_work_skpdi_report sr
+            COALESCE(sum((sr.quantity_done * p.unit_price)), (0)::numeric) AS actual_value
+           FROM ((((((((initial_data.fact_work_skpdi_report sr
              JOIN public.dim_date d ON ((d.date_day = sr.work_date)))
              JOIN public.dim_work_item wd ON ((wd.work_item_id = sr.work_item_id)))
              JOIN public.dim_estimate de ON ((de.estimate_id = wd.estimate_id)))
              JOIN public.dim_estimate_section ds ON ((ds.estimate_section_id = wd.estimate_section_id)))
-             LEFT JOIN initial_data.fact_price_2025 p25 ON (((p25.work_item_id = sr.work_item_id) AND (p25.estimate_id = wd.estimate_id) AND (p25.estimate_section_id = wd.estimate_section_id))))
-             LEFT JOIN initial_data.fact_price_2026_upto_may p26 ON (((p26.work_item_id = sr.work_item_id) AND (p26.estimate_id = wd.estimate_id) AND (p26.estimate_section_id = wd.estimate_section_id))))
+             LEFT JOIN public.v_work_item_price_by_date p ON (((p.work_item_id = sr.work_item_id) AND (p.estimate_id = wd.estimate_id) AND (p.estimate_section_id = wd.estimate_section_id) AND (d.date_day >= p.start_date) AND (d.date_day <= p.end_date))))
              LEFT JOIN public.dim_unit u ON ((u.unit_id = wd.unit_id)))
              LEFT JOIN public.dim_work_type wt ON ((wt.work_type_id = wd.work_type_id)))
              LEFT JOIN public.dim_work_status st ON ((st.work_status_id = sr.work_status_id)))
@@ -598,18 +598,12 @@ CREATE MATERIALIZED VIEW public.mv_work_actual_daily_value AS
             wd.work_type_id,
             wt.work_type_name,
             COALESCE(sum(f.quantity_done), (0)::numeric) AS quantity_done,
-            COALESCE(sum((f.quantity_done *
-                CASE
-                    WHEN (f.work_date <= '2025-12-31'::date) THEN p25.unit_price
-                    WHEN ((f.work_date >= '2026-01-01'::date) AND (f.work_date <= '2026-05-31'::date)) THEN p26.unit_price
-                    ELSE NULL::numeric
-                END)), (0)::numeric) AS actual_value
-           FROM (((((((initial_data.fact_work_actual_pik f
+            COALESCE(sum((f.quantity_done * p.unit_price)), (0)::numeric) AS actual_value
+           FROM ((((((initial_data.fact_work_actual_pik f
              JOIN public.dim_work_item wd ON ((wd.work_name = f.work_name)))
              JOIN public.dim_estimate de ON ((de.estimate_id = wd.estimate_id)))
              JOIN public.dim_estimate_section ds ON ((ds.estimate_section_id = wd.estimate_section_id)))
-             LEFT JOIN initial_data.fact_price_2025 p25 ON (((p25.work_item_id = wd.work_item_id) AND (p25.estimate_id = wd.estimate_id) AND (p25.estimate_section_id = wd.estimate_section_id))))
-             LEFT JOIN initial_data.fact_price_2026_upto_may p26 ON (((p26.work_item_id = wd.work_item_id) AND (p26.estimate_id = wd.estimate_id) AND (p26.estimate_section_id = wd.estimate_section_id))))
+             LEFT JOIN public.v_work_item_price_by_date p ON (((p.work_item_id = wd.work_item_id) AND (p.estimate_id = wd.estimate_id) AND (p.estimate_section_id = wd.estimate_section_id) AND (f.work_date >= p.start_date) AND (f.work_date <= p.end_date))))
              LEFT JOIN public.dim_unit u ON ((u.unit_id = wd.unit_id)))
              LEFT JOIN public.dim_work_type wt ON ((wt.work_type_id = wd.work_type_id)))
           GROUP BY f.work_date, wd.work_item_id, wd.work_name, wd.unit_id, u.unit_name, wd.estimate_id, de.estimate_name, wd.estimate_section_id, ds.estimate_section_name, wd.work_type_id, wt.work_type_name
@@ -1264,6 +1258,15 @@ GRANT SELECT ON TABLE public.etl_load_state TO metabase;
 
 
 --
+-- Name: TABLE v_work_item_price_by_date; Type: ACL; Schema: public; Owner: dima_admin
+--
+
+GRANT ALL ON TABLE public.v_work_item_price_by_date TO app_mad_podolsk;
+GRANT SELECT ON TABLE public.v_work_item_price_by_date TO app_turnover_u4s;
+GRANT SELECT ON TABLE public.v_work_item_price_by_date TO metabase;
+
+
+--
 -- Name: TABLE mv_work_actual_daily_value_rows; Type: ACL; Schema: public; Owner: dima_admin
 --
 
@@ -1472,5 +1475,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 -- PostgreSQL database dump complete
 --
 
-\unrestrict RtZI9UWzHL40IQcf2ce0hRL4mtd58kp2y2aOqg5ZAx2uhce4XJpsythkHQAATzx
+\unrestrict 7Nh10c0bFkiu7L5PZFvN4wgstpuIjAIiRO31v6nkC13Qo93jeINBRyVrLRYKepO
 
