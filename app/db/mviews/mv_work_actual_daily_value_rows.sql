@@ -15,13 +15,7 @@ CREATE MATERIALIZED VIEW public.mv_work_actual_daily_value_rows AS
             WHEN fb.work_report_id IS NOT NULL THEN true
             ELSE false
         END AS done_by_subcontractor,
-    r.quantity_done *
-        CASE
-            WHEN r.work_date <= '2025-12-31'::date THEN p25.unit_price
-            WHEN r.work_date >= '2026-01-01'::date AND r.work_date <= '2026-05-31'::date THEN p26.unit_price
-            ELSE NULL::numeric
-        END AS actual_value
+    r.quantity_done * p.unit_price AS actual_value
    FROM initial_data.fact_work_skpdi_report r
-     LEFT JOIN initial_data.fact_price_2025 p25 ON p25.work_item_id = r.work_item_id
-     LEFT JOIN initial_data.fact_price_2026_upto_may p26 ON p26.work_item_id = r.work_item_id
+     LEFT JOIN v_work_item_price_by_date p ON p.work_item_id = r.work_item_id AND r.work_date >= p.start_date AND r.work_date <= p.end_date
      LEFT JOIN initial_data.fact_work_by_subcontractor fb ON fb.work_report_id::numeric = r.work_report_id;;

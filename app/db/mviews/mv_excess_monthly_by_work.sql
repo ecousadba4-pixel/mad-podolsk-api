@@ -49,18 +49,6 @@ CREATE MATERIALIZED VIEW public.mv_excess_monthly_by_work AS
             dwi.work_item_id
            FROM agg a
              JOIN dim_work_item dwi ON dwi.work_name = a.work_name
-        ), prices AS (
-         SELECT fp.work_item_id,
-            fp.unit_price,
-            '1900-01-01'::date AS start_date,
-            '2025-12-31'::date AS end_date
-           FROM initial_data.fact_price_2025 fp
-        UNION ALL
-         SELECT fp.work_item_id,
-            fp.unit_price,
-            '2026-01-01'::date AS start_date,
-            '2026-05-31'::date AS end_date
-           FROM initial_data.fact_price_2026_upto_may fp
         ), price_pick AS (
          SELECT wm.month_start_date,
             wm.excess_type,
@@ -70,7 +58,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_monthly_by_work AS
             wm.excess_volume_sum,
             max(p.unit_price) AS unit_price
            FROM work_map wm
-             LEFT JOIN prices p ON p.work_item_id = wm.work_item_id AND wm.month_start_date >= p.start_date AND wm.month_start_date <= p.end_date
+             LEFT JOIN v_work_item_price_by_date p ON p.work_item_id = wm.work_item_id AND wm.month_start_date >= p.start_date AND wm.month_start_date <= p.end_date
           GROUP BY wm.month_start_date, wm.excess_type, wm.work_name, wm.work_item_id, wm.done_work_id_count, wm.excess_volume_sum
         )
  SELECT month_start_date,

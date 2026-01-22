@@ -21,19 +21,13 @@ CREATE MATERIALIZED VIEW public.mv_work_actual_daily_value AS
             wd.work_type_id,
             wt.work_type_name,
             COALESCE(sum(sr.quantity_done), 0::numeric) AS quantity_done,
-            COALESCE(sum(sr.quantity_done *
-                CASE
-                    WHEN d.date_day <= '2025-12-31'::date THEN p25.unit_price
-                    WHEN d.date_day >= '2026-01-01'::date AND d.date_day <= '2026-05-31'::date THEN p26.unit_price
-                    ELSE NULL::numeric
-                END), 0::numeric) AS actual_value
+            COALESCE(sum(sr.quantity_done * p.unit_price), 0::numeric) AS actual_value
            FROM initial_data.fact_work_skpdi_report sr
              JOIN dim_date d ON d.date_day = sr.work_date
              JOIN dim_work_item wd ON wd.work_item_id = sr.work_item_id
              JOIN dim_estimate de ON de.estimate_id = wd.estimate_id
              JOIN dim_estimate_section ds ON ds.estimate_section_id = wd.estimate_section_id
-             LEFT JOIN initial_data.fact_price_2025 p25 ON p25.work_item_id = sr.work_item_id AND p25.estimate_id = wd.estimate_id AND p25.estimate_section_id = wd.estimate_section_id
-             LEFT JOIN initial_data.fact_price_2026_upto_may p26 ON p26.work_item_id = sr.work_item_id AND p26.estimate_id = wd.estimate_id AND p26.estimate_section_id = wd.estimate_section_id
+             LEFT JOIN v_work_item_price_by_date p ON p.work_item_id = sr.work_item_id AND p.estimate_id = wd.estimate_id AND p.estimate_section_id = wd.estimate_section_id AND d.date_day >= p.start_date AND d.date_day <= p.end_date
              LEFT JOIN dim_unit u ON u.unit_id = wd.unit_id
              LEFT JOIN dim_work_type wt ON wt.work_type_id = wd.work_type_id
              LEFT JOIN dim_work_status st ON st.work_status_id = sr.work_status_id
@@ -59,18 +53,12 @@ CREATE MATERIALIZED VIEW public.mv_work_actual_daily_value AS
             wd.work_type_id,
             wt.work_type_name,
             COALESCE(sum(f.quantity_done), 0::numeric) AS quantity_done,
-            COALESCE(sum(f.quantity_done *
-                CASE
-                    WHEN f.work_date <= '2025-12-31'::date THEN p25.unit_price
-                    WHEN f.work_date >= '2026-01-01'::date AND f.work_date <= '2026-05-31'::date THEN p26.unit_price
-                    ELSE NULL::numeric
-                END), 0::numeric) AS actual_value
+            COALESCE(sum(f.quantity_done * p.unit_price), 0::numeric) AS actual_value
            FROM initial_data.fact_work_actual_pik f
              JOIN dim_work_item wd ON wd.work_name = f.work_name
              JOIN dim_estimate de ON de.estimate_id = wd.estimate_id
              JOIN dim_estimate_section ds ON ds.estimate_section_id = wd.estimate_section_id
-             LEFT JOIN initial_data.fact_price_2025 p25 ON p25.work_item_id = wd.work_item_id AND p25.estimate_id = wd.estimate_id AND p25.estimate_section_id = wd.estimate_section_id
-             LEFT JOIN initial_data.fact_price_2026_upto_may p26 ON p26.work_item_id = wd.work_item_id AND p26.estimate_id = wd.estimate_id AND p26.estimate_section_id = wd.estimate_section_id
+             LEFT JOIN v_work_item_price_by_date p ON p.work_item_id = wd.work_item_id AND p.estimate_id = wd.estimate_id AND p.estimate_section_id = wd.estimate_section_id AND f.work_date >= p.start_date AND f.work_date <= p.end_date
              LEFT JOIN dim_unit u ON u.unit_id = wd.unit_id
              LEFT JOIN dim_work_type wt ON wt.work_type_id = wd.work_type_id
           GROUP BY f.work_date, wd.work_item_id, wd.work_name, wd.unit_id, u.unit_name, wd.estimate_id, de.estimate_name, wd.estimate_section_id, ds.estimate_section_name, wd.work_type_id, wt.work_type_name
