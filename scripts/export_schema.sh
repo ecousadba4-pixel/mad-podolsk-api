@@ -3,17 +3,17 @@ set -euo pipefail
 
 ### НАСТРОЙКИ ###
 
-# Используем тот же DSN, что и в export_mviews.sh
+# DSN к БД (как в export_mviews.sh)
 DB_URL="postgresql://app_mad_podolsk:MA9Cs3eLu5QdJ2XVBZNJ@10.0.1.1:5433/app_mad_podolsk"
 
-# Схема, чью структуру выгружаем
-SCHEMA="${SCHEMA:-public}"
+# Список схем, которые выгружаем полностью
+SCHEMAS="${SCHEMAS:-public initial_data}"
 
-# Куда складываем DDL таблиц
+# Куда складываем DDL
 OUT_DIR="${OUT_DIR:-app/db/schema}"
 
 # Комментарий к коммиту
-COMMIT_MSG_PREFIX="${COMMIT_MSG_PREFIX:-Update table schema}"
+COMMIT_MSG_PREFIX="${COMMIT_MSG_PREFIX:-Update full DB schema}"
 
 # Ветка
 BRANCH="${BRANCH:-main}"
@@ -25,27 +25,14 @@ cd "$REPO_DIR"
 
 mkdir -p "$OUT_DIR"
 
-echo "Exporting table schema from schema '$SCHEMA' into '$OUT_DIR'..."
+echo "Exporting full schema for: $SCHEMAS into '$OUT_DIR'..."
 
-# Список обычных таблиц
-tables=$(psql "$DB_URL" -At -c "
-    SELECT tablename
-    FROM pg_tables
-    WHERE schemaname = '$SCHEMA'
-    ORDER BY tablename;
-")
+for schema in $SCHEMAS; do
+  file="$OUT_DIR/${schema}.sql"
+  echo "  -> schema $schema -> $file"
 
-if [ -z "$tables" ]; then
-  echo "No tables found in schema '$SCHEMA'."
-  exit 0
-fi
-
-for tbl in $tables; do
-  file="$OUT_DIR/${tbl}.sql"
-  echo "  -> $SCHEMA.$tbl -> $file"
-
-  # Выгружаем DDL таблицы (со всеми индексами/констрейнтами и т.п.)
-  pg_dump "$DB_URL" -s -t "$SCHEMA.$tbl" > "$file"
+  # Полный дамп схемы (только структура, без данных)
+  pg_dump "$DB_URL" -s -n "$schema" > "$file"
 done
 
 echo "Export finished. Checking git status..."
@@ -59,7 +46,7 @@ if git status --porcelain | grep -q .; then
   ts="$(date +'%Y-%m-%d %H:%M:%S')"
   git commit -m "$COMMIT_MSG_PREFIX ($ts)" && did_commit=1 || echo "Nothing to commit."
 else
-  echo "No changes in table schema."
+  echo "No changes in schema files."
 fi
 
 if [ "$did_commit" -eq 1 ]; then
