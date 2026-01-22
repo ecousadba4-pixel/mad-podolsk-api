@@ -9,8 +9,8 @@ DB_URL="postgresql://app_mad_podolsk:MA9Cs3eLu5QdJ2XVBZNJ@10.0.1.1:5433/app_mad_
 # Список схем, которые выгружаем полностью
 SCHEMAS="${SCHEMAS:-public initial_data}"
 
-# Куда складываем DDL
-OUT_DIR="${OUT_DIR:-app/db/schema}"
+# Куда складываем DDL полных схем
+OUT_DIR="${OUT_DIR:-app/db/schema/full}"
 
 # Комментарий к коммиту
 COMMIT_MSG_PREFIX="${COMMIT_MSG_PREFIX:-Update full DB schema}"
