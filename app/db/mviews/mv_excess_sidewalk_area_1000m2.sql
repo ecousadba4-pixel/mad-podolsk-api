@@ -19,19 +19,6 @@ CREATE MATERIALIZED VIEW public.mv_excess_sidewalk_area_1000m2 AS
              JOIN unit_1000m2 u1000 ON u1000.unit_id = vr.unit_id
           WHERE w.work_status_id = 3 AND vr.work_type_id = 3 AND w.done_by_subcontractor = false
           GROUP BY w.work_date, w.work_item_id, w.road_section_id, vr.unit_id
-        ), rs AS (
-         SELECT drs.road_section_id,
-            drs.road_section_name,
-            drs.sidewalk_passport_volume
-           FROM dim_road_section drs
-        ), wi AS (
-         SELECT dwi.work_item_id,
-            dwi.work_name
-           FROM dim_work_item dwi
-        ), u AS (
-         SELECT du.unit_id,
-            du.unit_name
-           FROM dim_unit du
         )
  SELECT b.work_date,
     b.done_work_ids_arr AS done_work_ids,
@@ -42,7 +29,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_sidewalk_area_1000m2 AS
     b.quantity_sum,
     b.quantity_sum - COALESCE(rs.sidewalk_passport_volume, 0::numeric) AS excess_volume
    FROM base b
-     JOIN rs ON rs.road_section_id = b.road_section_id
-     JOIN wi ON wi.work_item_id = b.work_item_id
-     JOIN u ON u.unit_id = b.unit_id
+     JOIN dim_road_section rs ON rs.road_section_id = b.road_section_id
+     JOIN dim_work_item wi ON wi.work_item_id = b.work_item_id
+     JOIN dim_unit u ON u.unit_id = b.unit_id
   WHERE rs.sidewalk_passport_volume IS NOT NULL AND b.quantity_sum > COALESCE(rs.sidewalk_passport_volume, 0::numeric);;
