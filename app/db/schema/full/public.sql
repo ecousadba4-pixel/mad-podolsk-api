@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict eMPG1VxgslQ8avzw2ka2JaHGPnk31hu2MfM1tMmUM2MoVbSB1NVOhoqlWJqWkBI
+\restrict WXkrgRYaJyJgPydKKvVjmWB5MTg0ElYvhohbR4RnpJU0EicT6QaKTcrjdkiGhdS
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -312,7 +312,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_road_area_10000m2 AS
             w.road_section_id,
             vr.unit_id,
             sum(w.quantity_done) AS quantity_sum,
-            array_agg(w.done_work_id ORDER BY w.done_work_id) AS done_work_ids_arr
+            array_agg((w.done_work_id)::bigint ORDER BY w.done_work_id) AS done_work_ids_arr
            FROM (public.mv_work_actual_daily_value_rows w
              JOIN public.dim_work_item vr ON ((vr.work_item_id = w.work_item_id)))
           WHERE ((w.work_status_id = 3) AND (vr.work_type_id = 3) AND (vr.unit_id IS NOT NULL) AND (vr.unit_id IN ( SELECT du.unit_id
@@ -337,7 +337,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_road_area_10000m2 AS
            FROM public.dim_work_item dwi
         )
  SELECT b.work_date,
-    array_to_string(b.done_work_ids_arr, ', '::text) AS done_work_ids,
+    b.done_work_ids_arr AS done_work_ids,
     wi.work_name,
     rs.road_section_name,
     u.unit_name,
@@ -370,7 +370,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_road_km_1km AS
             w.road_section_id,
             vr.unit_id,
             sum(w.quantity_done) AS quantity_sum,
-            array_agg(w.done_work_id ORDER BY w.done_work_id) AS done_work_ids_arr
+            array_agg((w.done_work_id)::bigint ORDER BY w.done_work_id) AS done_work_ids_arr
            FROM ((public.mv_work_actual_daily_value_rows w
              JOIN public.dim_work_item vr ON ((vr.work_item_id = w.work_item_id)))
              JOIN unit_km uk ON ((uk.unit_id = vr.unit_id)))
@@ -391,7 +391,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_road_km_1km AS
            FROM public.dim_unit du
         )
  SELECT b.work_date,
-    array_to_string(b.done_work_ids_arr, ', '::text) AS done_work_ids,
+    b.done_work_ids_arr AS done_work_ids,
     wi.work_name,
     rs.road_section_name,
     u.unit_name,
@@ -425,7 +425,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_sidewalk_area_1000m2 AS
             w.road_section_id,
             vr.unit_id,
             sum(w.quantity_done) AS quantity_sum,
-            array_agg(w.done_work_id ORDER BY w.done_work_id) AS done_work_ids_arr
+            array_agg((w.done_work_id)::bigint ORDER BY w.done_work_id) AS done_work_ids_arr
            FROM ((public.mv_work_actual_daily_value_rows w
              JOIN public.dim_work_item vr ON ((vr.work_item_id = w.work_item_id)))
              JOIN unit_1000m2 u1000 ON ((u1000.unit_id = vr.unit_id)))
@@ -446,7 +446,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_sidewalk_area_1000m2 AS
            FROM public.dim_unit du
         )
  SELECT b.work_date,
-    array_to_string(b.done_work_ids_arr, ', '::text) AS done_work_ids,
+    b.done_work_ids_arr AS done_work_ids,
     wi.work_name,
     rs.road_section_name,
     u.unit_name,
@@ -493,11 +493,10 @@ CREATE MATERIALIZED VIEW public.mv_excess_monthly_by_work AS
          SELECT (date_trunc('month'::text, (u.work_date)::timestamp with time zone))::date AS month_start_date,
             u.excess_type,
             u.work_name,
-            (TRIM(BOTH FROM x.x))::bigint AS done_work_id,
+            x.done_work_id,
             u.excess_volume
            FROM (unified u
-             CROSS JOIN LATERAL unnest(regexp_split_to_array(COALESCE(u.done_work_ids, ''::text), '\s*,\s*'::text)) x(x))
-          WHERE (TRIM(BOTH FROM x.x) <> ''::text)
+             CROSS JOIN LATERAL unnest(COALESCE(u.done_work_ids, ARRAY[]::bigint[])) x(done_work_id))
         ), agg AS (
          SELECT e.month_start_date,
             e.excess_type,
@@ -1394,5 +1393,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 -- PostgreSQL database dump complete
 --
 
-\unrestrict eMPG1VxgslQ8avzw2ka2JaHGPnk31hu2MfM1tMmUM2MoVbSB1NVOhoqlWJqWkBI
+\unrestrict WXkrgRYaJyJgPydKKvVjmWB5MTg0ElYvhohbR4RnpJU0EicT6QaKTcrjdkiGhdS
 
