@@ -13,7 +13,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_sidewalk_area_1000m2 AS
             w.road_section_id,
             vr.unit_id,
             sum(w.quantity_done) AS quantity_sum,
-            array_agg(w.done_work_id ORDER BY w.done_work_id) AS done_work_ids_arr
+            array_agg(w.done_work_id::bigint ORDER BY w.done_work_id) AS done_work_ids_arr
            FROM mv_work_actual_daily_value_rows w
              JOIN dim_work_item vr ON vr.work_item_id = w.work_item_id
              JOIN unit_1000m2 u1000 ON u1000.unit_id = vr.unit_id
@@ -34,7 +34,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_sidewalk_area_1000m2 AS
            FROM dim_unit du
         )
  SELECT b.work_date,
-    array_to_string(b.done_work_ids_arr, ', '::text) AS done_work_ids,
+    b.done_work_ids_arr AS done_work_ids,
     wi.work_name,
     rs.road_section_name,
     u.unit_name,

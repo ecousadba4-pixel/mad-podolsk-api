@@ -8,7 +8,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_road_area_10000m2 AS
             w.road_section_id,
             vr.unit_id,
             sum(w.quantity_done) AS quantity_sum,
-            array_agg(w.done_work_id ORDER BY w.done_work_id) AS done_work_ids_arr
+            array_agg(w.done_work_id::bigint ORDER BY w.done_work_id) AS done_work_ids_arr
            FROM mv_work_actual_daily_value_rows w
              JOIN dim_work_item vr ON vr.work_item_id = w.work_item_id
           WHERE w.work_status_id = 3 AND vr.work_type_id = 3 AND vr.unit_id IS NOT NULL AND (vr.unit_id IN ( SELECT du.unit_id
@@ -33,7 +33,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_road_area_10000m2 AS
            FROM dim_work_item dwi
         )
  SELECT b.work_date,
-    array_to_string(b.done_work_ids_arr, ', '::text) AS done_work_ids,
+    b.done_work_ids_arr AS done_work_ids,
     wi.work_name,
     rs.road_section_name,
     u.unit_name,
