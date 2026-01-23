@@ -30,7 +30,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_monthly_by_work AS
             x.done_work_id,
             u.excess_volume
            FROM unified u
-             CROSS JOIN LATERAL unnest(COALESCE(u.done_work_ids, ARRAY[]::bigint[])) AS x(done_work_id)
+             CROSS JOIN LATERAL unnest(COALESCE(u.done_work_ids, ARRAY[]::bigint[])) x(done_work_id)
         ), agg AS (
          SELECT e.month_start_date,
             e.excess_type,
