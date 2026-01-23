@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict AuSSY9Jhrz3dbajV89ufAEby741N9nDTCVYOKg9Bg7pEk14MH6kvQyFnc1aWUBk
+\restrict l1pJr2k1lEhqPu3efIXIA1PO37EWZXMmjVUoMrdDRSC1edlzvasPudSDDshWpRt
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -360,5 +360,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE dima_admin IN SCHEMA initial_data GRANT SELECT
 -- PostgreSQL database dump complete
 --
 
-\unrestrict AuSSY9Jhrz3dbajV89ufAEby741N9nDTCVYOKg9Bg7pEk14MH6kvQyFnc1aWUBk
+\unrestrict l1pJr2k1lEhqPu3efIXIA1PO37EWZXMmjVUoMrdDRSC1edlzvasPudSDDshWpRt
 
