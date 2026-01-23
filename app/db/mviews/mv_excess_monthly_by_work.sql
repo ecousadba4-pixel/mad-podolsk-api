@@ -27,11 +27,10 @@ CREATE MATERIALIZED VIEW public.mv_excess_monthly_by_work AS
          SELECT date_trunc('month'::text, u.work_date::timestamp with time zone)::date AS month_start_date,
             u.excess_type,
             u.work_name,
-            TRIM(BOTH FROM x.x)::bigint AS done_work_id,
+            x.done_work_id,
             u.excess_volume
            FROM unified u
-             CROSS JOIN LATERAL unnest(regexp_split_to_array(COALESCE(u.done_work_ids, ''::text), '\s*,\s*'::text)) x(x)
-          WHERE TRIM(BOTH FROM x.x) <> ''::text
+             CROSS JOIN LATERAL unnest(COALESCE(u.done_work_ids, ARRAY[]::bigint[])) AS x(done_work_id)
         ), agg AS (
          SELECT e.month_start_date,
             e.excess_type,
