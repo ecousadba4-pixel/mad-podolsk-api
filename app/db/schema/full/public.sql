@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict cludMlnpe5PTjpngSJS3bR12vI5Rxhh1JByLhnVpYe3R9TEWAhIwFOJH4TASxHb
+\restrict eMPG1VxgslQ8avzw2ka2JaHGPnk31hu2MfM1tMmUM2MoVbSB1NVOhoqlWJqWkBI
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -275,7 +275,7 @@ UNION ALL
 ALTER VIEW public.v_work_item_price_by_date OWNER TO dima_admin;
 
 --
--- Name: mv_work_actual_daily_value_rows; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
+-- Name: mv_work_actual_daily_value_rows; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE MATERIALIZED VIEW public.mv_work_actual_daily_value_rows AS
@@ -299,10 +299,10 @@ CREATE MATERIALIZED VIEW public.mv_work_actual_daily_value_rows AS
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.mv_work_actual_daily_value_rows OWNER TO dima_admin;
+ALTER MATERIALIZED VIEW public.mv_work_actual_daily_value_rows OWNER TO app_mad_podolsk;
 
 --
--- Name: mv_excess_road_area_10000m2; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
+-- Name: mv_excess_road_area_10000m2; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE MATERIALIZED VIEW public.mv_excess_road_area_10000m2 AS
@@ -352,10 +352,10 @@ CREATE MATERIALIZED VIEW public.mv_excess_road_area_10000m2 AS
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.mv_excess_road_area_10000m2 OWNER TO dima_admin;
+ALTER MATERIALIZED VIEW public.mv_excess_road_area_10000m2 OWNER TO app_mad_podolsk;
 
 --
--- Name: mv_excess_road_km_1km; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
+-- Name: mv_excess_road_km_1km; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE MATERIALIZED VIEW public.mv_excess_road_km_1km AS
@@ -407,10 +407,10 @@ CREATE MATERIALIZED VIEW public.mv_excess_road_km_1km AS
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.mv_excess_road_km_1km OWNER TO dima_admin;
+ALTER MATERIALIZED VIEW public.mv_excess_road_km_1km OWNER TO app_mad_podolsk;
 
 --
--- Name: mv_excess_sidewalk_area_1000m2; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
+-- Name: mv_excess_sidewalk_area_1000m2; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE MATERIALIZED VIEW public.mv_excess_sidewalk_area_1000m2 AS
@@ -461,10 +461,10 @@ CREATE MATERIALIZED VIEW public.mv_excess_sidewalk_area_1000m2 AS
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.mv_excess_sidewalk_area_1000m2 OWNER TO dima_admin;
+ALTER MATERIALIZED VIEW public.mv_excess_sidewalk_area_1000m2 OWNER TO app_mad_podolsk;
 
 --
--- Name: mv_excess_monthly_by_work; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
+-- Name: mv_excess_monthly_by_work; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE MATERIALIZED VIEW public.mv_excess_monthly_by_work AS
@@ -540,10 +540,10 @@ CREATE MATERIALIZED VIEW public.mv_excess_monthly_by_work AS
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.mv_excess_monthly_by_work OWNER TO dima_admin;
+ALTER MATERIALIZED VIEW public.mv_excess_monthly_by_work OWNER TO app_mad_podolsk;
 
 --
--- Name: mv_work_actual_daily_value; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
+-- Name: mv_work_actual_daily_value; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE MATERIALIZED VIEW public.mv_work_actual_daily_value AS
@@ -646,10 +646,10 @@ UNION ALL
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.mv_work_actual_daily_value OWNER TO dima_admin;
+ALTER MATERIALIZED VIEW public.mv_work_actual_daily_value OWNER TO app_mad_podolsk;
 
 --
--- Name: mv_work_plan_monthly_value; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
+-- Name: mv_work_plan_monthly_value; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE MATERIALIZED VIEW public.mv_work_plan_monthly_value AS
@@ -663,10 +663,10 @@ CREATE MATERIALIZED VIEW public.mv_work_plan_monthly_value AS
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.mv_work_plan_monthly_value OWNER TO dima_admin;
+ALTER MATERIALIZED VIEW public.mv_work_plan_monthly_value OWNER TO app_mad_podolsk;
 
 --
--- Name: mv_work_plan_vs_actual_monthly_value; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
+-- Name: mv_work_plan_vs_actual_monthly_value; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE MATERIALIZED VIEW public.mv_work_plan_vs_actual_monthly_value AS
@@ -703,10 +703,10 @@ CREATE MATERIALIZED VIEW public.mv_work_plan_vs_actual_monthly_value AS
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.mv_work_plan_vs_actual_monthly_value OWNER TO dima_admin;
+ALTER MATERIALIZED VIEW public.mv_work_plan_vs_actual_monthly_value OWNER TO app_mad_podolsk;
 
 --
--- Name: mv_work_plan_actual_monthly_summary; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
+-- Name: mv_work_plan_actual_monthly_summary; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE MATERIALIZED VIEW public.mv_work_plan_actual_monthly_summary AS
@@ -732,7 +732,7 @@ CREATE MATERIALIZED VIEW public.mv_work_plan_actual_monthly_summary AS
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.mv_work_plan_actual_monthly_summary OWNER TO dima_admin;
+ALTER MATERIALIZED VIEW public.mv_work_plan_actual_monthly_summary OWNER TO app_mad_podolsk;
 
 --
 -- Name: podolsk_mad_2026_1sthalf_contract_amount_id_seq; Type: SEQUENCE; Schema: public; Owner: dima_admin
@@ -1045,63 +1045,63 @@ ALTER TABLE ONLY public.dim_work_item
 
 
 --
--- Name: idx_mv_work_plan_monthly_value_work_item_id; Type: INDEX; Schema: public; Owner: dima_admin
+-- Name: idx_mv_work_plan_monthly_value_work_item_id; Type: INDEX; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE INDEX idx_mv_work_plan_monthly_value_work_item_id ON public.mv_work_plan_monthly_value USING btree (work_item_id);
 
 
 --
--- Name: mv_work_actual_daily_value_date_desc_status3_idx; Type: INDEX; Schema: public; Owner: dima_admin
+-- Name: mv_work_actual_daily_value_date_desc_status3_idx; Type: INDEX; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE INDEX mv_work_actual_daily_value_date_desc_status3_idx ON public.mv_work_actual_daily_value USING btree (work_date DESC) WHERE (work_status_id = 3);
 
 
 --
--- Name: mv_work_actual_daily_value_date_estimate_status3_idx; Type: INDEX; Schema: public; Owner: dima_admin
+-- Name: mv_work_actual_daily_value_date_estimate_status3_idx; Type: INDEX; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE INDEX mv_work_actual_daily_value_date_estimate_status3_idx ON public.mv_work_actual_daily_value USING btree (work_date, estimate_id) WHERE (work_status_id = 3);
 
 
 --
--- Name: mv_work_actual_daily_value_date_status3_idx; Type: INDEX; Schema: public; Owner: dima_admin
+-- Name: mv_work_actual_daily_value_date_status3_idx; Type: INDEX; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE INDEX mv_work_actual_daily_value_date_status3_idx ON public.mv_work_actual_daily_value USING btree (work_date, work_status_id) WHERE (work_status_id = 3);
 
 
 --
--- Name: mv_work_plan_actual_monthly_summary_month_facttotal_idx; Type: INDEX; Schema: public; Owner: dima_admin
+-- Name: mv_work_plan_actual_monthly_summary_month_facttotal_idx; Type: INDEX; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE INDEX mv_work_plan_actual_monthly_summary_month_facttotal_idx ON public.mv_work_plan_actual_monthly_summary USING btree (year_month_key, actual_value_total);
 
 
 --
--- Name: mv_work_plan_actual_monthly_summary_year_month_key_uq; Type: INDEX; Schema: public; Owner: dima_admin
+-- Name: mv_work_plan_actual_monthly_summary_year_month_key_uq; Type: INDEX; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE UNIQUE INDEX mv_work_plan_actual_monthly_summary_year_month_key_uq ON public.mv_work_plan_actual_monthly_summary USING btree (year_month_key);
 
 
 --
--- Name: mv_work_plan_vs_actual_monthly_value_month_estimate_idx; Type: INDEX; Schema: public; Owner: dima_admin
+-- Name: mv_work_plan_vs_actual_monthly_value_month_estimate_idx; Type: INDEX; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE INDEX mv_work_plan_vs_actual_monthly_value_month_estimate_idx ON public.mv_work_plan_vs_actual_monthly_value USING btree (month_start_date, estimate_name);
 
 
 --
--- Name: mv_work_plan_vs_actual_monthly_value_month_estimate_work_idx; Type: INDEX; Schema: public; Owner: dima_admin
+-- Name: mv_work_plan_vs_actual_monthly_value_month_estimate_work_idx; Type: INDEX; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE INDEX mv_work_plan_vs_actual_monthly_value_month_estimate_work_idx ON public.mv_work_plan_vs_actual_monthly_value USING btree (month_start_date, estimate_name, work_name);
 
 
 --
--- Name: mv_work_plan_vs_actual_monthly_value_month_idx; Type: INDEX; Schema: public; Owner: dima_admin
+-- Name: mv_work_plan_vs_actual_monthly_value_month_idx; Type: INDEX; Schema: public; Owner: app_mad_podolsk
 --
 
 CREATE INDEX mv_work_plan_vs_actual_monthly_value_month_idx ON public.mv_work_plan_vs_actual_monthly_value USING btree (month_start_date);
@@ -1267,87 +1267,6 @@ GRANT SELECT ON TABLE public.v_work_item_price_by_date TO metabase;
 
 
 --
--- Name: TABLE mv_work_actual_daily_value_rows; Type: ACL; Schema: public; Owner: dima_admin
---
-
-GRANT ALL ON TABLE public.mv_work_actual_daily_value_rows TO app_mad_podolsk;
-GRANT SELECT ON TABLE public.mv_work_actual_daily_value_rows TO app_turnover_u4s;
-GRANT SELECT ON TABLE public.mv_work_actual_daily_value_rows TO metabase;
-
-
---
--- Name: TABLE mv_excess_road_area_10000m2; Type: ACL; Schema: public; Owner: dima_admin
---
-
-GRANT ALL ON TABLE public.mv_excess_road_area_10000m2 TO app_mad_podolsk;
-GRANT SELECT ON TABLE public.mv_excess_road_area_10000m2 TO app_turnover_u4s;
-GRANT SELECT ON TABLE public.mv_excess_road_area_10000m2 TO metabase;
-
-
---
--- Name: TABLE mv_excess_road_km_1km; Type: ACL; Schema: public; Owner: dima_admin
---
-
-GRANT ALL ON TABLE public.mv_excess_road_km_1km TO app_mad_podolsk;
-GRANT SELECT ON TABLE public.mv_excess_road_km_1km TO app_turnover_u4s;
-GRANT SELECT ON TABLE public.mv_excess_road_km_1km TO metabase;
-
-
---
--- Name: TABLE mv_excess_sidewalk_area_1000m2; Type: ACL; Schema: public; Owner: dima_admin
---
-
-GRANT ALL ON TABLE public.mv_excess_sidewalk_area_1000m2 TO app_mad_podolsk;
-GRANT SELECT ON TABLE public.mv_excess_sidewalk_area_1000m2 TO app_turnover_u4s;
-GRANT SELECT ON TABLE public.mv_excess_sidewalk_area_1000m2 TO metabase;
-
-
---
--- Name: TABLE mv_excess_monthly_by_work; Type: ACL; Schema: public; Owner: dima_admin
---
-
-GRANT ALL ON TABLE public.mv_excess_monthly_by_work TO app_mad_podolsk;
-GRANT SELECT ON TABLE public.mv_excess_monthly_by_work TO app_turnover_u4s;
-GRANT SELECT ON TABLE public.mv_excess_monthly_by_work TO metabase;
-
-
---
--- Name: TABLE mv_work_actual_daily_value; Type: ACL; Schema: public; Owner: dima_admin
---
-
-GRANT ALL ON TABLE public.mv_work_actual_daily_value TO app_mad_podolsk;
-GRANT SELECT ON TABLE public.mv_work_actual_daily_value TO app_turnover_u4s;
-GRANT SELECT ON TABLE public.mv_work_actual_daily_value TO metabase;
-
-
---
--- Name: TABLE mv_work_plan_monthly_value; Type: ACL; Schema: public; Owner: dima_admin
---
-
-GRANT ALL ON TABLE public.mv_work_plan_monthly_value TO app_mad_podolsk;
-GRANT SELECT ON TABLE public.mv_work_plan_monthly_value TO app_turnover_u4s;
-GRANT SELECT ON TABLE public.mv_work_plan_monthly_value TO metabase;
-
-
---
--- Name: TABLE mv_work_plan_vs_actual_monthly_value; Type: ACL; Schema: public; Owner: dima_admin
---
-
-GRANT ALL ON TABLE public.mv_work_plan_vs_actual_monthly_value TO app_mad_podolsk;
-GRANT SELECT ON TABLE public.mv_work_plan_vs_actual_monthly_value TO app_turnover_u4s;
-GRANT SELECT ON TABLE public.mv_work_plan_vs_actual_monthly_value TO metabase;
-
-
---
--- Name: TABLE mv_work_plan_actual_monthly_summary; Type: ACL; Schema: public; Owner: dima_admin
---
-
-GRANT ALL ON TABLE public.mv_work_plan_actual_monthly_summary TO app_mad_podolsk;
-GRANT SELECT ON TABLE public.mv_work_plan_actual_monthly_summary TO app_turnover_u4s;
-GRANT SELECT ON TABLE public.mv_work_plan_actual_monthly_summary TO metabase;
-
-
---
 -- Name: SEQUENCE podolsk_mad_2026_1sthalf_contract_amount_id_seq; Type: ACL; Schema: public; Owner: dima_admin
 --
 
@@ -1475,5 +1394,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 -- PostgreSQL database dump complete
 --
 
-\unrestrict cludMlnpe5PTjpngSJS3bR12vI5Rxhh1JByLhnVpYe3R9TEWAhIwFOJH4TASxHb
+\unrestrict eMPG1VxgslQ8avzw2ka2JaHGPnk31hu2MfM1tMmUM2MoVbSB1NVOhoqlWJqWkBI
 
