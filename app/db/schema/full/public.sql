@@ -658,7 +658,7 @@ CREATE MATERIALIZED VIEW public.mv_work_plan_monthly_value AS
     (spa.quantity_planned * p.unit_price) AS planned_value
    FROM ((initial_data.fact_work_plan_monthly spa
      JOIN public.dim_work_item wd ON ((spa.work_name = wd.work_name)))
-     JOIN initial_data.fact_price_2025 p ON ((p.work_item_id = wd.work_item_id)))
+     JOIN public.v_work_item_price_by_date p ON (((p.work_item_id = wd.work_item_id) AND (spa.month_start_date >= p.start_date) AND (spa.month_start_date <= p.end_date))))
   WITH NO DATA;
 
 
@@ -1394,4 +1394,3 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 --
 
 \unrestrict WXkrgRYaJyJgPydKKvVjmWB5MTg0ElYvhohbR4RnpJU0EicT6QaKTcrjdkiGhdS
-
