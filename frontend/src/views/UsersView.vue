@@ -2,7 +2,7 @@
 /**
  * UsersView — Раздел управления пользователями (только для админов)
  */
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/authStore'
 import { storeToRefs } from 'pinia'
@@ -61,7 +61,7 @@ watch([roleFilter, statusFilter], () => {
 })
 
 // Debounced search
-watch(searchQuery, (val) => {
+watch(searchQuery, () => {
   if (searchTimeout) {
     clearTimeout(searchTimeout)
   }

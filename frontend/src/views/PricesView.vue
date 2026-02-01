@@ -3,7 +3,7 @@
  * PricesView — Раздел Расценки
  * Отображает таблицу расценок с поиском и фильтрацией
  */
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { getPrices, getPricesFilters, type PriceRow, type EstimateOption, type WorkTypeOption } from '@/api/prices'
 import { UiInput, UiCard } from '@/components/ui'
 import { TableSkeleton, EmptyState } from '@/components/common'

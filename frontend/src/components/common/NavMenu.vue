@@ -48,11 +48,6 @@ const currentSection = computed(() => {
   return 'revenue'
 })
 
-const currentSectionLabel = computed(() => {
-  const item = navItems.find(i => i.id === currentSection.value)
-  return item?.label || 'Выручка'
-})
-
 function toggleMenu() {
   isOpen.value = !isOpen.value
 }
