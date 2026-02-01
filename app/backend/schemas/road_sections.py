@@ -19,6 +19,7 @@ class RoadSectionRow(_BaseSchema):
     road_section_id: int
     road_section_name: Optional[str]
     length_km: Optional[float]
+    width_m: Optional[float]
     passport_volume: Optional[float]
     sidewalk_passport_volume: Optional[float]
 

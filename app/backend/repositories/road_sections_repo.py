@@ -24,6 +24,7 @@ async def get_road_sections(search: Optional[str] = None) -> List[dict]:
             road_section_id,
             road_section_name,
             length_km,
+            width_m,
             passport_volume,
             sidewalk_passport_volume
         FROM dim_road_section
