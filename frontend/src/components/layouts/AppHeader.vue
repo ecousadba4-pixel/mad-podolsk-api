@@ -4,7 +4,7 @@ import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDashboardStore } from '../../store/dashboardStore'
 import { storeToRefs } from 'pinia'
-import { LastUpdatedBadge } from '../common'
+import { LastUpdatedBadge, NavMenu } from '../common'
 import { MonthPicker, DayPicker } from '../pickers'
 // ExportPdfButton temporarily disabled in header during report work-in-progress
 
@@ -25,6 +25,12 @@ const router = useRouter()
 const route = useRoute()
 const store = useDashboardStore()
 const { selectedMonth: selectedMonthRef, monthlySummary, selectedDate, loadedAt } = storeToRefs(store)
+
+// Определяем текущий раздел
+const isRevenueSection = computed(() => {
+  const path = route.path
+  return path === '/' || path === '/daily' || path.startsWith('/smeta') || route.name === 'monthly'
+})
 
 // выбор режима (локально + навигация)
 const isMonthlyActive = computed(() => route.path === '/' || route.name === 'monthly')
@@ -66,12 +72,14 @@ const selectedMonth = computed({
   <header class="app-header new-app-header">
     <div class="app-header__inner" ref="innerRef">
       <div class="new-header-row new-header-row--title">
-        <div>
+        <NavMenu />
+        <div class="app-header__title-block">
           <h1 class="app-header__title">СКПДИ · МАД · Подольск</h1>
-          <p class="app-header__subtitle text-body-sm">Работы в статусе «Рассмотрено»</p>
+          <p v-if="isRevenueSection" class="app-header__subtitle text-body-sm">Работы в статусе «Рассмотрено»</p>
         </div>
       </div>
-      <div class="new-header-row new-header-row--switch">
+      <!-- Контролы отображаются только в разделе Выручка -->
+      <div v-if="isRevenueSection" class="new-header-row new-header-row--switch">
         <div class="app-header__mode-switch control mode-switch--mobile" role="tablist" aria-label="Режим просмотра">
           <button
             type="button"

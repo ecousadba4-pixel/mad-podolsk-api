@@ -4,6 +4,7 @@ export { default as TableSkeleton } from './TableSkeleton.vue'
 export { default as ToastContainer } from './ToastContainer.vue'
 export { default as ErrorBoundary } from './ErrorBoundary.vue'
 export { default as EmptyState } from './EmptyState.vue'
+export { default as NavMenu } from './NavMenu.vue'
 
 // Icons
 export {

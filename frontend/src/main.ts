@@ -75,6 +75,39 @@ installQueryClient(app, {
   refetchOnWindowFocus: true
 })
 
+// Import auth store after pinia is installed
+import { useAuthStore } from './store/authStore'
+
+// Auth guard
+router.beforeEach(async (to, _from, next) => {
+  const authStore = useAuthStore()
+  
+  // Initialize auth state if not done yet
+  if (authStore.user === null && to.path !== '/login') {
+    await authStore.init()
+  }
+  
+  // Check if route requires auth
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next('/login')
+    return
+  }
+  
+  // Check if route requires admin
+  if (to.meta.requiresAdmin && !authStore.isAdmin) {
+    next('/')
+    return
+  }
+  
+  // Redirect to home if already authenticated and trying to access login
+  if (to.path === '/login' && authStore.isAuthenticated) {
+    next('/')
+    return
+  }
+  
+  next()
+})
+
 // Vue 3.4+: улучшенная производительность гидратации
 // Performance: отключаем devtools в production
 if (import.meta.env.PROD) {

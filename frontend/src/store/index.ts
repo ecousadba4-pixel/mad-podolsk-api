@@ -6,6 +6,7 @@
  * - monthlyStore: данные месячного дашборда
  * - dailyStore: данные дневного дашборда  
  * - smetaStore: данные смет
+ * - authStore: аутентификация и управление пользователями
  * - helpers: общие утилиты и типы
  */
 
@@ -17,6 +18,7 @@ export type { DashboardMode, NormalizedDailyRow, DailyData, SmetaDetailsWithType
 export { useMonthlyStore } from './monthlyStore'
 export { useDailyStore } from './dailyStore'
 export { useSmetaStore } from './smetaStore'
+export { useAuthStore } from './authStore'
 
 // Shared helpers
 export {

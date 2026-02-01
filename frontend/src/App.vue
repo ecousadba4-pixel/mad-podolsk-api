@@ -2,12 +2,17 @@
 import { AppHeader } from './components/layouts'
 import { ToastContainer, ErrorBoundary } from './components/common'
 import { useDashboardStore } from './store/dashboardStore'
-import { shallowRef, nextTick, onErrorCaptured } from 'vue'
+import { shallowRef, nextTick, onErrorCaptured, computed } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
 import { provideToast, handleError } from './composables'
 
 const store = useDashboardStore()
 const { mode } = storeToRefs(store)
+const route = useRoute()
+
+// Не показываем хедер на странице логина
+const showHeader = computed(() => route.path !== '/login')
 
 // Инициализируем провайдер toast для всего приложения
 provideToast()
@@ -82,7 +87,7 @@ function afterEnter() {
 
 <template>
   <div class="page" :data-view-mode="mode">
-    <AppHeader />
+    <AppHeader v-if="showHeader" />
 
     <main class="app-content page__content">
       <div ref="routerShell" class="router-shell">

@@ -5,6 +5,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.backend.routers.dashboard import router as dashboard_router
+from app.backend.routers.auth import router as auth_router
+from app.backend.routers.prices import router as prices_router
+from app.backend.routers.road_sections import router as road_sections_router
 from app.backend import db
 
 
@@ -28,6 +31,9 @@ app = FastAPI(
 
 # API v1 - фиксированный контракт
 app.include_router(dashboard_router, prefix="/api/v1/dashboard", tags=["dashboard"])
+app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
+app.include_router(prices_router, prefix="/api/v1/prices", tags=["prices"])
+app.include_router(road_sections_router, prefix="/api/v1/road-sections", tags=["road-sections"])
 
 # CORS: читаем разрешённые origin'ы из переменной окружения ALLOWED_ORIGINS (comma-separated)
 allowed = os.environ.get("ALLOWED_ORIGINS", "*")
