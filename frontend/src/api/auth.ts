@@ -69,7 +69,7 @@ export interface UserUpdateData {
 export async function login(loginName: string, password: string): Promise<LoginResponse> {
   return await request<LoginResponse>(`${API_BASE}/login`, {
     method: 'POST',
-    body: JSON.stringify({ login: loginName, password }),
+    body: { login: loginName, password } as unknown as BodyInit,
     credentials: 'include',
   })
 }
@@ -120,7 +120,7 @@ export async function getUsers(params?: {
 export async function createUser(data: UserCreateData): Promise<UserResponse> {
   return await request<UserResponse>(`${API_BASE}/users`, {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data as unknown as BodyInit,
     credentials: 'include',
   })
 }
@@ -131,7 +131,7 @@ export async function createUser(data: UserCreateData): Promise<UserResponse> {
 export async function updateUser(userId: number, data: UserUpdateData): Promise<UserResponse> {
   return await request<UserResponse>(`${API_BASE}/users/${userId}`, {
     method: 'PUT',
-    body: JSON.stringify(data),
+    body: data as unknown as BodyInit,
     credentials: 'include',
   })
 }
@@ -142,7 +142,7 @@ export async function updateUser(userId: number, data: UserUpdateData): Promise<
 export async function resetUserPassword(userId: number, newPassword: string): Promise<UserResponse> {
   return await request<UserResponse>(`${API_BASE}/users/${userId}/reset-password`, {
     method: 'POST',
-    body: JSON.stringify({ new_password: newPassword }),
+    body: { new_password: newPassword } as unknown as BodyInit,
     credentials: 'include',
   })
 }
