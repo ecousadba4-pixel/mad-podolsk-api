@@ -96,8 +96,8 @@ onMounted(async () => {
               <th>Участок дороги</th>
               <th class="road-sections-table__col-num">Длина, км</th>
               <th class="road-sections-table__col-num">Ширина, м</th>
-              <th class="road-sections-table__col-num">Объем паспорт дороги</th>
-              <th class="road-sections-table__col-num">Объем паспорт тротуар</th>
+              <th class="road-sections-table__col-num">Паспорт дороги</th>
+              <th class="road-sections-table__col-num">Паспорт тротуар</th>
             </tr>
           </thead>
           <tbody>
