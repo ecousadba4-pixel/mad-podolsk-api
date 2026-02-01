@@ -4,10 +4,10 @@
 
     <table v-else :class="['smeta-breakdown-table', `sorted-by-${sortKey}`]">
       <colgroup>
-        <col />
-        <col />
-        <col />
-        <col />
+        <col style="width: auto" />
+        <col style="width: 140px" />
+        <col style="width: 140px" />
+        <col style="width: 140px" />
       </colgroup>
       <thead>
         <tr>
@@ -275,6 +275,14 @@ function toggleTitleExpand(id) {
 
 <style scoped>
 .smeta-details-desktop {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Override global display: block to keep proper table layout */
+.smeta-details-desktop :deep(.smeta-breakdown-table) {
+  display: table;
+  table-layout: fixed;
   width: 100%;
 }
 
