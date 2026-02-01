@@ -99,48 +99,50 @@ onMounted(async () => {
     <!-- Filters -->
     <UiCard class="prices-view__filters">
       <div class="prices-filters">
-        <div class="prices-filters__search">
-          <label class="prices-filters__label">Поиск по названию работы</label>
-          <UiInput 
-            v-model="searchQuery" 
-            placeholder="Введите минимум 3 символа..."
-            class="prices-filters__input"
-          />
-        </div>
-
-        <div class="prices-filters__select-group">
-          <div class="prices-filters__select-item">
-            <label class="prices-filters__label">Смета</label>
-            <select 
-              v-model="selectedEstimate" 
-              class="prices-filters__select"
-            >
-              <option :value="null">Все сметы</option>
-              <option 
-                v-for="est in estimates" 
-                :key="est.estimate_id" 
-                :value="est.estimate_id"
-              >
-                {{ est.estimate_name }}
-              </option>
-            </select>
+        <div class="prices-filters__row">
+          <div class="prices-filters__search">
+            <label class="prices-filters__label">Поиск по названию работы</label>
+            <UiInput 
+              v-model="searchQuery" 
+              placeholder="Введите минимум 3 символа..."
+              class="prices-filters__input"
+            />
           </div>
 
-          <div class="prices-filters__select-item">
-            <label class="prices-filters__label">Тип работы</label>
-            <select 
-              v-model="selectedWorkType" 
-              class="prices-filters__select"
-            >
-              <option :value="null">Все типы</option>
-              <option 
-                v-for="wt in workTypes" 
-                :key="wt.work_type_id" 
-                :value="wt.work_type_id"
+          <div class="prices-filters__select-group">
+            <div class="prices-filters__select-item">
+              <label class="prices-filters__label">Смета</label>
+              <select 
+                v-model="selectedEstimate" 
+                class="prices-filters__select"
               >
-                {{ wt.work_type_name }}
-              </option>
-            </select>
+                <option :value="null">Все сметы</option>
+                <option 
+                  v-for="est in estimates" 
+                  :key="est.estimate_id" 
+                  :value="est.estimate_id"
+                >
+                  {{ est.estimate_name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="prices-filters__select-item">
+              <label class="prices-filters__label">Тип работы</label>
+              <select 
+                v-model="selectedWorkType" 
+                class="prices-filters__select"
+              >
+                <option :value="null">Все типы</option>
+                <option 
+                  v-for="wt in workTypes" 
+                  :key="wt.work_type_id" 
+                  :value="wt.work_type_id"
+                >
+                  {{ wt.work_type_name }}
+                </option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -226,6 +228,13 @@ onMounted(async () => {
 .prices-filters {
   display: flex;
   flex-direction: column;
+  gap: var(--gap-md);
+}
+
+.prices-filters__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
   gap: var(--gap-lg);
 }
 
@@ -233,6 +242,8 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: var(--gap-xs);
+  flex: 1;
+  min-width: 200px;
 }
 
 .prices-filters__label {
@@ -249,7 +260,7 @@ onMounted(async () => {
 
 .prices-filters__select-group {
   display: flex;
-  gap: var(--gap-lg);
+  gap: var(--gap-md);
   flex-wrap: wrap;
 }
 
@@ -257,7 +268,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: var(--gap-xs);
-  min-width: 200px;
+  min-width: 150px;
 }
 
 .prices-filters__select {
@@ -353,6 +364,19 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
+  .prices-filters__row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .prices-filters__search {
+    min-width: 100%;
+  }
+
+  .prices-filters__input {
+    max-width: 100%;
+  }
+
   .prices-filters__select-group {
     flex-direction: column;
   }
