@@ -113,6 +113,7 @@ def query(sql: str, params: tuple = ()) -> List[Dict[str, Any]]:
                 rows = cur.fetchall()
             except psycopg2.ProgrammingError:
                 rows = []
+            conn.commit()  # Commit transaction to persist changes (INSERT/UPDATE/DELETE)
             return rows
     except Exception:
         conn.rollback()  # Rollback on error to prevent connection corruption
