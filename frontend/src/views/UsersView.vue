@@ -210,7 +210,7 @@ onMounted(async () => {
     <!-- Filters -->
     <UiCard class="users-view__filters">
       <div class="users-filters">
-        <div class="users-filters__search">
+        <div class="users-filters__item users-filters__item--search">
           <label class="users-filters__label">Поиск</label>
           <UiInput 
             v-model="searchQuery" 
@@ -219,24 +219,22 @@ onMounted(async () => {
           />
         </div>
 
-        <div class="users-filters__select-group">
-          <div class="users-filters__select-item">
-            <label class="users-filters__label">Роль</label>
-            <select v-model="roleFilter" class="users-filters__select">
-              <option :value="null">Все роли</option>
-              <option value="admin">Администратор</option>
-              <option value="user">Пользователь</option>
-            </select>
-          </div>
+        <div class="users-filters__item">
+          <label class="users-filters__label">Роль</label>
+          <select v-model="roleFilter" class="users-filters__select">
+            <option :value="null">Все роли</option>
+            <option value="admin">Администратор</option>
+            <option value="user">Пользователь</option>
+          </select>
+        </div>
 
-          <div class="users-filters__select-item">
-            <label class="users-filters__label">Статус</label>
-            <select v-model="statusFilter" class="users-filters__select">
-              <option :value="null">Все статусы</option>
-              <option :value="true">Активен</option>
-              <option :value="false">Заблокирован</option>
-            </select>
-          </div>
+        <div class="users-filters__item">
+          <label class="users-filters__label">Статус</label>
+          <select v-model="statusFilter" class="users-filters__select">
+            <option :value="null">Все статусы</option>
+            <option :value="true">Активен</option>
+            <option :value="false">Заблокирован</option>
+          </select>
         </div>
       </div>
     </UiCard>
@@ -450,14 +448,22 @@ onMounted(async () => {
 
 .users-filters {
   display: flex;
-  flex-direction: column;
+  align-items: flex-end;
   gap: var(--gap-lg);
+  flex-wrap: wrap;
 }
 
-.users-filters__search {
+.users-filters__item {
   display: flex;
   flex-direction: column;
   gap: var(--gap-xs);
+  min-width: 150px;
+
+  &--search {
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+  }
 }
 
 .users-filters__label {
@@ -469,20 +475,7 @@ onMounted(async () => {
 }
 
 .users-filters__input {
-  max-width: 300px;
-}
-
-.users-filters__select-group {
-  display: flex;
-  gap: var(--gap-lg);
-  flex-wrap: wrap;
-}
-
-.users-filters__select-item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-xs);
-  min-width: 150px;
+  width: 100%;
 }
 
 .users-filters__select {
@@ -763,12 +756,17 @@ onMounted(async () => {
     justify-content: space-between;
   }
 
-  .users-filters__select-group {
+  .users-filters {
     flex-direction: column;
+    align-items: stretch;
   }
 
-  .users-filters__select-item {
+  .users-filters__item {
     min-width: 100%;
+
+    &--search {
+      max-width: none;
+    }
   }
 }
 </style>
