@@ -170,21 +170,21 @@ onMounted(async () => {
         <table class="prices-table">
           <thead>
             <tr>
-              <th>Смета</th>
-              <th>Раздел</th>
-              <th>Тип работы</th>
-              <th>Вид работы</th>
-              <th>Ед. изм.</th>
+              <th class="prices-table__col-desktop">Смета</th>
+              <th class="prices-table__col-desktop">Раздел</th>
+              <th class="prices-table__col-desktop">Тип работы</th>
+              <th class="prices-table__col-work">Вид работы</th>
+              <th class="prices-table__col-unit">Ед. изм.</th>
               <th class="prices-table__col-price">Расценка</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="row in rows" :key="row.price_id">
-              <td>{{ row.estimate_name || '—' }}</td>
-              <td>{{ row.estimate_section_name || '—' }}</td>
-              <td>{{ row.work_type_name || '—' }}</td>
-              <td class="prices-table__cell-work">{{ row.work_name || '—' }}</td>
-              <td>{{ row.unit_name || '—' }}</td>
+              <td class="prices-table__col-desktop">{{ row.estimate_name || '—' }}</td>
+              <td class="prices-table__col-desktop">{{ row.estimate_section_name || '—' }}</td>
+              <td class="prices-table__col-desktop">{{ row.work_type_name || '—' }}</td>
+              <td class="prices-table__col-work">{{ row.work_name || '—' }}</td>
+              <td class="prices-table__col-unit">{{ row.unit_name || '—' }}</td>
               <td class="prices-table__col-price">
                 {{ row.unit_price !== null ? formatMoney(row.unit_price) : '—' }}
               </td>
@@ -353,8 +353,12 @@ onMounted(async () => {
   }
 }
 
-.prices-table__cell-work {
+.prices-table__col-work {
   max-width: 300px;
+}
+
+.prices-table__col-unit {
+  white-space: nowrap;
 }
 
 .prices-table__col-price {
@@ -385,12 +389,37 @@ onMounted(async () => {
     min-width: 100%;
   }
 
+  /* Скрываем колонки на мобильном: Смета, Раздел, Тип работы */
+  .prices-table__col-desktop {
+    display: none;
+  }
+
   .prices-table {
-    font-size: var(--font-size-caption);
+    font-size: var(--font-size-body-sm);
+    table-layout: fixed;
+    width: 100%;
 
     th, td {
       padding: var(--gap-sm) var(--gap-md);
     }
+  }
+
+  /* Мобильная компоновка: Вид работы занимает основное пространство */
+  .prices-table__col-work {
+    width: auto;
+    max-width: none;
+    word-break: break-word;
+  }
+
+  /* Единицы измерения - компактно */
+  .prices-table__col-unit {
+    width: 60px;
+    text-align: center;
+  }
+
+  /* Расценка - компактно справа */
+  .prices-table__col-price {
+    width: 90px;
   }
 }
 </style>
