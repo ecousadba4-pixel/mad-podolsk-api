@@ -155,7 +155,6 @@ onUnmounted(() => {
         <div v-if="isAuthenticated" class="nav-menu__footer">
           <div class="nav-menu__user">
             <span class="nav-menu__user-name">{{ user?.full_name || user?.login }}</span>
-            <span class="nav-menu__user-role">{{ user?.role === 'admin' ? 'Администратор' : 'Пользователь' }}</span>
           </div>
           <button class="nav-menu__logout" @click="handleLogout">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -329,11 +328,6 @@ onUnmounted(() => {
   font-size: var(--font-size-body-sm);
   font-weight: 600;
   color: var(--text-main);
-}
-
-.nav-menu__user-role {
-  font-size: var(--font-size-caption);
-  color: var(--text-muted);
 }
 
 .nav-menu__logout {
