@@ -2,7 +2,7 @@
 /**
  * NavMenu — Navigation hamburger menu for switching between dashboard sections
  */
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/store/authStore'
 import { storeToRefs } from 'pinia'
@@ -13,6 +13,8 @@ const authStore = useAuthStore()
 const { isAuthenticated, isAdmin, user } = storeToRefs(authStore)
 
 const isOpen = ref(false)
+const toggleRef = ref<HTMLElement | null>(null)
+const dropdownStyle = ref<{ top: string; left: string } | null>(null)
 
 interface NavItem {
   id: string
@@ -48,8 +50,20 @@ const currentSection = computed(() => {
   return 'revenue'
 })
 
+function updateDropdownPosition() {
+  if (!toggleRef.value) return
+  const rect = toggleRef.value.getBoundingClientRect()
+  dropdownStyle.value = {
+    top: `${rect.bottom + 8}px`,
+    left: `${rect.left}px`
+  }
+}
+
 function toggleMenu() {
   isOpen.value = !isOpen.value
+  if (isOpen.value) {
+    nextTick(() => updateDropdownPosition())
+  }
 }
 
 function closeMenu() {
@@ -70,7 +84,8 @@ async function handleLogout() {
 // Close menu on click outside
 function handleClickOutside(e: MouseEvent) {
   const target = e.target as HTMLElement
-  if (!target.closest('.nav-menu')) {
+  // Check if click is inside the nav-menu toggle or inside the dropdown (now teleported to body)
+  if (!target.closest('.nav-menu') && !target.closest('.nav-menu__dropdown')) {
     closeMenu()
   }
 }
@@ -82,20 +97,32 @@ function handleKeydown(e: KeyboardEvent) {
   }
 }
 
+// Update dropdown position on window resize/scroll
+function handlePositionUpdate() {
+  if (isOpen.value) {
+    updateDropdownPosition()
+  }
+}
+
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
   document.addEventListener('keydown', handleKeydown)
+  window.addEventListener('resize', handlePositionUpdate)
+  window.addEventListener('scroll', handlePositionUpdate, true)
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
   document.removeEventListener('keydown', handleKeydown)
+  window.removeEventListener('resize', handlePositionUpdate)
+  window.removeEventListener('scroll', handlePositionUpdate, true)
 })
 </script>
 
 <template>
   <div class="nav-menu">
     <button 
+      ref="toggleRef"
       class="nav-menu__toggle" 
       @click.stop="toggleMenu"
       :aria-expanded="isOpen"
@@ -108,8 +135,14 @@ onUnmounted(() => {
       </span>
     </button>
 
-    <Transition name="nav-dropdown">
-      <div v-if="isOpen" class="nav-menu__dropdown" @click.stop>
+    <Teleport to="body">
+      <Transition name="nav-dropdown">
+        <div 
+          v-if="isOpen" 
+          class="nav-menu__dropdown" 
+          :style="dropdownStyle"
+          @click.stop
+        >
         <div class="nav-menu__header">
           <span class="nav-menu__section-label">Разделы</span>
         </div>
@@ -165,6 +198,7 @@ onUnmounted(() => {
         </div>
       </div>
     </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -226,17 +260,19 @@ onUnmounted(() => {
     }
   }
 }
+</style>
 
+<!-- Global styles for teleported dropdown (must be outside scoped) -->
+<style lang="scss">
 .nav-menu__dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
+  position: fixed;
   min-width: 240px;
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-strong);
   overflow: hidden;
+  z-index: 1000;
 }
 
 .nav-menu__header {
