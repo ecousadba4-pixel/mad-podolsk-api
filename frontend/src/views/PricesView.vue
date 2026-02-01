@@ -411,15 +411,17 @@ onMounted(async () => {
     word-break: break-word;
   }
 
-  /* Единицы измерения - компактно */
+  /* Единицы измерения - выравнивание влево */
   .prices-table__col-unit {
-    width: 60px;
-    text-align: center;
+    width: 70px;
+    text-align: left;
+    padding-right: var(--gap-lg) !important;
   }
 
   /* Расценка - компактно справа */
   .prices-table__col-price {
     width: 90px;
+    padding-left: var(--gap-md) !important;
   }
 }
 </style>
