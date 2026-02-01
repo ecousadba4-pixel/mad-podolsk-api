@@ -5,10 +5,10 @@
     <div v-else :class="['smeta-breakdown-table', `sorted-by-${sortKey}`]">
       <table>
         <colgroup>
-          <col style="width: auto" />
-          <col style="width: 140px" />
-          <col style="width: 140px" />
-          <col style="width: 140px" />
+          <col class="col-work" />
+          <col class="col-numeric" />
+          <col class="col-numeric" />
+          <col class="col-numeric" />
         </colgroup>
         <thead>
         <tr>
@@ -289,13 +289,54 @@ function toggleTitleExpand(id) {
   border-spacing: 0;
 }
 
-.smeta-breakdown-table__row--group-header {
+/* Column widths via colgroup */
+.smeta-details-desktop :deep(.smeta-breakdown-table table col.col-work) {
+  width: calc(100% - 420px); /* remaining space after 3 numeric columns */
+}
+
+.smeta-details-desktop :deep(.smeta-breakdown-table table col.col-numeric) {
+  width: 140px;
+}
+
+/* Ensure consistent padding for th and td in numeric columns */
+.smeta-details-desktop :deep(.smeta-breakdown-table table thead th),
+.smeta-details-desktop :deep(.smeta-breakdown-table table tbody td),
+.smeta-details-desktop :deep(.smeta-breakdown-table table tfoot td) {
+  padding: 12px 16px;
+}
+
+/* Numeric columns - consistent right alignment and padding */
+.smeta-details-desktop :deep(.smeta-breakdown-table table th.numeric),
+.smeta-details-desktop :deep(.smeta-breakdown-table table td.numeric) {
+  text-align: right;
+  padding-right: 16px;
+}
+
+/* First column width override */
+.smeta-details-desktop :deep(.smeta-breakdown-table table th:first-child),
+.smeta-details-desktop :deep(.smeta-breakdown-table table td:first-child) {
+  width: auto;
+  max-width: none;
+}
+
+/* Alternating row backgrounds */
+.smeta-details-desktop :deep(.smeta-breakdown-table table tbody tr:nth-child(odd):not(.smeta-breakdown-table__row--group-header)) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Interactive row hover */
+.smeta-details-desktop :deep(.smeta-breakdown-table table .smeta-breakdown-table__row--interactive:hover) {
+  background-color: var(--color-surface-hover, rgba(0, 0, 0, 0.04));
+}
+
+/* Group header row */
+.smeta-details-desktop :deep(.smeta-breakdown-table table .smeta-breakdown-table__row--group-header) {
   background-color: var(--color-surface-elevated, #f5f5f5);
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
 
-.smeta-breakdown-table__row--group-header:hover {
+.smeta-details-desktop :deep(.smeta-breakdown-table table .smeta-breakdown-table__row--group-header:hover) {
   background-color: var(--color-surface-hover, #ebebeb);
 }
 
@@ -404,17 +445,4 @@ function toggleTitleExpand(id) {
   overflow: visible;
 }
 
-.smeta-breakdown-table td.numeric,
-.smeta-breakdown-table th.numeric {
-  text-align: right;
-  padding-right: 12px;
-}
-
-.smeta-breakdown-table tbody tr:nth-child(odd):not(.smeta-breakdown-table__row--group-header) {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
-.smeta-breakdown-table__row--interactive:hover {
-  background-color: var(--color-surface-hover, rgba(0, 0, 0, 0.04));
-}
 </style>
