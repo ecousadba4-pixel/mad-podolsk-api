@@ -33,6 +33,7 @@ export interface UserListItem {
   role: string
   is_active: boolean
   created_at: string | null
+  last_visit: string | null
 }
 
 export interface UserListResponse {

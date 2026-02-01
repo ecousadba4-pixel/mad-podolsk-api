@@ -185,6 +185,18 @@ function getStatusLabel(isActive: boolean): string {
   return isActive ? 'Активен' : 'Заблокирован'
 }
 
+function formatLastVisit(dateStr: string | null): string {
+  if (!dateStr) return '—'
+  const date = new Date(dateStr)
+  return date.toLocaleString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
 onMounted(async () => {
   // Check if user is admin
   if (!isAdmin.value) {
@@ -241,7 +253,7 @@ onMounted(async () => {
 
     <!-- Table -->
     <UiCard class="users-view__table-card">
-      <TableSkeleton v-if="isLoading" :rows="10" :cols="5" />
+      <TableSkeleton v-if="isLoading" :rows="10" :cols="6" />
       
       <EmptyState 
         v-else-if="users.length === 0" 
@@ -257,6 +269,7 @@ onMounted(async () => {
               <th>Логин</th>
               <th>Роль</th>
               <th>Статус</th>
+              <th>Последнее посещение</th>
               <th class="users-table__col-actions">Действия</th>
             </tr>
           </thead>
@@ -279,6 +292,9 @@ onMounted(async () => {
                 >
                   {{ getStatusLabel(user.is_active) }}
                 </span>
+              </td>
+              <td class="users-table__col-last-visit">
+                {{ formatLastVisit(user.last_visit) }}
               </td>
               <td class="users-table__col-actions">
                 <div class="users-table__actions">
@@ -536,6 +552,12 @@ onMounted(async () => {
 .users-table__col-actions {
   width: 100px;
   text-align: center;
+}
+
+.users-table__col-last-visit {
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: var(--font-size-caption);
 }
 
 .users-table__actions {

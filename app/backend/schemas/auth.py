@@ -48,6 +48,7 @@ class UserListItem(_BaseSchema):
     role: str
     is_active: bool
     created_at: Optional[datetime]
+    last_visit: Optional[datetime]
 
 
 class UserListResponse(_BaseSchema):

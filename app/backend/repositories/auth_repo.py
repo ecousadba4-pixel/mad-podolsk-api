@@ -126,26 +126,34 @@ async def get_all_users(
     params = []
     
     if search:
-        conditions.append("(login ILIKE %s OR full_name ILIKE %s)")
+        conditions.append("(u.login ILIKE %s OR u.full_name ILIKE %s)")
         search_pattern = f"%{search}%"
         params.extend([search_pattern, search_pattern])
     
     if role_filter:
-        conditions.append("role = %s")
+        conditions.append("u.role = %s")
         params.append(role_filter)
     
     if is_active_filter is not None:
-        conditions.append("is_active = %s")
+        conditions.append("u.is_active = %s")
         params.append(is_active_filter)
     
     where_clause = " AND ".join(conditions) if conditions else "1=1"
     
     return await db.query_async(
         f"""
-        SELECT user_id, login, full_name, role, is_active, created_at, updated_at
-        FROM users
+        SELECT 
+            u.user_id, 
+            u.login, 
+            u.full_name, 
+            u.role, 
+            u.is_active, 
+            u.created_at, 
+            u.updated_at,
+            (SELECT MAX(s.updated_at) FROM sessions s WHERE s.user_id = u.user_id) AS last_visit
+        FROM users u
         WHERE {where_clause}
-        ORDER BY user_id
+        ORDER BY u.user_id
         """,
         tuple(params),
     )
