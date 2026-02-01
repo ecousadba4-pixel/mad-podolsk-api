@@ -2,14 +2,15 @@
   <div class="smeta-details-desktop">
     <div v-if="!groupedData.length" class="empty-state">Нет данных по смете</div>
 
-    <table v-else :class="['smeta-breakdown-table', `sorted-by-${sortKey}`]">
-      <colgroup>
-        <col style="width: auto" />
-        <col style="width: 140px" />
-        <col style="width: 140px" />
-        <col style="width: 140px" />
-      </colgroup>
-      <thead>
+    <div v-else :class="['smeta-breakdown-table', `sorted-by-${sortKey}`]">
+      <table>
+        <colgroup>
+          <col style="width: auto" />
+          <col style="width: 140px" />
+          <col style="width: 140px" />
+          <col style="width: 140px" />
+        </colgroup>
+        <thead>
         <tr>
           <th>Работы</th>
           <th :class="['numeric','sortable', { sorted: sortKey === 'plan' } ]" @click="toggleSort('plan')">
@@ -109,8 +110,9 @@
           <td class="numeric"><strong>{{ formatMoney(grandTotals.fact) }}</strong></td>
           <td :class="{'negative': grandTotals.delta < 0}" class="numeric"><strong>{{ formatMoney(grandTotals.delta) }}</strong></td>
         </tr>
-      </tfoot>
-    </table>
+        </tfoot>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -276,14 +278,15 @@ function toggleTitleExpand(id) {
 <style scoped>
 .smeta-details-desktop {
   width: 100%;
-  overflow-x: auto;
 }
 
-/* Override global display: block to keep proper table layout */
-.smeta-details-desktop :deep(.smeta-breakdown-table) {
+/* Inner table should use fixed layout and fill the wrapper */
+.smeta-details-desktop :deep(.smeta-breakdown-table table) {
   display: table;
   table-layout: fixed;
   width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .smeta-breakdown-table__row--group-header {
