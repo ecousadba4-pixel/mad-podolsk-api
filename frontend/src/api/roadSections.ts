@@ -12,6 +12,7 @@ export interface RoadSectionRow {
   road_section_id: number
   road_section_name: string | null
   length_km: number | null
+  width_m: number | null
   passport_volume: number | null
   sidewalk_passport_volume: number | null
 }

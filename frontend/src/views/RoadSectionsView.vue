@@ -81,7 +81,7 @@ onMounted(async () => {
 
     <!-- Table -->
     <UiCard class="road-sections-view__table-card">
-      <TableSkeleton v-if="isLoading" :rows="10" :cols="4" />
+      <TableSkeleton v-if="isLoading" :rows="10" :cols="5" />
       
       <EmptyState 
         v-else-if="rows.length === 0" 
@@ -95,6 +95,7 @@ onMounted(async () => {
             <tr>
               <th>Участок дороги</th>
               <th class="road-sections-table__col-num">Длина, км</th>
+              <th class="road-sections-table__col-num">Ширина, м</th>
               <th class="road-sections-table__col-num">Объем паспорт дороги</th>
               <th class="road-sections-table__col-num">Объем паспорт тротуар</th>
             </tr>
@@ -103,6 +104,7 @@ onMounted(async () => {
             <tr v-for="row in rows" :key="row.road_section_id">
               <td class="road-sections-table__cell-name">{{ row.road_section_name || '—' }}</td>
               <td class="road-sections-table__col-num">{{ formatNumber(row.length_km) }}</td>
+              <td class="road-sections-table__col-num">{{ formatNumber(row.width_m) }}</td>
               <td class="road-sections-table__col-num">{{ formatNumber(row.passport_volume) }}</td>
               <td class="road-sections-table__col-num">{{ formatNumber(row.sidewalk_passport_volume) }}</td>
             </tr>
