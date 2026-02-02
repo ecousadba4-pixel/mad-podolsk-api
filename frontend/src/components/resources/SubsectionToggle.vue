@@ -89,6 +89,29 @@ onMounted(async () => {
   box-shadow: var(--shadow-soft);
 }
 
+@media (max-width: 768px) {
+  .subsection-toggle {
+    display: flex;
+    width: calc(100% + 2 * var(--gap-md));
+    margin-left: calc(-1 * var(--gap-md));
+    margin-right: calc(-1 * var(--gap-md));
+  }
+
+  .subsection-toggle__track {
+    width: 100%;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .subsection-toggle__option {
+    flex: 1;
+    text-align: center;
+    padding-left: var(--gap-sm);
+    padding-right: var(--gap-sm);
+  }
+}
+
 .subsection-toggle__indicator {
   position: absolute;
   top: 4px;

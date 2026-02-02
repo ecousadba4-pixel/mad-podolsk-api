@@ -126,15 +126,17 @@ async function handleDelete(reason: string) {
 
     <!-- Action buttons -->
     <div v-if="activeMode === 'none'" class="equipment-block__actions">
-      <UiButton variant="primary" @click="startCreate">
+      <UiButton variant="primary" class="equipment-block__btn-new" @click="startCreate">
         Новая запись
       </UiButton>
-      <UiButton variant="secondary" @click="startEdit">
-        Редактирование
-      </UiButton>
-      <UiButton variant="secondary" @click="startDelete">
-        Удалить запись
-      </UiButton>
+      <div class="equipment-block__btn-row">
+        <UiButton variant="secondary" class="equipment-block__btn-half" @click="startEdit">
+          Редактирование
+        </UiButton>
+        <UiButton variant="secondary" class="equipment-block__btn-half" @click="startDelete">
+          Удалить запись
+        </UiButton>
+      </div>
     </div>
 
     <!-- Create mode -->
@@ -248,6 +250,31 @@ async function handleDelete(reason: string) {
   display: flex;
   flex-wrap: wrap;
   gap: var(--gap-md);
+}
+
+.equipment-block__btn-row {
+  display: contents;
+}
+
+@media (max-width: 768px) {
+  .equipment-block__actions {
+    flex-direction: column;
+  }
+
+  .equipment-block__btn-new {
+    width: 100%;
+  }
+
+  .equipment-block__btn-row {
+    display: flex;
+    gap: var(--gap-md);
+    width: 100%;
+  }
+
+  .equipment-block__btn-half {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 .equipment-block__form-area {

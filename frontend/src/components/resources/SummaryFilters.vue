@@ -90,24 +90,27 @@ function handleApply() {
         />
       </div>
 
-      <!-- Time From -->
-      <div class="summary-filters__field">
-        <label class="summary-filters__label">Время с</label>
-        <TimePicker 
-          v-model="timeFrom"
-          placeholder="—"
-          :minuteStep="15"
-        />
-      </div>
+      <!-- Time fields container -->
+      <div class="summary-filters__time-group">
+        <!-- Time From -->
+        <div class="summary-filters__field">
+          <label class="summary-filters__label">Время с</label>
+          <TimePicker 
+            v-model="timeFrom"
+            placeholder="—"
+            :minuteStep="15"
+          />
+        </div>
 
-      <!-- Time To -->
-      <div class="summary-filters__field">
-        <label class="summary-filters__label">Время по</label>
-        <TimePicker 
-          v-model="timeTo"
-          placeholder="—"
-          :minuteStep="15"
-        />
+        <!-- Time To -->
+        <div class="summary-filters__field">
+          <label class="summary-filters__label">Время по</label>
+          <TimePicker 
+            v-model="timeTo"
+            placeholder="—"
+            :minuteStep="15"
+          />
+        </div>
       </div>
 
       <!-- Apply button -->
@@ -149,6 +152,10 @@ function handleApply() {
   }
 }
 
+.summary-filters__time-group {
+  display: contents;
+}
+
 .summary-filters__label {
   font-size: var(--font-size-caption);
   font-weight: 600;
@@ -186,9 +193,23 @@ function handleApply() {
 }
 
 @media (max-width: 768px) {
+  .summary-filters {
+    padding: var(--gap-md);
+  }
+
   .summary-filters__fields {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .summary-filters__time-group {
+    display: flex;
+    gap: var(--gap-md);
+  }
+
+  .summary-filters__time-group .summary-filters__field {
+    flex: 1;
+    min-width: 0;
   }
 
   .summary-filters__field--action {

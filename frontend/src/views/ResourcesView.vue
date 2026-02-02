@@ -97,9 +97,18 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
+  .resources-view {
+    gap: var(--gap-md);
+  }
+
   .resources-view__header {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: var(--gap-sm);
+  }
+
+  .resources-view__title {
+    font-size: var(--font-size-h2);
   }
 }
 </style>
