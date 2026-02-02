@@ -71,16 +71,6 @@ async function handleCreate(data: any) {
   }
 }
 
-async function handleCreateAndNext(data: any) {
-  const result = await store.createEquipmentShift(data)
-  if (result) {
-    toast.success('Запись сохранена')
-    store.clearCurrentShifts()
-    // Form will reset itself as initialData is now undefined
-  } else {
-    toast.error(operationError.value || 'Ошибка создания записи')
-  }
-}
 
 async function handleSearch(data: { identifier: string | number; date: string }) {
   const result = await store.searchEquipmentShift(data.identifier as string, data.date)
@@ -158,24 +148,7 @@ async function handleDelete(reason: string) {
         mode="create"
         @submit="handleCreate"
         @cancel="cancelOperation"
-      >
-        <template #extra-actions>
-          <UiButton 
-            variant="secondary" 
-            :disabled="isOperationLoading"
-            @click.prevent="(e: Event) => {
-              e.preventDefault()
-              const form = (e.target as HTMLElement).closest('form')
-              if (form) {
-                const formData = new FormData(form)
-                // Trigger form validation and get data through custom event
-              }
-            }"
-          >
-            Записать и добавить следующую
-          </UiButton>
-        </template>
-      </EquipmentForm>
+      />
     </div>
 
     <!-- Edit mode - Search -->

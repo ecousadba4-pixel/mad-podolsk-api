@@ -2,7 +2,7 @@
 /**
  * ResourcesView — главная страница раздела "Учет техники и людей"
  */
-import { ref, onMounted, watch } from 'vue'
+import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useResourcesStore } from '@/store/resourcesStore'
 import { SubsectionToggle } from '@/components/resources'

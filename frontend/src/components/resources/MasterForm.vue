@@ -36,10 +36,10 @@ const { masters, isOperationLoading } = storeToRefs(store)
 
 // Form state
 const selectedMasterId = ref<number | null>(null)
-const workersCount = ref<number | null>(null)
+const workersCount = ref<number | string>('')
 const shiftStartDate = ref('')
 const shiftStartTime = ref('')
-const shiftDurationHours = ref<number | null>(null)
+const shiftDurationHours = ref<number | string>('')
 
 // Calendar state
 const isCalendarOpen = ref(false)
@@ -55,10 +55,12 @@ const formattedDate = computed(() => {
 
 const isValid = computed(() => {
   if (!selectedMasterId.value) return false
-  if (workersCount.value === null || workersCount.value < 0) return false
+  const workers = Number(workersCount.value)
+  if (workersCount.value === '' || isNaN(workers) || workers < 0) return false
   if (!shiftStartDate.value) return false
   if (!shiftStartTime.value) return false
-  if (!shiftDurationHours.value || shiftDurationHours.value <= 0) return false
+  const duration = Number(shiftDurationHours.value)
+  if (!duration || duration <= 0) return false
   
   return true
 })
@@ -67,10 +69,10 @@ const isValid = computed(() => {
 onMounted(() => {
   if (props.initialData) {
     selectedMasterId.value = props.initialData.masterId ?? null
-    workersCount.value = props.initialData.workersCount ?? null
+    workersCount.value = props.initialData.workersCount ?? ''
     shiftStartDate.value = props.initialData.shiftStartDate ?? ''
     shiftStartTime.value = props.initialData.shiftStartTime ?? ''
-    shiftDurationHours.value = props.initialData.shiftDurationHours ?? null
+    shiftDurationHours.value = props.initialData.shiftDurationHours ?? ''
   } else {
     // Set default date to today
     const today = new Date()
@@ -96,10 +98,10 @@ function handleSubmit() {
   
   emit('submit', {
     master_id: selectedMasterId.value!,
-    workers_count: workersCount.value!,
+    workers_count: Number(workersCount.value),
     shift_start_date: shiftStartDate.value,
     shift_start_time: shiftStartTime.value,
-    shift_duration_hours: shiftDurationHours.value!,
+    shift_duration_hours: Number(shiftDurationHours.value),
   })
 }
 

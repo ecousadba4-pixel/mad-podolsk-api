@@ -52,7 +52,7 @@ const selectedDriverId = ref<number | null>(null)
 const driverName = ref('')
 const shiftStartDate = ref('')
 const shiftStartTime = ref('')
-const shiftDurationHours = ref<number | null>(null)
+const shiftDurationHours = ref<number | string>('')
 
 // Calendar state
 const isCalendarOpen = ref(false)
@@ -76,7 +76,8 @@ const isValid = computed(() => {
   if (!plateNumber.value.trim()) return false
   if (!shiftStartDate.value) return false
   if (!shiftStartTime.value) return false
-  if (!shiftDurationHours.value || shiftDurationHours.value <= 0) return false
+  const duration = Number(shiftDurationHours.value)
+  if (!duration || duration <= 0) return false
   
   if (props.isOwn) {
     if (!selectedVehicleId.value) return false
@@ -115,7 +116,7 @@ onMounted(() => {
     driverName.value = props.initialData.driverName ?? ''
     shiftStartDate.value = props.initialData.shiftStartDate ?? ''
     shiftStartTime.value = props.initialData.shiftStartTime ?? ''
-    shiftDurationHours.value = props.initialData.shiftDurationHours ?? null
+    shiftDurationHours.value = props.initialData.shiftDurationHours ?? ''
   } else {
     // Set default date to today
     const today = new Date()
@@ -148,7 +149,7 @@ function handleSubmit() {
     driver_name: props.isOwn ? undefined : driverName.value.trim() || undefined,
     shift_start_date: shiftStartDate.value,
     shift_start_time: shiftStartTime.value,
-    shift_duration_hours: shiftDurationHours.value!,
+    shift_duration_hours: Number(shiftDurationHours.value),
   })
 }
 

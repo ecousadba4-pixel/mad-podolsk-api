@@ -56,8 +56,10 @@ const displayValue = computed(() => {
 // Watch modelValue changes
 watch(() => props.modelValue, (val) => {
   if (val) {
-    const [h, m] = val.split(':').map(Number)
-    if (!isNaN(h) && !isNaN(m)) {
+    const parts = val.split(':').map(Number)
+    const h = parts[0]
+    const m = parts[1]
+    if (h !== undefined && m !== undefined && !isNaN(h) && !isNaN(m)) {
       selectedHour.value = h
       selectedMinute.value = m
     }
