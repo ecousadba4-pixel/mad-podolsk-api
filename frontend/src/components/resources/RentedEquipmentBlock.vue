@@ -151,6 +151,7 @@ async function handleDelete(reason: string) {
     <div v-else-if="activeMode === 'edit' && !foundShiftForEdit" class="equipment-block__form-area">
       <ShiftSearchForm
         type="equipment"
+        :isOwn="false"
         @search="handleSearch"
         @cancel="cancelOperation"
       />
@@ -171,6 +172,7 @@ async function handleDelete(reason: string) {
     <div v-else-if="activeMode === 'delete' && !foundShiftForDelete" class="equipment-block__form-area">
       <ShiftSearchForm
         type="equipment"
+        :isOwn="false"
         @search="handleSearch"
         @cancel="cancelOperation"
       />

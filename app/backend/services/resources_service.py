@@ -41,6 +41,12 @@ async def get_masters() -> Dict[str, Any]:
     return {"items": items}
 
 
+async def get_rented_plate_numbers(equipment_type_id: Optional[int] = None) -> Dict[str, Any]:
+    """Get unique plate numbers from rented equipment shifts."""
+    items = await resources_repo.get_rented_plate_numbers(equipment_type_id=equipment_type_id)
+    return {"items": items}
+
+
 # =============================================================================
 # Equipment Shifts
 # =============================================================================

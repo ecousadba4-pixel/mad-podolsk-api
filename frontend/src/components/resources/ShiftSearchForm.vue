@@ -2,16 +2,17 @@
 /**
  * ShiftSearchForm — форма поиска записи по идентификатору + дате
  * 
- * Используется для поиска смен техники (гос.номер + дата) и мастеров (ФИО + дата)
+ * Используется для поиска смен техники (тип + гос.номер + дата) и мастеров (ФИО + дата)
  */
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useResourcesStore } from '@/store/resourcesStore'
-import { UiInput, UiButton } from '@/components/ui'
+import { UiButton } from '@/components/ui'
 import { CalendarDropdown } from '@/components/pickers'
 
 const props = defineProps<{
   type: 'equipment' | 'master'
+  isOwn?: boolean  // For equipment: true = own, false = rented
 }>()
 
 const emit = defineEmits<{
@@ -20,10 +21,17 @@ const emit = defineEmits<{
 }>()
 
 const store = useResourcesStore()
-const { masters, isOperationLoading } = storeToRefs(store)
+const { 
+  masters, 
+  equipmentTypes, 
+  vehicles, 
+  rentedPlateNumbers,
+  isOperationLoading 
+} = storeToRefs(store)
 
 // Form state
-const plateNumber = ref('')
+const selectedTypeId = ref<number | null>(null)
+const selectedPlateNumber = ref<string | null>(null)
 const selectedMasterId = ref<number | null>(null)
 const searchDate = ref('')
 
@@ -33,6 +41,16 @@ const calendarAnchorRect = ref<DOMRect | null>(null)
 const datePickerRef = ref<HTMLElement | null>(null)
 
 // Computed
+const filteredVehicles = computed(() => {
+  if (!selectedTypeId.value) return []
+  return vehicles.value.filter(v => v.equipment_type_id === selectedTypeId.value)
+})
+
+const filteredRentedPlateNumbers = computed(() => {
+  if (!selectedTypeId.value) return []
+  return rentedPlateNumbers.value.filter(p => p.equipment_type_id === selectedTypeId.value)
+})
+
 const formattedDate = computed(() => {
   if (!searchDate.value) return ''
   const d = new Date(searchDate.value)
@@ -43,17 +61,33 @@ const isValid = computed(() => {
   if (!searchDate.value) return false
   
   if (props.type === 'equipment') {
-    return plateNumber.value.trim().length > 0
+    return selectedTypeId.value !== null && selectedPlateNumber.value !== null
   } else {
     return selectedMasterId.value !== null
   }
 })
 
+// Watchers
+watch(selectedTypeId, async (newTypeId) => {
+  // Reset plate number when type changes
+  selectedPlateNumber.value = null
+  
+  // For rented equipment, fetch plate numbers for this type
+  if (props.type === 'equipment' && !props.isOwn && newTypeId) {
+    await store.fetchRentedPlateNumbers(newTypeId)
+  }
+})
+
 // Initialize
-onMounted(() => {
+onMounted(async () => {
   // Set default date to today
   const today = new Date()
   searchDate.value = today.toISOString().slice(0, 10)
+  
+  // Pre-fetch all rented plate numbers if needed
+  if (props.type === 'equipment' && !props.isOwn) {
+    await store.fetchRentedPlateNumbers()
+  }
 })
 
 // Methods
@@ -74,7 +108,7 @@ function handleSearch() {
   
   if (props.type === 'equipment') {
     emit('search', {
-      identifier: plateNumber.value.trim().toUpperCase(),
+      identifier: selectedPlateNumber.value!,
       date: searchDate.value,
     })
   } else {
@@ -93,16 +127,70 @@ function handleCancel() {
 <template>
   <form class="search-form" @submit.prevent="handleSearch">
     <div class="search-form__fields">
+      <!-- Equipment Type (only for equipment search) -->
+      <template v-if="type === 'equipment'">
+        <div class="search-form__field">
+          <label class="search-form__label">Тип техники</label>
+          <select 
+            v-model="selectedTypeId" 
+            class="search-form__select"
+          >
+            <option :value="null" disabled>Выберите тип</option>
+            <option 
+              v-for="eqType in equipmentTypes" 
+              :key="eqType.id" 
+              :value="eqType.id"
+            >
+              {{ eqType.name }}
+            </option>
+          </select>
+        </div>
+      </template>
+
       <!-- Identifier field -->
       <div class="search-form__field">
         <label class="search-form__label">
           {{ type === 'equipment' ? 'Гос. номер' : 'ФИО мастера' }}
         </label>
         <template v-if="type === 'equipment'">
-          <UiInput 
-            v-model="plateNumber" 
-            placeholder="Введите гос. номер"
-          />
+          <!-- Own equipment: select from vehicles -->
+          <template v-if="isOwn">
+            <select 
+              v-model="selectedPlateNumber" 
+              class="search-form__select"
+              :disabled="!selectedTypeId"
+            >
+              <option :value="null" disabled>
+                {{ selectedTypeId ? 'Выберите гос. номер' : 'Сначала выберите тип' }}
+              </option>
+              <option 
+                v-for="vehicle in filteredVehicles" 
+                :key="vehicle.id" 
+                :value="vehicle.plate_number"
+              >
+                {{ vehicle.plate_number }}
+              </option>
+            </select>
+          </template>
+          <!-- Rented equipment: select from rented plate numbers -->
+          <template v-else>
+            <select 
+              v-model="selectedPlateNumber" 
+              class="search-form__select"
+              :disabled="!selectedTypeId"
+            >
+              <option :value="null" disabled>
+                {{ selectedTypeId ? 'Выберите гос. номер' : 'Сначала выберите тип' }}
+              </option>
+              <option 
+                v-for="item in filteredRentedPlateNumbers" 
+                :key="item.plate_number" 
+                :value="item.plate_number"
+              >
+                {{ item.plate_number }}
+              </option>
+            </select>
+          </template>
         </template>
         <template v-else>
           <select 

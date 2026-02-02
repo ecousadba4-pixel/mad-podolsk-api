@@ -10,6 +10,7 @@ import type {
   Vehicle,
   Driver,
   Master,
+  RentedPlateNumber,
   EquipmentShiftResponse,
   MasterShiftResponse,
   SummaryResponse,
@@ -28,6 +29,7 @@ export const useResourcesStore = defineStore('resources', () => {
   const vehicles = ref<Vehicle[]>([])
   const drivers = ref<Driver[]>([])
   const masters = ref<Master[]>([])
+  const rentedPlateNumbers = ref<RentedPlateNumber[]>([])
   
   const isLoadingReferences = ref(false)
   const referencesError = ref<string | null>(null)
@@ -62,6 +64,10 @@ export const useResourcesStore = defineStore('resources', () => {
   
   const vehiclesByType = computed(() => {
     return (typeId: number) => vehicles.value.filter(v => v.equipment_type_id === typeId)
+  })
+  
+  const rentedPlateNumbersByType = computed(() => {
+    return (typeId: number) => rentedPlateNumbers.value.filter(p => p.equipment_type_id === typeId)
   })
   
   const activeEquipmentTypes = computed(() => {
@@ -112,6 +118,21 @@ export const useResourcesStore = defineStore('resources', () => {
       vehicles.value = [...otherVehicles, ...res.items]
     } catch (e) {
       console.error('Failed to fetch vehicles by type:', e)
+    }
+  }
+  
+  async function fetchRentedPlateNumbers(equipmentTypeId?: number) {
+    try {
+      const res = await resourcesApi.getRentedPlateNumbers(equipmentTypeId)
+      if (equipmentTypeId !== undefined) {
+        // Update only plate numbers of this type in the store
+        const otherPlateNumbers = rentedPlateNumbers.value.filter(p => p.equipment_type_id !== equipmentTypeId)
+        rentedPlateNumbers.value = [...otherPlateNumbers, ...res.items]
+      } else {
+        rentedPlateNumbers.value = res.items
+      }
+    } catch (e) {
+      console.error('Failed to fetch rented plate numbers:', e)
     }
   }
   
@@ -318,6 +339,7 @@ export const useResourcesStore = defineStore('resources', () => {
     vehicles,
     drivers,
     masters,
+    rentedPlateNumbers,
     isLoadingReferences,
     referencesError,
     
@@ -337,6 +359,7 @@ export const useResourcesStore = defineStore('resources', () => {
     
     // Getters
     vehiclesByType,
+    rentedPlateNumbersByType,
     activeEquipmentTypes,
     activeDrivers,
     activeMasters,
@@ -344,6 +367,7 @@ export const useResourcesStore = defineStore('resources', () => {
     // Actions - Reference Data
     fetchReferences,
     fetchVehiclesByType,
+    fetchRentedPlateNumbers,
     
     // Actions - Equipment Shifts
     createEquipmentShift,

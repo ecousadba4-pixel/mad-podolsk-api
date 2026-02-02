@@ -10,6 +10,7 @@ from app.backend.schemas.resources import (
     VehiclesResponse,
     DriversResponse,
     MastersResponse,
+    RentedPlateNumbersResponse,
     # Equipment shift schemas
     EquipmentShiftCreate,
     EquipmentShiftUpdate,
@@ -66,6 +67,15 @@ async def get_masters():
     """Get list of active masters."""
     result = await resources_service.get_masters()
     return MastersResponse(**result)
+
+
+@router.get("/references/rented-plate-numbers", response_model=RentedPlateNumbersResponse)
+async def get_rented_plate_numbers(
+    equipment_type_id: Optional[int] = Query(None, description="Filter by equipment type"),
+):
+    """Get unique plate numbers from rented equipment shifts."""
+    result = await resources_service.get_rented_plate_numbers(equipment_type_id=equipment_type_id)
+    return RentedPlateNumbersResponse(**result)
 
 
 # =============================================================================

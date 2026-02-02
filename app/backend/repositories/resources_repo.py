@@ -82,6 +82,35 @@ async def get_masters(active_only: bool = True) -> List[dict]:
     )
 
 
+async def get_rented_plate_numbers(equipment_type_id: Optional[int] = None) -> List[dict]:
+    """Get unique plate numbers from rented equipment shifts (is_own = false).
+    
+    Returns list of unique plate numbers with equipment type info.
+    """
+    conditions = ["es.is_own = false", "es.is_deleted = false"]
+    params = []
+    
+    if equipment_type_id is not None:
+        conditions.append("es.equipment_type_id = %s")
+        params.append(equipment_type_id)
+    
+    where_clause = " AND ".join(conditions)
+    
+    return await db.query_async(
+        f"""
+        SELECT DISTINCT ON (es.plate_number)
+            es.plate_number,
+            es.equipment_type_id,
+            et.name AS equipment_type_name
+        FROM equipment_shifts es
+        LEFT JOIN equipment_types et ON es.equipment_type_id = et.id
+        WHERE {where_clause}
+        ORDER BY es.plate_number
+        """,
+        tuple(params) if params else None,
+    )
+
+
 # =============================================================================
 # Equipment Shifts
 # =============================================================================

@@ -54,6 +54,16 @@ export interface MastersResponse {
   items: Master[]
 }
 
+export interface RentedPlateNumber {
+  plate_number: string
+  equipment_type_id: number
+  equipment_type_name: string | null
+}
+
+export interface RentedPlateNumbersResponse {
+  items: RentedPlateNumber[]
+}
+
 // =============================================================================
 // Types - Equipment Shifts
 // =============================================================================
@@ -234,6 +244,19 @@ export async function getDrivers(): Promise<DriversResponse> {
  */
 export async function getMasters(): Promise<MastersResponse> {
   return await request<MastersResponse>(`${API_BASE}/references/masters`)
+}
+
+/**
+ * Get unique plate numbers from rented equipment shifts
+ */
+export async function getRentedPlateNumbers(equipmentTypeId?: number): Promise<RentedPlateNumbersResponse> {
+  const params = new URLSearchParams()
+  if (equipmentTypeId !== undefined) {
+    params.set('equipment_type_id', String(equipmentTypeId))
+  }
+  const queryString = params.toString()
+  const url = queryString ? `${API_BASE}/references/rented-plate-numbers?${queryString}` : `${API_BASE}/references/rented-plate-numbers`
+  return await request<RentedPlateNumbersResponse>(url)
 }
 
 // =============================================================================

@@ -240,6 +240,18 @@ class MastersResponse(_BaseSchema):
     items: List[Master]
 
 
+class RentedPlateNumber(_BaseSchema):
+    """Rented equipment plate number."""
+    plate_number: str
+    equipment_type_id: int
+    equipment_type_name: Optional[str] = None
+
+
+class RentedPlateNumbersResponse(_BaseSchema):
+    """List of unique rented plate numbers."""
+    items: List[RentedPlateNumber]
+
+
 # =============================================================================
 # Generic Response Wrappers
 # =============================================================================
