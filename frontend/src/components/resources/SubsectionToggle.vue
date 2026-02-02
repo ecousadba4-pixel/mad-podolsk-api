@@ -82,9 +82,11 @@ onMounted(async () => {
 .subsection-toggle__track {
   position: relative;
   display: flex;
-  background: var(--bg-muted);
+  background: #fff;
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
   padding: 4px;
+  box-shadow: var(--shadow-soft);
 }
 
 .subsection-toggle__indicator {
