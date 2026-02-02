@@ -2,7 +2,7 @@
 /**
  * SubsectionToggle — слайдер-переключатель между подразделами
  */
-import { computed } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 
 const props = defineProps<{
   modelValue: 'summary' | 'data-entry'
@@ -12,21 +12,48 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: 'summary' | 'data-entry'): void
 }>()
 
-const activeIndex = computed(() => props.modelValue === 'summary' ? 0 : 1)
+const summaryBtn = ref<HTMLButtonElement | null>(null)
+const dataEntryBtn = ref<HTMLButtonElement | null>(null)
+
+const indicatorStyle = computed(() => {
+  const activeBtn = props.modelValue === 'summary' ? summaryBtn.value : dataEntryBtn.value
+  const offsetBtn = props.modelValue === 'summary' ? null : summaryBtn.value
+  
+  if (!activeBtn) {
+    return { width: '0px', transform: 'translateX(0)' }
+  }
+  
+  const width = activeBtn.offsetWidth
+  const offsetX = offsetBtn ? offsetBtn.offsetWidth : 0
+  
+  return {
+    width: `${width}px`,
+    transform: `translateX(${offsetX}px)`
+  }
+})
 
 function selectOption(option: 'summary' | 'data-entry') {
   emit('update:modelValue', option)
 }
+
+// Force reactivity update after mount
+const mounted = ref(false)
+onMounted(async () => {
+  await nextTick()
+  mounted.value = true
+})
 </script>
 
 <template>
   <div class="subsection-toggle">
     <div class="subsection-toggle__track">
       <div 
+        v-if="mounted"
         class="subsection-toggle__indicator" 
-        :style="{ transform: `translateX(${activeIndex * 100}%)` }"
+        :style="indicatorStyle"
       />
       <button
+        ref="summaryBtn"
         type="button"
         class="subsection-toggle__option"
         :class="{ 'subsection-toggle__option--active': modelValue === 'summary' }"
@@ -35,6 +62,7 @@ function selectOption(option: 'summary' | 'data-entry') {
         Сводка
       </button>
       <button
+        ref="dataEntryBtn"
         type="button"
         class="subsection-toggle__option"
         :class="{ 'subsection-toggle__option--active': modelValue === 'data-entry' }"
@@ -63,12 +91,12 @@ function selectOption(option: 'summary' | 'data-entry') {
   position: absolute;
   top: 4px;
   left: 4px;
-  width: calc(50% - 4px);
   height: calc(100% - 8px);
   background: var(--accent);
   border-radius: var(--radius-md);
   box-shadow: 0 2px 8px rgb(47 111 237 / 35%);
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .subsection-toggle__option {

@@ -34,33 +34,21 @@ defineProps<{
     </div>
 
     <div v-else class="people-summary__content">
-      <!-- Masters list -->
-      <div v-if="data.masters.length > 0" class="people-summary__section">
-        <div class="people-summary__section-header">
-          <span>Мастера</span>
-          <span class="people-summary__section-count">{{ data.total_masters }}</span>
-        </div>
-        <table class="people-summary__table">
-          <thead>
-            <tr>
-              <th>ФИО мастера</th>
-              <th>Рабочих</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="master in data.masters" :key="master.master_id">
-              <td class="people-summary__name">{{ master.master_full_name }}</td>
-              <td class="people-summary__count">{{ master.workers_count }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Summary -->
+      <!-- Summary with master names -->
       <div class="people-summary__totals">
         <div class="people-summary__total-row">
           <span>Мастеров:</span>
           <strong>{{ data.total_masters }}</strong>
+        </div>
+        <!-- Master names list -->
+        <div v-if="data.masters.length > 0" class="people-summary__masters-list">
+          <span 
+            v-for="(master, index) in data.masters" 
+            :key="master.master_id"
+            class="people-summary__master-name"
+          >
+            {{ master.master_full_name }}<span v-if="index < data.masters.length - 1">,</span>
+          </span>
         </div>
         <div class="people-summary__total-row">
           <span>Рабочих:</span>
@@ -111,66 +99,6 @@ defineProps<{
   gap: var(--gap-lg);
 }
 
-.people-summary__section {
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-.people-summary__section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--gap-sm) var(--gap-md);
-  background: var(--bg-muted);
-  border-bottom: 1px solid var(--border-soft);
-  font-size: var(--font-size-body-sm);
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-.people-summary__section-count {
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.people-summary__table {
-  width: 100%;
-  border-collapse: collapse;
-
-  th, td {
-    padding: var(--gap-sm) var(--gap-md);
-    text-align: left;
-  }
-
-  th {
-    font-size: var(--font-size-caption);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--text-muted);
-    background: var(--bg-muted);
-    border-bottom: 1px solid var(--border-soft);
-  }
-
-  tr:not(:last-child) td {
-    border-bottom: 1px solid var(--border-soft);
-  }
-}
-
-.people-summary__name {
-  font-size: var(--font-size-body-sm);
-  color: var(--text-main);
-}
-
-.people-summary__count {
-  text-align: right !important;
-  font-size: var(--font-size-body-sm);
-  font-weight: 600;
-  color: var(--text-main);
-  width: 80px;
-}
-
 .people-summary__totals {
   display: flex;
   flex-direction: column;
@@ -209,5 +137,17 @@ defineProps<{
       color: var(--accent);
     }
   }
+}
+
+.people-summary__masters-list {
+  padding-left: var(--gap-md);
+  margin-bottom: var(--gap-xs);
+  font-size: var(--font-size-body-sm);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.people-summary__master-name {
+  white-space: nowrap;
 }
 </style>
