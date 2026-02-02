@@ -141,29 +141,31 @@ function handleClick(e: MouseEvent) {
 
   /* Variants */
   &--primary {
-    background: var(--gradient-accent);
+    background: var(--accent);
     color: var(--text-inverse);
     box-shadow: var(--shadow-btn-primary);
 
     &:hover:not(:disabled) {
+      background: var(--accent-strong);
       transform: translateY(-1px);
       box-shadow: var(--shadow-btn-airy-hover);
     }
 
     &:active:not(:disabled) {
+      background: var(--accent-strong);
       transform: translateY(0);
       box-shadow: var(--shadow-btn-primary-active);
     }
   }
 
   &--secondary {
-    background: var(--gradient-btn-airy);
+    background: var(--bg-card);
     color: var(--text-main);
     border-color: var(--border-soft);
     box-shadow: var(--shadow-soft);
 
     &:hover:not(:disabled) {
-      background: var(--gradient-btn-airy-hover);
+      background: var(--bg-muted);
       border-color: var(--border-strong);
       transform: translateY(-1px);
       box-shadow: var(--shadow-btn-airy-hover);
@@ -177,10 +179,11 @@ function handleClick(e: MouseEvent) {
 
   &--ghost {
     background: transparent;
-    color: var(--text-main);
+    color: var(--text-muted);
 
     &:hover:not(:disabled) {
       background: var(--overlay-dark-hover);
+      color: var(--text-main);
     }
 
     &:active:not(:disabled) {
@@ -191,10 +194,12 @@ function handleClick(e: MouseEvent) {
   &--danger {
     background: var(--danger);
     color: var(--text-inverse);
+    box-shadow: 0 4px 12px rgb(192 52 43 / 25%);
 
     &:hover:not(:disabled) {
       filter: brightness(1.1);
       transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgb(192 52 43 / 30%);
     }
 
     &:active:not(:disabled) {

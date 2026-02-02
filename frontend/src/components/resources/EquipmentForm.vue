@@ -316,8 +316,16 @@ function handleCancel() {
 
 .equipment-form__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--gap-md);
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap-md) var(--gap-lg);
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .equipment-form__field {
