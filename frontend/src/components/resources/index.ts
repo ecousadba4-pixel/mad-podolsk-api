@@ -1,0 +1,12 @@
+// Resources section components
+export { default as SubsectionToggle } from './SubsectionToggle.vue'
+export { default as OwnEquipmentBlock } from './OwnEquipmentBlock.vue'
+export { default as RentedEquipmentBlock } from './RentedEquipmentBlock.vue'
+export { default as MastersBlock } from './MastersBlock.vue'
+export { default as EquipmentForm } from './EquipmentForm.vue'
+export { default as MasterForm } from './MasterForm.vue'
+export { default as ShiftSearchForm } from './ShiftSearchForm.vue'
+export { default as DeleteReasonModal } from './DeleteReasonModal.vue'
+export { default as SummaryFilters } from './SummaryFilters.vue'
+export { default as SummaryEquipmentTable } from './SummaryEquipmentTable.vue'
+export { default as SummaryPeopleTable } from './SummaryPeopleTable.vue'

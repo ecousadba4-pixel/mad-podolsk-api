@@ -7,6 +7,7 @@ const SmetaBreakdown = () => import(/* webpackChunkName: "smeta" */ '../views/Sm
 const PricesView = () => import(/* webpackChunkName: "prices" */ '../views/PricesView.vue')
 const RoadSectionsView = () => import(/* webpackChunkName: "road-sections" */ '../views/RoadSectionsView.vue')
 const UsersView = () => import(/* webpackChunkName: "users" */ '../views/UsersView.vue')
+const ResourcesView = () => import(/* webpackChunkName: "resources" */ '../views/ResourcesView.vue')
 const LoginView = () => import(/* webpackChunkName: "login" */ '../views/LoginView.vue')
 
 // Extend RouteMeta for our custom properties
@@ -55,6 +56,12 @@ const routes: RouteRecordRaw[] = [
     name: 'users',
     component: UsersView,
     meta: { title: 'Пользователи', requiresAuth: true, requiresAdmin: true }
+  },
+  {
+    path: '/resources',
+    name: 'resources',
+    component: ResourcesView,
+    meta: { title: 'Учет техники и людей', requiresAuth: true }
   },
   {
     path: '/login',

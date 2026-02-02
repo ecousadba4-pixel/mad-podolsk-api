@@ -8,7 +8,9 @@ from app.backend.routers.dashboard import router as dashboard_router
 from app.backend.routers.auth import router as auth_router
 from app.backend.routers.prices import router as prices_router
 from app.backend.routers.road_sections import router as road_sections_router
+from app.backend.routers.resources import router as resources_router
 from app.backend import db
+from app.backend import db_resources
 
 
 @asynccontextmanager
@@ -18,9 +20,17 @@ async def lifespan(app: FastAPI):
     dsn = os.environ.get("DB_DSN")
     if dsn:
         db.init_db(dsn)
+    
+    # Initialize resources database
+    dsn_resources = os.environ.get("DB_DSN_RESOURCES")
+    if dsn_resources:
+        db_resources.init_db(dsn_resources)
+    
     yield
+    
     # Shutdown
     db.close_db()
+    db_resources.close_db()
 
 
 app = FastAPI(
@@ -34,6 +44,7 @@ app.include_router(dashboard_router, prefix="/api/v1/dashboard", tags=["dashboar
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(prices_router, prefix="/api/v1/prices", tags=["prices"])
 app.include_router(road_sections_router, prefix="/api/v1/road-sections", tags=["road-sections"])
+app.include_router(resources_router, prefix="/api/v1/resources", tags=["resources"])
 
 # CORS: читаем разрешённые origin'ы из переменной окружения ALLOWED_ORIGINS (comma-separated)
 allowed = os.environ.get("ALLOWED_ORIGINS", "*")
@@ -55,9 +66,17 @@ app.add_middleware(
 async def health():
     """Health check endpoint with DB connectivity status."""
     db_health = await db.health_check()
-    overall_status = "ok" if db_health.get("status") == "healthy" else "degraded"
+    db_resources_health = await db_resources.health_check()
+    
+    all_healthy = (
+        db_health.get("status") == "healthy" and
+        db_resources_health.get("status") == "healthy"
+    )
+    overall_status = "ok" if all_healthy else "degraded"
+    
     return {
         "status": overall_status,
         "database": db_health,
+        "database_resources": db_resources_health,
     }
 

@@ -28,6 +28,7 @@ const navItems: NavItem[] = [
   { id: 'revenue', label: 'Выручка', path: '/', icon: 'chart' },
   { id: 'prices', label: 'Расценки', path: '/prices', icon: 'list' },
   { id: 'roads', label: 'Участки дороги', path: '/road-sections', icon: 'road' },
+  { id: 'resources', label: 'Учет техники и людей', path: '/resources', icon: 'truck' },
   { id: 'users', label: 'Пользователи', path: '/users', icon: 'users', adminOnly: true },
 ]
 
@@ -45,6 +46,7 @@ const currentSection = computed(() => {
   if (path === '/' || path === '/daily' || path.startsWith('/smeta')) return 'revenue'
   if (path === '/prices') return 'prices'
   if (path === '/road-sections') return 'roads'
+  if (path === '/resources') return 'resources'
   if (path === '/users') return 'users'
   if (path === '/login') return ''
   return 'revenue'
@@ -168,6 +170,13 @@ onUnmounted(() => {
               <!-- Road icon -->
               <svg v-else-if="item.icon === 'road'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M4 19L8 5M16 19l4-14M12 19v-2M12 14v-2M12 9V7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <!-- Truck icon (resources) -->
+              <svg v-else-if="item.icon === 'truck'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="3" width="15" height="13"/>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                <circle cx="5.5" cy="18.5" r="2.5"/>
+                <circle cx="18.5" cy="18.5" r="2.5"/>
               </svg>
               <!-- Users icon -->
               <svg v-else-if="item.icon === 'users'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
