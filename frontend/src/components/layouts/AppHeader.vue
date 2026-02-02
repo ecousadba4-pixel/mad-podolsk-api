@@ -74,7 +74,7 @@ const selectedMonth = computed({
       <div class="new-header-row new-header-row--title">
         <NavMenu />
         <div class="app-header__title-block">
-          <h1 class="app-header__title">СКПДИ · МАД · Подольск</h1>
+          <h1 class="app-header__title">МАД · Подольск</h1>
           <p v-if="isRevenueSection" class="app-header__subtitle text-body-sm">Работы в статусе «Рассмотрено»</p>
         </div>
       </div>

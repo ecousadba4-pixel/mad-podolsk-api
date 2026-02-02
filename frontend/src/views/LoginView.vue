@@ -50,7 +50,7 @@ onMounted(() => {
     <div class="login-view__container">
       <UiCard class="login-card">
         <div class="login-card__header">
-          <h1 class="login-card__title">СКПДИ · МАД · Подольск</h1>
+          <h1 class="login-card__title">МАД · Подольск</h1>
           <p class="login-card__subtitle">Вход в систему</p>
         </div>
 

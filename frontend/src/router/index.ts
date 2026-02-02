@@ -95,7 +95,7 @@ const router = createRouter({
 
 // Обновление заголовка страницы
 router.beforeEach((to) => {
-  const baseTitle = 'СКПДИ · МАД · Подольск'
+  const baseTitle = 'МАД · Подольск'
   document.title = to.meta.title ? `${to.meta.title} | ${baseTitle}` : baseTitle
 })
 
