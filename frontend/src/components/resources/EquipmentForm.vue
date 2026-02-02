@@ -88,7 +88,7 @@ const isValid = computed(() => {
 })
 
 // Watchers
-watch(selectedTypeId, (newVal, oldVal) => {
+watch(selectedTypeId, (_newVal, oldVal) => {
   // Reset vehicle when type changes (for own equipment)
   // Skip reset on initial mount (when oldVal is undefined/null)
   if (props.isOwn && oldVal != null) {
