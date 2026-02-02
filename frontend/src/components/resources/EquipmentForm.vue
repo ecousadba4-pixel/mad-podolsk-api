@@ -88,9 +88,10 @@ const isValid = computed(() => {
 })
 
 // Watchers
-watch(selectedTypeId, () => {
+watch(selectedTypeId, (newVal, oldVal) => {
   // Reset vehicle when type changes (for own equipment)
-  if (props.isOwn) {
+  // Skip reset on initial mount (when oldVal is undefined/null)
+  if (props.isOwn && oldVal != null) {
     selectedVehicleId.value = null
     plateNumber.value = ''
   }
