@@ -1,0 +1,53 @@
+# dependencies
+node_modules/
+.pnpm/
+.yarn/
+.yarn-cache/
+
+# build outputs
+dist/
+build/
+coverage/
+.storybook/
+
+# Vite / frontend artifacts
+.vite/
+.cache/
+.tmp/
+
+# lockfiles (очень большие и почти бесполезные для LLM)
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# environment & secrets
+.env
+.env.*
+!.env.example
+
+# Docker
+*.log
+docker-compose.override.yml
+
+# IDE / editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated assets
+public/assets/
+public/*.map
+
+# Tests artifacts
+playwright-report/
+test-results/
+
+# CSS tooling cache
+.stylelintcache
+.eslintcache
+
+# Large config files rarely needed
+tsconfig.node.json
