@@ -65,9 +65,9 @@ function selectOption(option: 'summary' | 'data-entry') {
   left: 4px;
   width: calc(50% - 4px);
   height: calc(100% - 8px);
-  background: var(--bg-card);
+  background: var(--accent);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0 2px 8px rgb(47 111 237 / 35%);
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -90,7 +90,7 @@ function selectOption(option: 'summary' | 'data-entry') {
   }
 
   &--active {
-    color: var(--text-main);
+    color: #fff;
     font-weight: 600;
   }
 }

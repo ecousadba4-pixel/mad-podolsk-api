@@ -20,7 +20,7 @@ const emit = defineEmits<{
 
 const isOpen = ref(false)
 const root = ref<HTMLElement | null>(null)
-const dropdownStyle = ref<{ top: string; left: string; minWidth: string } | null>(null)
+const dropdownStyle = ref<{ top: string; left: string } | null>(null)
 
 // Parse current value
 const selectedHour = ref<number | null>(null)
@@ -82,8 +82,7 @@ function updateDropdownPosition() {
   
   dropdownStyle.value = {
     top: openAbove ? `${rect.top - dropdownHeight - 4}px` : `${rect.bottom + 4}px`,
-    left: `${rect.left}px`,
-    minWidth: `${Math.max(rect.width, 200)}px`
+    left: `${rect.left}px`
   }
 }
 
