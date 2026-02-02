@@ -238,13 +238,17 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .time-picker {
   position: relative;
-  display: inline-flex;
+  display: flex;
+  width: 100%;
+  min-width: 0;
 }
 
 .time-picker__toggle {
   display: flex;
   align-items: center;
   gap: var(--gap-sm);
+  width: 100%;
+  min-width: 0;
   height: var(--control-height-sm);
   padding: 0 var(--gap-md);
   background: var(--bg-card);

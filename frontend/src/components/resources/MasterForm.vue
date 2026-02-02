@@ -235,6 +235,22 @@ function handleCancel() {
   display: flex;
   flex-direction: column;
   gap: var(--gap-xs);
+  min-width: 0;
+}
+
+/* Все блоки ввода одной ширины — растягиваем на всю ячейку грида */
+.master-form__field .master-form__select,
+.master-form__field .master-form__date-btn {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.master-form__field :deep(.time-picker),
+.master-form__field :deep(.ui-input) {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .master-form__label {

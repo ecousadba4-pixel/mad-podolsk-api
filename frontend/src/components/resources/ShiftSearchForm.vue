@@ -180,6 +180,20 @@ function handleCancel() {
   display: flex;
   flex-direction: column;
   gap: var(--gap-xs);
+  min-width: 0;
+}
+
+.search-form__field .search-form__select,
+.search-form__field .search-form__date-btn {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.search-form__field :deep(.ui-input) {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .search-form__label {
