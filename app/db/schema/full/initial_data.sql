@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict cwwI4pWxwlWQQL3imUExjLfPJzFbm69jCl6toU6tTN3Fv02U8aflwgI0WUI5maa
+\restrict cF1l0yamaavAKSBU743Yu24k36OBEXhyXfQTfGRm1baHbCcfCTaqaQmuHbsTlUO
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -33,6 +33,102 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: fact_equipment_shifts; Type: TABLE; Schema: initial_data; Owner: dima_admin
+--
+
+CREATE TABLE initial_data.fact_equipment_shifts (
+    id bigint NOT NULL,
+    is_own boolean NOT NULL,
+    vehicle_id bigint,
+    equipment_type_id smallint NOT NULL,
+    plate_number character varying(20) NOT NULL,
+    driver_id bigint,
+    driver_name character varying(255),
+    shift_start_date date NOT NULL,
+    shift_start_time time without time zone NOT NULL,
+    shift_start_at timestamp with time zone,
+    shift_duration_hours numeric(4,2) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_by bigint,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_by bigint,
+    is_deleted boolean DEFAULT false NOT NULL,
+    deleted_at timestamp with time zone,
+    deleted_by bigint,
+    delete_reason character varying(100)
+);
+
+
+ALTER TABLE initial_data.fact_equipment_shifts OWNER TO dima_admin;
+
+--
+-- Name: fact_equipment_shifts_id_seq; Type: SEQUENCE; Schema: initial_data; Owner: dima_admin
+--
+
+CREATE SEQUENCE initial_data.fact_equipment_shifts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE initial_data.fact_equipment_shifts_id_seq OWNER TO dima_admin;
+
+--
+-- Name: fact_equipment_shifts_id_seq; Type: SEQUENCE OWNED BY; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER SEQUENCE initial_data.fact_equipment_shifts_id_seq OWNED BY initial_data.fact_equipment_shifts.id;
+
+
+--
+-- Name: fact_master_shifts; Type: TABLE; Schema: initial_data; Owner: dima_admin
+--
+
+CREATE TABLE initial_data.fact_master_shifts (
+    id bigint NOT NULL,
+    master_id bigint NOT NULL,
+    workers_count integer NOT NULL,
+    shift_start_date date NOT NULL,
+    shift_start_time time without time zone NOT NULL,
+    shift_start_at timestamp with time zone,
+    shift_duration_hours numeric(4,2) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_by bigint,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_by bigint,
+    is_deleted boolean DEFAULT false NOT NULL,
+    deleted_at timestamp with time zone,
+    deleted_by bigint,
+    delete_reason character varying(100)
+);
+
+
+ALTER TABLE initial_data.fact_master_shifts OWNER TO dima_admin;
+
+--
+-- Name: fact_master_shifts_id_seq; Type: SEQUENCE; Schema: initial_data; Owner: dima_admin
+--
+
+CREATE SEQUENCE initial_data.fact_master_shifts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE initial_data.fact_master_shifts_id_seq OWNER TO dima_admin;
+
+--
+-- Name: fact_master_shifts_id_seq; Type: SEQUENCE OWNED BY; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER SEQUENCE initial_data.fact_master_shifts_id_seq OWNED BY initial_data.fact_master_shifts.id;
+
+
+--
 -- Name: fact_price_2025; Type: TABLE; Schema: initial_data; Owner: dima_admin
 --
 
@@ -61,6 +157,46 @@ CREATE TABLE initial_data.fact_price_2026_upto_may (
 
 
 ALTER TABLE initial_data.fact_price_2026_upto_may OWNER TO dima_admin;
+
+--
+-- Name: fact_resources_change_log; Type: TABLE; Schema: initial_data; Owner: dima_admin
+--
+
+CREATE TABLE initial_data.fact_resources_change_log (
+    id bigint NOT NULL,
+    entity_name character varying(64) NOT NULL,
+    entity_id bigint NOT NULL,
+    operation character varying(16) NOT NULL,
+    changed_at timestamp with time zone DEFAULT now() NOT NULL,
+    changed_by bigint,
+    old_data jsonb,
+    new_data jsonb,
+    comment character varying(255)
+);
+
+
+ALTER TABLE initial_data.fact_resources_change_log OWNER TO dima_admin;
+
+--
+-- Name: fact_resources_change_log_id_seq; Type: SEQUENCE; Schema: initial_data; Owner: dima_admin
+--
+
+CREATE SEQUENCE initial_data.fact_resources_change_log_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE initial_data.fact_resources_change_log_id_seq OWNER TO dima_admin;
+
+--
+-- Name: fact_resources_change_log_id_seq; Type: SEQUENCE OWNED BY; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER SEQUENCE initial_data.fact_resources_change_log_id_seq OWNED BY initial_data.fact_resources_change_log.id;
+
 
 --
 -- Name: fact_work_actual_pik; Type: TABLE; Schema: initial_data; Owner: dima_admin
@@ -119,7 +255,8 @@ CREATE TABLE initial_data.fact_work_skpdi_report (
     work_item_id bigint,
     quantity_done numeric,
     comment_text text,
-    work_name text
+    work_name text,
+    employee_id integer
 );
 
 
@@ -173,17 +310,63 @@ CREATE TABLE initial_data.skpdi_report_raw_tmp (
     road_section_name text,
     work_name text,
     quantity_done numeric,
-    comment_text text
+    comment_text text,
+    responsible_person_name text
 );
 
 
 ALTER TABLE initial_data.skpdi_report_raw_tmp OWNER TO dima_admin;
 
 --
+-- Name: fact_equipment_shifts id; Type: DEFAULT; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER TABLE ONLY initial_data.fact_equipment_shifts ALTER COLUMN id SET DEFAULT nextval('initial_data.fact_equipment_shifts_id_seq'::regclass);
+
+
+--
+-- Name: fact_master_shifts id; Type: DEFAULT; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER TABLE ONLY initial_data.fact_master_shifts ALTER COLUMN id SET DEFAULT nextval('initial_data.fact_master_shifts_id_seq'::regclass);
+
+
+--
 -- Name: fact_price_2025 price_id; Type: DEFAULT; Schema: initial_data; Owner: dima_admin
 --
 
 ALTER TABLE ONLY initial_data.fact_price_2025 ALTER COLUMN price_id SET DEFAULT nextval('initial_data.prices_2025_id_price_seq'::regclass);
+
+
+--
+-- Name: fact_resources_change_log id; Type: DEFAULT; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER TABLE ONLY initial_data.fact_resources_change_log ALTER COLUMN id SET DEFAULT nextval('initial_data.fact_resources_change_log_id_seq'::regclass);
+
+
+--
+-- Name: fact_equipment_shifts fact_equipment_shifts_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER TABLE ONLY initial_data.fact_equipment_shifts
+    ADD CONSTRAINT fact_equipment_shifts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: fact_master_shifts fact_master_shifts_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER TABLE ONLY initial_data.fact_master_shifts
+    ADD CONSTRAINT fact_master_shifts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: fact_resources_change_log fact_resources_change_log_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER TABLE ONLY initial_data.fact_resources_change_log
+    ADD CONSTRAINT fact_resources_change_log_pkey PRIMARY KEY (id);
 
 
 --
@@ -272,6 +455,20 @@ GRANT USAGE ON SCHEMA initial_data TO app_mad_podolsk;
 
 
 --
+-- Name: TABLE fact_equipment_shifts; Type: ACL; Schema: initial_data; Owner: dima_admin
+--
+
+GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_equipment_shifts TO app_mad_podolsk;
+
+
+--
+-- Name: TABLE fact_master_shifts; Type: ACL; Schema: initial_data; Owner: dima_admin
+--
+
+GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_master_shifts TO app_mad_podolsk;
+
+
+--
 -- Name: TABLE fact_price_2025; Type: ACL; Schema: initial_data; Owner: dima_admin
 --
 
@@ -285,6 +482,13 @@ GRANT ALL ON TABLE initial_data.fact_price_2025 TO app_mad_podolsk;
 
 GRANT ALL ON TABLE initial_data.fact_price_2026_upto_may TO app_mad_podolsk;
 GRANT SELECT ON TABLE initial_data.fact_price_2026_upto_may TO app_turnover_u4s;
+
+
+--
+-- Name: TABLE fact_resources_change_log; Type: ACL; Schema: initial_data; Owner: dima_admin
+--
+
+GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_resources_change_log TO app_mad_podolsk;
 
 
 --
@@ -360,5 +564,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE dima_admin IN SCHEMA initial_data GRANT SELECT
 -- PostgreSQL database dump complete
 --
 
-\unrestrict cwwI4pWxwlWQQL3imUExjLfPJzFbm69jCl6toU6tTN3Fv02U8aflwgI0WUI5maa
+\unrestrict cF1l0yamaavAKSBU743Yu24k36OBEXhyXfQTfGRm1baHbCcfCTaqaQmuHbsTlUO
 
