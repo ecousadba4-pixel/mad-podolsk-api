@@ -9,6 +9,7 @@ CREATE MATERIALIZED VIEW public.mv_work_actual_daily_value_rows AS
     r.work_status_id,
     r.road_section_id,
     r.work_item_id,
+    r.employee_id,
     r.quantity_done,
     r.comment_text,
         CASE
