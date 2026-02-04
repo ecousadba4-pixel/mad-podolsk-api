@@ -5,7 +5,7 @@ from datetime import date, time, datetime
 from decimal import Decimal
 import json
 
-from app.backend import db_resources as db
+from app.backend import db
 
 
 # =============================================================================
@@ -17,8 +17,8 @@ async def get_equipment_types(active_only: bool = True) -> List[dict]:
     condition = "WHERE is_active = true" if active_only else ""
     return await db.query_async(
         f"""
-        SELECT id, name, is_active
-        FROM equipment_types
+        SELECT vehicles_types_id AS id, name, is_active
+        FROM public.dim_vehicles_types
         {condition}
         ORDER BY name
         """
@@ -34,7 +34,7 @@ async def get_vehicles_by_type(equipment_type_id: Optional[int] = None, active_o
         conditions.append("v.is_active = true")
     
     if equipment_type_id is not None:
-        conditions.append("v.equipment_type_id = %s")
+        conditions.append("v.vehicles_types_id = %s")
         params.append(equipment_type_id)
     
     where_clause = " AND ".join(conditions) if conditions else "1=1"
@@ -43,12 +43,12 @@ async def get_vehicles_by_type(equipment_type_id: Optional[int] = None, active_o
         f"""
         SELECT 
             v.id,
-            v.equipment_type_id,
+            v.vehicles_types_id AS equipment_type_id,
             et.name AS equipment_type_name,
             v.plate_number,
             v.is_active
-        FROM vehicles v
-        LEFT JOIN equipment_types et ON v.equipment_type_id = et.id
+        FROM public.dim_vehicles v
+        LEFT JOIN public.dim_vehicles_types et ON v.vehicles_types_id = et.vehicles_types_id
         WHERE {where_clause}
         ORDER BY v.plate_number
         """,
@@ -57,27 +57,37 @@ async def get_vehicles_by_type(equipment_type_id: Optional[int] = None, active_o
 
 
 async def get_drivers(active_only: bool = True) -> List[dict]:
-    """Get list of drivers."""
-    condition = "WHERE is_active = true" if active_only else ""
+    """Get list of drivers (employees with type 'Водитель КДМ' or 'Водитель Техника')."""
+    # Note: active_only parameter kept for API compatibility but dim_employee has no is_active column
     return await db.query_async(
-        f"""
-        SELECT id, full_name, phone, is_active
-        FROM drivers
-        {condition}
-        ORDER BY full_name
+        """
+        SELECT 
+            e.employee_id AS id, 
+            e.employee_name AS full_name, 
+            NULL AS phone, 
+            true AS is_active
+        FROM public.dim_employee e
+        JOIN public.dim_type_of_employee t ON e.type_of_employee_id = t.type_of_employee_id
+        WHERE t.type_of_employee IN ('Водитель КДМ', 'Водитель Техника')
+        ORDER BY e.employee_name
         """
     )
 
 
 async def get_masters(active_only: bool = True) -> List[dict]:
-    """Get list of masters."""
-    condition = "WHERE is_active = true" if active_only else ""
+    """Get list of masters (employees with type 'Мастер')."""
+    # Note: active_only parameter kept for API compatibility but dim_employee has no is_active column
     return await db.query_async(
-        f"""
-        SELECT id, full_name, phone, is_active
-        FROM masters
-        {condition}
-        ORDER BY full_name
+        """
+        SELECT 
+            e.employee_id AS id, 
+            e.employee_name AS full_name, 
+            NULL AS phone, 
+            true AS is_active
+        FROM public.dim_employee e
+        JOIN public.dim_type_of_employee t ON e.type_of_employee_id = t.type_of_employee_id
+        WHERE t.type_of_employee = 'Мастер'
+        ORDER BY e.employee_name
         """
     )
 
@@ -102,8 +112,8 @@ async def get_rented_plate_numbers(equipment_type_id: Optional[int] = None) -> L
             es.plate_number,
             es.equipment_type_id,
             et.name AS equipment_type_name
-        FROM equipment_shifts es
-        LEFT JOIN equipment_types et ON es.equipment_type_id = et.id
+        FROM initial_data.fact_equipment_shifts es
+        LEFT JOIN public.dim_vehicles_types et ON es.equipment_type_id = et.vehicles_types_id
         WHERE {where_clause}
         ORDER BY es.plate_number
         """,
@@ -133,7 +143,7 @@ async def create_equipment_shift(
     
     result = await db.query_one_async(
         """
-        INSERT INTO equipment_shifts (
+        INSERT INTO initial_data.fact_equipment_shifts (
             is_own, vehicle_id, equipment_type_id, plate_number,
             driver_id, driver_name,
             shift_start_date, shift_start_time, shift_start_at, shift_duration_hours,
@@ -162,15 +172,15 @@ async def find_equipment_shift(
     include_deleted: bool = False,
 ) -> Optional[dict]:
     """Find equipment shift by plate number and date."""
-    deleted_condition = "" if include_deleted else "AND is_deleted = false"
+    deleted_condition = "" if include_deleted else "AND es.is_deleted = false"
     
     return await db.query_one_async(
         f"""
         SELECT 
             es.*,
             et.name AS equipment_type_name
-        FROM equipment_shifts es
-        LEFT JOIN equipment_types et ON es.equipment_type_id = et.id
+        FROM initial_data.fact_equipment_shifts es
+        LEFT JOIN public.dim_vehicles_types et ON es.equipment_type_id = et.vehicles_types_id
         WHERE es.plate_number = %s 
           AND es.shift_start_date = %s
           {deleted_condition}
@@ -188,8 +198,8 @@ async def get_equipment_shift_by_id(shift_id: int) -> Optional[dict]:
         SELECT 
             es.*,
             et.name AS equipment_type_name
-        FROM equipment_shifts es
-        LEFT JOIN equipment_types et ON es.equipment_type_id = et.id
+        FROM initial_data.fact_equipment_shifts es
+        LEFT JOIN public.dim_vehicles_types et ON es.equipment_type_id = et.vehicles_types_id
         WHERE es.id = %s
         """,
         (shift_id,),
@@ -242,7 +252,7 @@ async def update_equipment_shift(
     
     return await db.query_one_async(
         f"""
-        UPDATE equipment_shifts
+        UPDATE initial_data.fact_equipment_shifts
         SET {set_clause}
         WHERE id = %s AND is_deleted = false
         RETURNING *
@@ -259,7 +269,7 @@ async def soft_delete_equipment_shift(
     """Soft delete equipment shift."""
     return await db.query_one_async(
         """
-        UPDATE equipment_shifts
+        UPDATE initial_data.fact_equipment_shifts
         SET 
             is_deleted = true,
             deleted_at = now(),
@@ -292,7 +302,7 @@ async def create_master_shift(
     
     result = await db.query_one_async(
         """
-        INSERT INTO master_shifts (
+        INSERT INTO initial_data.fact_master_shifts (
             master_id, workers_count,
             shift_start_date, shift_start_time, shift_start_at, shift_duration_hours,
             created_by, updated_by
@@ -324,9 +334,9 @@ async def find_master_shift(
         f"""
         SELECT 
             ms.*,
-            m.full_name AS master_full_name
-        FROM master_shifts ms
-        LEFT JOIN masters m ON ms.master_id = m.id
+            m.employee_name AS master_full_name
+        FROM initial_data.fact_master_shifts ms
+        LEFT JOIN public.dim_employee m ON ms.master_id = m.employee_id
         WHERE ms.master_id = %s 
           AND ms.shift_start_date = %s
           {deleted_condition}
@@ -343,9 +353,9 @@ async def get_master_shift_by_id(shift_id: int) -> Optional[dict]:
         """
         SELECT 
             ms.*,
-            m.full_name AS master_full_name
-        FROM master_shifts ms
-        LEFT JOIN masters m ON ms.master_id = m.id
+            m.employee_name AS master_full_name
+        FROM initial_data.fact_master_shifts ms
+        LEFT JOIN public.dim_employee m ON ms.master_id = m.employee_id
         WHERE ms.id = %s
         """,
         (shift_id,),
@@ -388,7 +398,7 @@ async def update_master_shift(
     
     return await db.query_one_async(
         f"""
-        UPDATE master_shifts
+        UPDATE initial_data.fact_master_shifts
         SET {set_clause}
         WHERE id = %s AND is_deleted = false
         RETURNING *
@@ -405,7 +415,7 @@ async def soft_delete_master_shift(
     """Soft delete master shift."""
     return await db.query_one_async(
         """
-        UPDATE master_shifts
+        UPDATE initial_data.fact_master_shifts
         SET 
             is_deleted = true,
             deleted_at = now(),
@@ -440,8 +450,8 @@ async def get_summary_equipment(
     if time_from is not None and time_to is not None:
         # Filter shifts that overlap with the time range
         time_conditions.append("""
-            AND shift_start_time <= %s
-            AND (shift_start_time + (shift_duration_hours * interval '1 hour'))::time >= %s
+            AND es.shift_start_time <= %s
+            AND (es.shift_start_time + (es.shift_duration_hours * interval '1 hour'))::time >= %s
         """)
         params.extend([time_to, time_from])
     
@@ -454,8 +464,8 @@ async def get_summary_equipment(
             es.equipment_type_id,
             et.name AS equipment_type_name,
             COUNT(*) AS count
-        FROM equipment_shifts es
-        LEFT JOIN equipment_types et ON es.equipment_type_id = et.id
+        FROM initial_data.fact_equipment_shifts es
+        LEFT JOIN public.dim_vehicles_types et ON es.equipment_type_id = et.vehicles_types_id
         WHERE es.shift_start_date = %s
           AND es.is_deleted = false
           {time_filter}
@@ -481,8 +491,8 @@ async def get_summary_people(
     
     if time_from is not None and time_to is not None:
         time_conditions.append("""
-            AND shift_start_time <= %s
-            AND (shift_start_time + (shift_duration_hours * interval '1 hour'))::time >= %s
+            AND ms.shift_start_time <= %s
+            AND (ms.shift_start_time + (ms.shift_duration_hours * interval '1 hour'))::time >= %s
         """)
         params.extend([time_to, time_from])
     
@@ -492,14 +502,14 @@ async def get_summary_people(
         f"""
         SELECT 
             ms.master_id,
-            m.full_name AS master_full_name,
+            m.employee_name AS master_full_name,
             ms.workers_count
-        FROM master_shifts ms
-        LEFT JOIN masters m ON ms.master_id = m.id
+        FROM initial_data.fact_master_shifts ms
+        LEFT JOIN public.dim_employee m ON ms.master_id = m.employee_id
         WHERE ms.shift_start_date = %s
           AND ms.is_deleted = false
           {time_filter}
-        ORDER BY m.full_name
+        ORDER BY m.employee_name
         """,
         tuple(params),
     )
@@ -537,10 +547,10 @@ async def log_change(
     changed_by: Optional[int] = None,
     comment: Optional[str] = None,
 ) -> dict:
-    """Log a change to change_log table."""
+    """Log a change to fact_resources_change_log table."""
     return await db.query_one_async(
         """
-        INSERT INTO change_log (
+        INSERT INTO initial_data.fact_resources_change_log (
             entity_name, entity_id, operation,
             old_data, new_data,
             changed_by, comment
