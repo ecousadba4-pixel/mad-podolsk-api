@@ -42,7 +42,7 @@ async def get_vehicles_by_type(equipment_type_id: Optional[int] = None, active_o
     return await db.query_async(
         f"""
         SELECT 
-            v.id,
+            v.vehicles_id AS id,
             v.vehicles_types_id AS equipment_type_id,
             et.name AS equipment_type_name,
             v.plate_number,
