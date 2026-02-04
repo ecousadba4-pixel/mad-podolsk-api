@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict qR4mZBcnWJtccu7FAECdpebiVF3EdInKOdWIwT58IytB2DifXLVdnSjdwPpODCm
+\restrict 7nA9PNdRtC9ap65kt3jPge668wuDHyO9aOe3ISv2c4J4RO2aVcg8QiST0gAf6Oo
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -427,7 +427,7 @@ UNION ALL
 ALTER VIEW public.v_work_item_price_by_date OWNER TO dima_admin;
 
 --
--- Name: mv_work_actual_daily_value_rows; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
+-- Name: mv_work_actual_daily_value_rows; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
 --
 
 CREATE MATERIALIZED VIEW public.mv_work_actual_daily_value_rows AS
@@ -438,6 +438,7 @@ CREATE MATERIALIZED VIEW public.mv_work_actual_daily_value_rows AS
     r.work_status_id,
     r.road_section_id,
     r.work_item_id,
+    r.employee_id,
     r.quantity_done,
     r.comment_text,
         CASE
@@ -451,10 +452,10 @@ CREATE MATERIALIZED VIEW public.mv_work_actual_daily_value_rows AS
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.mv_work_actual_daily_value_rows OWNER TO app_mad_podolsk;
+ALTER MATERIALIZED VIEW public.mv_work_actual_daily_value_rows OWNER TO dima_admin;
 
 --
--- Name: mv_excess_road_area_10000m2; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
+-- Name: mv_excess_road_area_10000m2; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
 --
 
 CREATE MATERIALIZED VIEW public.mv_excess_road_area_10000m2 AS
@@ -488,10 +489,10 @@ CREATE MATERIALIZED VIEW public.mv_excess_road_area_10000m2 AS
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.mv_excess_road_area_10000m2 OWNER TO app_mad_podolsk;
+ALTER MATERIALIZED VIEW public.mv_excess_road_area_10000m2 OWNER TO dima_admin;
 
 --
--- Name: mv_excess_road_km_1km; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
+-- Name: mv_excess_road_km_1km; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
 --
 
 CREATE MATERIALIZED VIEW public.mv_excess_road_km_1km AS
@@ -530,10 +531,10 @@ CREATE MATERIALIZED VIEW public.mv_excess_road_km_1km AS
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.mv_excess_road_km_1km OWNER TO app_mad_podolsk;
+ALTER MATERIALIZED VIEW public.mv_excess_road_km_1km OWNER TO dima_admin;
 
 --
--- Name: mv_excess_sidewalk_area_1000m2; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
+-- Name: mv_excess_sidewalk_area_1000m2; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
 --
 
 CREATE MATERIALIZED VIEW public.mv_excess_sidewalk_area_1000m2 AS
@@ -571,10 +572,10 @@ CREATE MATERIALIZED VIEW public.mv_excess_sidewalk_area_1000m2 AS
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.mv_excess_sidewalk_area_1000m2 OWNER TO app_mad_podolsk;
+ALTER MATERIALIZED VIEW public.mv_excess_sidewalk_area_1000m2 OWNER TO dima_admin;
 
 --
--- Name: mv_excess_monthly_by_work; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
+-- Name: mv_excess_monthly_by_work; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
 --
 
 CREATE MATERIALIZED VIEW public.mv_excess_monthly_by_work AS
@@ -649,7 +650,7 @@ CREATE MATERIALIZED VIEW public.mv_excess_monthly_by_work AS
   WITH NO DATA;
 
 
-ALTER MATERIALIZED VIEW public.mv_excess_monthly_by_work OWNER TO app_mad_podolsk;
+ALTER MATERIALIZED VIEW public.mv_excess_monthly_by_work OWNER TO dima_admin;
 
 --
 -- Name: mv_work_actual_daily_value; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
@@ -1636,6 +1637,51 @@ GRANT SELECT ON TABLE public.v_work_item_price_by_date TO metabase;
 
 
 --
+-- Name: TABLE mv_work_actual_daily_value_rows; Type: ACL; Schema: public; Owner: dima_admin
+--
+
+GRANT ALL ON TABLE public.mv_work_actual_daily_value_rows TO app_mad_podolsk;
+GRANT SELECT ON TABLE public.mv_work_actual_daily_value_rows TO app_turnover_u4s;
+GRANT SELECT ON TABLE public.mv_work_actual_daily_value_rows TO metabase;
+
+
+--
+-- Name: TABLE mv_excess_road_area_10000m2; Type: ACL; Schema: public; Owner: dima_admin
+--
+
+GRANT ALL ON TABLE public.mv_excess_road_area_10000m2 TO app_mad_podolsk;
+GRANT SELECT ON TABLE public.mv_excess_road_area_10000m2 TO app_turnover_u4s;
+GRANT SELECT ON TABLE public.mv_excess_road_area_10000m2 TO metabase;
+
+
+--
+-- Name: TABLE mv_excess_road_km_1km; Type: ACL; Schema: public; Owner: dima_admin
+--
+
+GRANT ALL ON TABLE public.mv_excess_road_km_1km TO app_mad_podolsk;
+GRANT SELECT ON TABLE public.mv_excess_road_km_1km TO app_turnover_u4s;
+GRANT SELECT ON TABLE public.mv_excess_road_km_1km TO metabase;
+
+
+--
+-- Name: TABLE mv_excess_sidewalk_area_1000m2; Type: ACL; Schema: public; Owner: dima_admin
+--
+
+GRANT ALL ON TABLE public.mv_excess_sidewalk_area_1000m2 TO app_mad_podolsk;
+GRANT SELECT ON TABLE public.mv_excess_sidewalk_area_1000m2 TO app_turnover_u4s;
+GRANT SELECT ON TABLE public.mv_excess_sidewalk_area_1000m2 TO metabase;
+
+
+--
+-- Name: TABLE mv_excess_monthly_by_work; Type: ACL; Schema: public; Owner: dima_admin
+--
+
+GRANT ALL ON TABLE public.mv_excess_monthly_by_work TO app_mad_podolsk;
+GRANT SELECT ON TABLE public.mv_excess_monthly_by_work TO app_turnover_u4s;
+GRANT SELECT ON TABLE public.mv_excess_monthly_by_work TO metabase;
+
+
+--
 -- Name: SEQUENCE podolsk_mad_2026_1sthalf_contract_amount_id_seq; Type: ACL; Schema: public; Owner: dima_admin
 --
 
@@ -1799,5 +1845,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 -- PostgreSQL database dump complete
 --
 
-\unrestrict qR4mZBcnWJtccu7FAECdpebiVF3EdInKOdWIwT58IytB2DifXLVdnSjdwPpODCm
+\unrestrict 7nA9PNdRtC9ap65kt3jPge668wuDHyO9aOe3ISv2c4J4RO2aVcg8QiST0gAf6Oo
 

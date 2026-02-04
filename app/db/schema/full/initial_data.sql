@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict cF1l0yamaavAKSBU743Yu24k36OBEXhyXfQTfGRm1baHbCcfCTaqaQmuHbsTlUO
+\restrict EOzg83KZHCoh52oGvKs9qTgX9PtL5ry6P51rGeHtD2rMg2JkeKWH99U1kGc8arC
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -462,10 +462,24 @@ GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_equipment_
 
 
 --
+-- Name: SEQUENCE fact_equipment_shifts_id_seq; Type: ACL; Schema: initial_data; Owner: dima_admin
+--
+
+GRANT SELECT,USAGE ON SEQUENCE initial_data.fact_equipment_shifts_id_seq TO app_mad_podolsk;
+
+
+--
 -- Name: TABLE fact_master_shifts; Type: ACL; Schema: initial_data; Owner: dima_admin
 --
 
 GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_master_shifts TO app_mad_podolsk;
+
+
+--
+-- Name: SEQUENCE fact_master_shifts_id_seq; Type: ACL; Schema: initial_data; Owner: dima_admin
+--
+
+GRANT SELECT,USAGE ON SEQUENCE initial_data.fact_master_shifts_id_seq TO app_mad_podolsk;
 
 
 --
@@ -489,6 +503,13 @@ GRANT SELECT ON TABLE initial_data.fact_price_2026_upto_may TO app_turnover_u4s;
 --
 
 GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_resources_change_log TO app_mad_podolsk;
+
+
+--
+-- Name: SEQUENCE fact_resources_change_log_id_seq; Type: ACL; Schema: initial_data; Owner: dima_admin
+--
+
+GRANT SELECT,USAGE ON SEQUENCE initial_data.fact_resources_change_log_id_seq TO app_mad_podolsk;
 
 
 --
@@ -554,6 +575,13 @@ GRANT ALL ON TABLE initial_data.skpdi_report_raw_tmp TO app_mad_podolsk;
 
 
 --
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE dima_admin IN SCHEMA initial_data GRANT SELECT,USAGE ON SEQUENCES TO app_mad_podolsk;
+
+
+--
 -- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: initial_data; Owner: dima_admin
 --
 
@@ -564,5 +592,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE dima_admin IN SCHEMA initial_data GRANT SELECT
 -- PostgreSQL database dump complete
 --
 
-\unrestrict cF1l0yamaavAKSBU743Yu24k36OBEXhyXfQTfGRm1baHbCcfCTaqaQmuHbsTlUO
+\unrestrict EOzg83KZHCoh52oGvKs9qTgX9PtL5ry6P51rGeHtD2rMg2JkeKWH99U1kGc8arC
 
