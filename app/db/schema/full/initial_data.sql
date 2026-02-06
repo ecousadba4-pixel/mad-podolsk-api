@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict I0g83JJetGEgGnVLz7DIYTvDU3HFInUyX67aaOfk9eiGFfvpekjJd9HmIGEPcn6
+\restrict tVoLPf2NuPyeoV3Tm8GveljQDZHZNbgMtlJ3BghgBhbnGrwo3O9K19r0n6RjXDQ
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -199,6 +199,60 @@ ALTER SEQUENCE initial_data.fact_resources_change_log_id_seq OWNED BY initial_da
 
 
 --
+-- Name: fact_vehicle_mileage; Type: TABLE; Schema: initial_data; Owner: dima_admin
+--
+
+CREATE TABLE initial_data.fact_vehicle_mileage (
+    fact_vehicle_mileage_id bigint NOT NULL,
+    vehicles_id bigint NOT NULL,
+    period_start timestamp with time zone NOT NULL,
+    period_end timestamp with time zone NOT NULL,
+    mileage_km numeric(12,2) NOT NULL,
+    source text DEFAULT 'omnicomm'::text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT chk_period_valid CHECK ((period_end > period_start)),
+    CONSTRAINT chk_positive_mileage CHECK ((mileage_km >= (0)::numeric))
+);
+
+
+ALTER TABLE initial_data.fact_vehicle_mileage OWNER TO dima_admin;
+
+--
+-- Name: fact_vehicle_mileage_fact_vehicle_mileage_id_seq; Type: SEQUENCE; Schema: initial_data; Owner: dima_admin
+--
+
+CREATE SEQUENCE initial_data.fact_vehicle_mileage_fact_vehicle_mileage_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE initial_data.fact_vehicle_mileage_fact_vehicle_mileage_id_seq OWNER TO dima_admin;
+
+--
+-- Name: fact_vehicle_mileage_fact_vehicle_mileage_id_seq; Type: SEQUENCE OWNED BY; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER SEQUENCE initial_data.fact_vehicle_mileage_fact_vehicle_mileage_id_seq OWNED BY initial_data.fact_vehicle_mileage.fact_vehicle_mileage_id;
+
+
+--
+-- Name: fact_vehicle_mileage_state; Type: TABLE; Schema: initial_data; Owner: dima_admin
+--
+
+CREATE TABLE initial_data.fact_vehicle_mileage_state (
+    vehicles_id bigint NOT NULL,
+    last_synced_at timestamp with time zone NOT NULL,
+    last_mileage_total_km double precision,
+    last_message_time timestamp with time zone
+);
+
+
+ALTER TABLE initial_data.fact_vehicle_mileage_state OWNER TO dima_admin;
+
+--
 -- Name: fact_work_actual_pik; Type: TABLE; Schema: initial_data; Owner: dima_admin
 --
 
@@ -346,6 +400,13 @@ ALTER TABLE ONLY initial_data.fact_resources_change_log ALTER COLUMN id SET DEFA
 
 
 --
+-- Name: fact_vehicle_mileage fact_vehicle_mileage_id; Type: DEFAULT; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER TABLE ONLY initial_data.fact_vehicle_mileage ALTER COLUMN fact_vehicle_mileage_id SET DEFAULT nextval('initial_data.fact_vehicle_mileage_fact_vehicle_mileage_id_seq'::regclass);
+
+
+--
 -- Name: fact_equipment_shifts fact_equipment_shifts_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
 --
 
@@ -367,6 +428,22 @@ ALTER TABLE ONLY initial_data.fact_master_shifts
 
 ALTER TABLE ONLY initial_data.fact_resources_change_log
     ADD CONSTRAINT fact_resources_change_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: fact_vehicle_mileage fact_vehicle_mileage_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER TABLE ONLY initial_data.fact_vehicle_mileage
+    ADD CONSTRAINT fact_vehicle_mileage_pkey PRIMARY KEY (fact_vehicle_mileage_id);
+
+
+--
+-- Name: fact_vehicle_mileage_state fact_vehicle_mileage_state_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER TABLE ONLY initial_data.fact_vehicle_mileage_state
+    ADD CONSTRAINT fact_vehicle_mileage_state_pkey PRIMARY KEY (vehicles_id);
 
 
 --
@@ -410,6 +487,21 @@ ALTER TABLE ONLY initial_data.fact_work_skpdi_report
 
 
 --
+-- Name: fact_vehicle_mileage uq_vehicle_mileage_interval; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER TABLE ONLY initial_data.fact_vehicle_mileage
+    ADD CONSTRAINT uq_vehicle_mileage_interval UNIQUE (vehicles_id, period_start, period_end);
+
+
+--
+-- Name: idx_fact_vehicle_mileage_period; Type: INDEX; Schema: initial_data; Owner: dima_admin
+--
+
+CREATE INDEX idx_fact_vehicle_mileage_period ON initial_data.fact_vehicle_mileage USING btree (period_start, period_end);
+
+
+--
 -- Name: idx_plan_agg_description; Type: INDEX; Schema: initial_data; Owner: app_mad_podolsk
 --
 
@@ -421,6 +513,22 @@ CREATE INDEX idx_plan_agg_description ON initial_data.fact_work_plan_monthly USI
 --
 
 CREATE INDEX idx_plan_agg_month_desc_unit ON initial_data.fact_work_plan_monthly USING btree (month_start_date, work_name, unit);
+
+
+--
+-- Name: fact_vehicle_mileage_state fact_vehicle_mileage_state_vehicles_id_fkey; Type: FK CONSTRAINT; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER TABLE ONLY initial_data.fact_vehicle_mileage_state
+    ADD CONSTRAINT fact_vehicle_mileage_state_vehicles_id_fkey FOREIGN KEY (vehicles_id) REFERENCES public.dim_vehicles(vehicles_id) ON DELETE CASCADE;
+
+
+--
+-- Name: fact_vehicle_mileage fact_vehicle_mileage_vehicles_id_fkey; Type: FK CONSTRAINT; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER TABLE ONLY initial_data.fact_vehicle_mileage
+    ADD CONSTRAINT fact_vehicle_mileage_vehicles_id_fkey FOREIGN KEY (vehicles_id) REFERENCES public.dim_vehicles(vehicles_id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
@@ -513,6 +621,27 @@ GRANT SELECT,USAGE ON SEQUENCE initial_data.fact_resources_change_log_id_seq TO 
 
 
 --
+-- Name: TABLE fact_vehicle_mileage; Type: ACL; Schema: initial_data; Owner: dima_admin
+--
+
+GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_vehicle_mileage TO app_mad_podolsk;
+
+
+--
+-- Name: SEQUENCE fact_vehicle_mileage_fact_vehicle_mileage_id_seq; Type: ACL; Schema: initial_data; Owner: dima_admin
+--
+
+GRANT SELECT,USAGE ON SEQUENCE initial_data.fact_vehicle_mileage_fact_vehicle_mileage_id_seq TO app_mad_podolsk;
+
+
+--
+-- Name: TABLE fact_vehicle_mileage_state; Type: ACL; Schema: initial_data; Owner: dima_admin
+--
+
+GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_vehicle_mileage_state TO app_mad_podolsk;
+
+
+--
 -- Name: TABLE fact_work_actual_pik; Type: ACL; Schema: initial_data; Owner: dima_admin
 --
 
@@ -592,5 +721,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE dima_admin IN SCHEMA initial_data GRANT SELECT
 -- PostgreSQL database dump complete
 --
 
-\unrestrict I0g83JJetGEgGnVLz7DIYTvDU3HFInUyX67aaOfk9eiGFfvpekjJd9HmIGEPcn6
+\unrestrict tVoLPf2NuPyeoV3Tm8GveljQDZHZNbgMtlJ3BghgBhbnGrwo3O9K19r0n6RjXDQ
 

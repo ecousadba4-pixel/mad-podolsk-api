@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict dfXFboyIYwxRTpdWHdpHtz2IcDbe9wyr1u73S4QDfIADjY5teYEli9aNDfNSwar
+\restrict msOwE54xIRmMtd0wZcJ3xvjAuuQ9EobPM18W59YdVX64m7BUUbOB3EWLqS95Uno
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -311,7 +311,8 @@ CREATE TABLE public.dim_vehicles (
     is_active boolean NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    gps_provider text
+    gps_provider text,
+    gps_provider_id text
 );
 
 
@@ -1846,5 +1847,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 -- PostgreSQL database dump complete
 --
 
-\unrestrict dfXFboyIYwxRTpdWHdpHtz2IcDbe9wyr1u73S4QDfIADjY5teYEli9aNDfNSwar
+\unrestrict msOwE54xIRmMtd0wZcJ3xvjAuuQ9EobPM18W59YdVX64m7BUUbOB3EWLqS95Uno
 
