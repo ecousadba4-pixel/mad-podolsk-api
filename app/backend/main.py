@@ -9,6 +9,7 @@ from app.backend.routers.auth import router as auth_router
 from app.backend.routers.prices import router as prices_router
 from app.backend.routers.road_sections import router as road_sections_router
 from app.backend.routers.resources import router as resources_router
+from app.backend.routers.mileage import router as mileage_router
 from app.backend import db
 
 
@@ -38,6 +39,7 @@ app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(prices_router, prefix="/api/v1/prices", tags=["prices"])
 app.include_router(road_sections_router, prefix="/api/v1/road-sections", tags=["road-sections"])
 app.include_router(resources_router, prefix="/api/v1/resources", tags=["resources"])
+app.include_router(mileage_router, prefix="/api/v1/mileage", tags=["mileage"])
 
 # CORS: читаем разрешённые origin'ы из переменной окружения ALLOWED_ORIGINS (comma-separated)
 allowed = os.environ.get("ALLOWED_ORIGINS", "*")

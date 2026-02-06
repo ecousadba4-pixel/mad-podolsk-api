@@ -29,6 +29,7 @@ const navItems: NavItem[] = [
   { id: 'prices', label: 'Расценки', path: '/prices', icon: 'list' },
   { id: 'roads', label: 'Участки дороги', path: '/road-sections', icon: 'road' },
   { id: 'resources', label: 'Учет техники и людей', path: '/resources', icon: 'truck' },
+  { id: 'mileage', label: 'Пробег машин', path: '/mileage', icon: 'mileage' },
   { id: 'users', label: 'Пользователи', path: '/users', icon: 'users', adminOnly: true },
 ]
 
@@ -47,6 +48,7 @@ const currentSection = computed(() => {
   if (path === '/prices') return 'prices'
   if (path === '/road-sections') return 'roads'
   if (path === '/resources') return 'resources'
+  if (path === '/mileage') return 'mileage'
   if (path === '/users') return 'users'
   if (path === '/login') return ''
   return 'revenue'
@@ -177,6 +179,12 @@ onUnmounted(() => {
                 <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
                 <circle cx="5.5" cy="18.5" r="2.5"/>
                 <circle cx="18.5" cy="18.5" r="2.5"/>
+              </svg>
+              <!-- Mileage icon (speedometer) -->
+              <svg v-else-if="item.icon === 'mileage'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10" stroke-linecap="round"/>
+                <path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M19 16l3 3M22 16l-3 3" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               <!-- Users icon -->
               <svg v-else-if="item.icon === 'users'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
