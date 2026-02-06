@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict tVoLPf2NuPyeoV3Tm8GveljQDZHZNbgMtlJ3BghgBhbnGrwo3O9K19r0n6RjXDQ
+\restrict R4vt9NZQ0EUz3WBFVRDjMe1QTQcfJ7tIBFAvlAC0wcDTdOdkndiSYTaImmSf7fa
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -455,6 +455,14 @@ ALTER TABLE ONLY initial_data.fact_work_by_subcontractor
 
 
 --
+-- Name: fact_work_by_subcontractor fact_work_by_subcontractor_work_report_id_uniq; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER TABLE ONLY initial_data.fact_work_by_subcontractor
+    ADD CONSTRAINT fact_work_by_subcontractor_work_report_id_uniq UNIQUE (work_report_id);
+
+
+--
 -- Name: fact_price_2025 prices_2025_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
 --
 
@@ -721,5 +729,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE dima_admin IN SCHEMA initial_data GRANT SELECT
 -- PostgreSQL database dump complete
 --
 
-\unrestrict tVoLPf2NuPyeoV3Tm8GveljQDZHZNbgMtlJ3BghgBhbnGrwo3O9K19r0n6RjXDQ
+\unrestrict R4vt9NZQ0EUz3WBFVRDjMe1QTQcfJ7tIBFAvlAC0wcDTdOdkndiSYTaImmSf7fa
 
