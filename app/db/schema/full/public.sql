@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict XUyPKEFbuIo2UTGuJHaqdWSwBpPceVs4qpHcp0wRwpp8SUtPUPXsoYOHxsocuDT
+\restrict 84oFJ781GP296ZaOMCKohBFwWzL3zPCuBGrp41PfB7KWLjIEaaZ206ZODbc775P
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -653,6 +653,41 @@ CREATE MATERIALIZED VIEW public.mv_excess_monthly_by_work AS
 
 
 ALTER MATERIALIZED VIEW public.mv_excess_monthly_by_work OWNER TO dima_admin;
+
+--
+-- Name: mv_excess_rotor; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
+--
+
+CREATE MATERIALIZED VIEW public.mv_excess_rotor AS
+ WITH base AS (
+         SELECT w.work_date,
+            w.work_item_id,
+            w.road_section_id,
+            vr.unit_id,
+            sum(w.quantity_done) AS quantity_sum,
+            array_agg((w.done_work_id)::bigint ORDER BY w.done_work_id) AS done_work_ids_arr
+           FROM (public.mv_work_actual_daily_value_rows w
+             JOIN public.dim_work_item vr ON ((vr.work_item_id = w.work_item_id)))
+          WHERE ((w.work_status_id = 3) AND (vr.work_type_id = 3) AND (w.done_by_subcontractor = false) AND (w.work_item_id = 307))
+          GROUP BY w.work_date, w.work_item_id, w.road_section_id, vr.unit_id
+        )
+ SELECT b.work_date,
+    b.done_work_ids_arr AS done_work_ids,
+    wi.work_name,
+    rs.road_section_name,
+    u.unit_name,
+    rs.length_km,
+    (b.quantity_sum * (10)::numeric) AS quantity_sum,
+    ((b.quantity_sum * (10)::numeric) - rs.length_km) AS excess_volume
+   FROM (((base b
+     JOIN public.dim_road_section rs ON ((rs.road_section_id = b.road_section_id)))
+     JOIN public.dim_work_item wi ON ((wi.work_item_id = b.work_item_id)))
+     JOIN public.dim_unit u ON ((u.unit_id = b.unit_id)))
+  WHERE ((rs.length_km IS NOT NULL) AND ((b.quantity_sum * (10)::numeric) > rs.length_km))
+  WITH NO DATA;
+
+
+ALTER MATERIALIZED VIEW public.mv_excess_rotor OWNER TO dima_admin;
 
 --
 -- Name: mv_work_actual_daily_value; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
@@ -1684,6 +1719,15 @@ GRANT SELECT ON TABLE public.mv_excess_monthly_by_work TO metabase;
 
 
 --
+-- Name: TABLE mv_excess_rotor; Type: ACL; Schema: public; Owner: dima_admin
+--
+
+GRANT ALL ON TABLE public.mv_excess_rotor TO app_mad_podolsk;
+GRANT SELECT ON TABLE public.mv_excess_rotor TO app_turnover_u4s;
+GRANT SELECT ON TABLE public.mv_excess_rotor TO metabase;
+
+
+--
 -- Name: SEQUENCE podolsk_mad_2026_1sthalf_contract_amount_id_seq; Type: ACL; Schema: public; Owner: dima_admin
 --
 
@@ -1847,5 +1891,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 -- PostgreSQL database dump complete
 --
 
-\unrestrict XUyPKEFbuIo2UTGuJHaqdWSwBpPceVs4qpHcp0wRwpp8SUtPUPXsoYOHxsocuDT
+\unrestrict 84oFJ781GP296ZaOMCKohBFwWzL3zPCuBGrp41PfB7KWLjIEaaZ206ZODbc775P
 
