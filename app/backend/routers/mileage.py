@@ -34,11 +34,16 @@ async def get_mileage_by_vehicle(
     vehicles_id: int = Query(..., description="Vehicle ID"),
     date_from: date = Query(..., description="Start date (YYYY-MM-DD)"),
     date_to: date = Query(..., description="End date (YYYY-MM-DD)"),
+    by_hours: bool = Query(False, description="Include hourly breakdown per day"),
 ):
-    """Get daily mileage for a specific vehicle within a date range."""
+    """Get daily mileage for a specific vehicle within a date range.
+
+    When by_hours=true, each day item includes an hourly mileage breakdown.
+    """
     result = await mileage_service.get_mileage_by_vehicle(
         vehicles_id=vehicles_id,
         date_from=date_from,
         date_to=date_to,
+        by_hours=by_hours,
     )
     return MileageByVehicleResponse(**result)

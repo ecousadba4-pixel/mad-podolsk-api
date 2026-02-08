@@ -99,7 +99,7 @@ export const useMileageStore = defineStore('mileage', () => {
   // Actions - By Vehicle
   // ==========================================================================
 
-  async function fetchMileageByVehicle(vehiclesId: number, dateFrom: string, dateTo: string) {
+  async function fetchMileageByVehicle(vehiclesId: number, dateFrom: string, dateTo: string, byHours: boolean = false) {
     isLoadingByVehicle.value = true
     byVehicleError.value = null
 
@@ -108,6 +108,7 @@ export const useMileageStore = defineStore('mileage', () => {
         vehicles_id: vehiclesId,
         date_from: dateFrom,
         date_to: dateTo,
+        by_hours: byHours,
       })
       byVehicleData.value = result
     } catch (e) {

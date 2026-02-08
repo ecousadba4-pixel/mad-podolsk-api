@@ -68,3 +68,30 @@ async def get_mileage_by_vehicle(
         """,
         (vehicles_id, date_from, date_to),
     )
+
+
+async def get_mileage_by_vehicle_hourly(
+    vehicles_id: int,
+    date_from: date,
+    date_to: date,
+) -> List[dict]:
+    """Get hourly mileage for a specific vehicle within a date range.
+
+    Returns list of dicts with date, hour_start and mileage_km.
+    Only hours with actual mileage data are returned.
+    """
+    return await db.query_async(
+        """
+        SELECT
+            fm.period_start::date AS date,
+            EXTRACT(HOUR FROM fm.period_start)::int AS hour_start,
+            SUM(fm.mileage_km) AS mileage_km
+        FROM initial_data.fact_vehicle_mileage fm
+        WHERE fm.vehicles_id = %s
+          AND fm.period_start::date >= %s
+          AND fm.period_start::date <= %s
+        GROUP BY fm.period_start::date, EXTRACT(HOUR FROM fm.period_start)
+        ORDER BY fm.period_start::date, EXTRACT(HOUR FROM fm.period_start)
+        """,
+        (vehicles_id, date_from, date_to),
+    )

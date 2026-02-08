@@ -42,8 +42,12 @@ async def get_mileage_by_vehicle(
     vehicles_id: int,
     date_from: date,
     date_to: date,
+    by_hours: bool = False,
 ) -> Dict[str, Any]:
-    """Get daily mileage for a specific vehicle within a date range."""
+    """Get daily mileage for a specific vehicle within a date range.
+
+    When by_hours=True, each daily item also includes hourly breakdown.
+    """
     # Get vehicle info for response
     vehicle_info = await _get_vehicle_info(vehicles_id)
 
@@ -60,6 +64,30 @@ async def get_mileage_by_vehicle(
         }
         for row in rows
     ]
+
+    # If by_hours requested, fetch hourly data and nest into daily items
+    if by_hours:
+        hourly_rows = await mileage_repo.get_mileage_by_vehicle_hourly(
+            vehicles_id=vehicles_id,
+            date_from=date_from,
+            date_to=date_to,
+        )
+
+        # Group hourly rows by date
+        hourly_by_date: Dict[date, list] = {}
+        for hr in hourly_rows:
+            d = hr["date"]
+            if d not in hourly_by_date:
+                hourly_by_date[d] = []
+            hourly_by_date[d].append({
+                "hour_from": hr["hour_start"],
+                "hour_to": hr["hour_start"] + 1,
+                "mileage_km": hr["mileage_km"],
+            })
+
+        # Attach hourly data to each daily item
+        for item in items:
+            item["hours"] = hourly_by_date.get(item["date"], [])
 
     return {
         "vehicle_type_name": vehicle_info.get("vehicle_type_name") if vehicle_info else None,

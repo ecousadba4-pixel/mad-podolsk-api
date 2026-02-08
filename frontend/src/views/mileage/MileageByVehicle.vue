@@ -11,8 +11,8 @@ import { MileageByVehicleFilters, MileageByVehicleTable } from '@/components/mil
 const store = useMileageStore()
 const { equipmentTypes, vehicles, byVehicleData, isLoadingByVehicle } = storeToRefs(store)
 
-async function handleApplyFilters(filters: { vehiclesId: number; dateFrom: string; dateTo: string }) {
-  await store.fetchMileageByVehicle(filters.vehiclesId, filters.dateFrom, filters.dateTo)
+async function handleApplyFilters(filters: { vehiclesId: number; dateFrom: string; dateTo: string; byHours: boolean }) {
+  await store.fetchMileageByVehicle(filters.vehiclesId, filters.dateFrom, filters.dateTo, filters.byHours)
 }
 
 function handleTypeChange(typeId: number) {

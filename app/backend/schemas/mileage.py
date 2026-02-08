@@ -39,10 +39,18 @@ class MileageByDateResponse(_BaseSchema):
 # Mileage By Vehicle Schemas (По машине)
 # =============================================================================
 
+class MileageByVehicleHourItem(_BaseSchema):
+    """Single hourly segment in mileage-by-vehicle expanded row."""
+    hour_from: int
+    hour_to: int
+    mileage_km: Decimal
+
+
 class MileageByVehicleItem(_BaseSchema):
     """Single row in mileage-by-vehicle table."""
     date: date
     mileage_km: Decimal
+    hours: Optional[List[MileageByVehicleHourItem]] = None
 
 
 class MileageByVehicleResponse(_BaseSchema):

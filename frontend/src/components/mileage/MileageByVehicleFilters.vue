@@ -14,7 +14,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'apply', filters: { vehiclesId: number; dateFrom: string; dateTo: string }): void
+  (e: 'apply', filters: { vehiclesId: number; dateFrom: string; dateTo: string; byHours: boolean }): void
   (e: 'typeChange', typeId: number): void
 }>()
 
@@ -23,6 +23,7 @@ const selectedTypeId = ref<number | null>(null)
 const selectedVehicleId = ref<number | null>(null)
 const dateFrom = ref('')
 const dateTo = ref('')
+const byHours = ref(false)
 
 // Calendar states
 const isCalendarFromOpen = ref(false)
@@ -104,6 +105,7 @@ function handleApply() {
     vehiclesId: selectedVehicleId.value!,
     dateFrom: dateFrom.value,
     dateTo: dateTo.value,
+    byHours: byHours.value,
   })
 }
 </script>
@@ -202,6 +204,18 @@ function handleApply() {
         </div>
       </div>
 
+      <!-- By Hours checkbox -->
+      <div class="mileage-filters__field mileage-filters__field--checkbox">
+        <label class="mileage-filters__checkbox-label">
+          <input
+            v-model="byHours"
+            type="checkbox"
+            class="mileage-filters__checkbox"
+          />
+          <span>По часам</span>
+        </label>
+      </div>
+
       <!-- Apply button -->
       <div class="mileage-filters__field mileage-filters__field--action">
         <UiButton 
@@ -276,6 +290,28 @@ function handleApply() {
     outline: 2px solid var(--accent);
     outline-offset: -1px;
   }
+}
+
+.mileage-filters__field--checkbox {
+  justify-content: flex-end;
+}
+
+.mileage-filters__checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-xs);
+  height: var(--control-height-sm);
+  cursor: pointer;
+  font-size: var(--font-size-body-sm);
+  color: var(--text-main);
+  user-select: none;
+}
+
+.mileage-filters__checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
 }
 
 .mileage-filters__date-btn {
