@@ -295,16 +295,17 @@ function handleApply() {
         </div>
       </div>
 
-      <!-- Apply button -->
-      <div class="mileage-filters__field mileage-filters__field--action">
-        <UiButton 
-          variant="primary" 
-          :loading="isLoading"
-          @click="handleApply"
-        >
-          Применить
-        </UiButton>
-      </div>
+    </div>
+
+    <!-- Apply button -->
+    <div class="mileage-filters__field mileage-filters__field--action">
+      <UiButton 
+        variant="primary" 
+        :loading="isLoading"
+        @click="handleApply"
+      >
+        Применить
+      </UiButton>
     </div>
   </div>
 </template>
@@ -315,14 +316,21 @@ function handleApply() {
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
+  display: grid;
+  grid-template-areas:
+    "toggle  action"
+    "fields  fields";
+  grid-template-columns: 1fr auto;
+  gap: var(--gap-md);
+  align-items: center;
 }
 
 .mileage-filters__mode-toggle {
+  grid-area: toggle;
   display: inline-flex;
   background: var(--bg-muted);
   border-radius: var(--radius-md);
   padding: 2px;
-  margin-bottom: var(--gap-md);
 }
 
 .mileage-filters__mode-btn {
@@ -350,6 +358,7 @@ function handleApply() {
 }
 
 .mileage-filters__fields {
+  grid-area: fields;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
@@ -362,7 +371,8 @@ function handleApply() {
   gap: var(--gap-xs);
 
   &--action {
-    margin-left: auto;
+    grid-area: action;
+    align-self: center;
   }
 }
 
@@ -413,6 +423,11 @@ function handleApply() {
 @media (max-width: 768px) {
   .mileage-filters {
     padding: var(--gap-md);
+    grid-template-areas:
+      "toggle"
+      "fields"
+      "action";
+    grid-template-columns: 1fr;
   }
 
   .mileage-filters__fields {
@@ -445,7 +460,6 @@ function handleApply() {
   }
 
   .mileage-filters__field--action {
-    margin-left: 0;
     margin-top: var(--gap-sm);
   }
 }

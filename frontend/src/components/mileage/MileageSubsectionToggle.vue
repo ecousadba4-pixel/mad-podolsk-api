@@ -2,7 +2,7 @@
 /**
  * MileageSubsectionToggle — слайдер-переключатель между подразделами пробега
  */
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 
 const props = defineProps<{
   modelValue: 'by-date' | 'by-vehicle'
@@ -14,8 +14,16 @@ const emit = defineEmits<{
 
 const byDateBtn = ref<HTMLButtonElement | null>(null)
 const byVehicleBtn = ref<HTMLButtonElement | null>(null)
+const trackRef = ref<HTMLElement | null>(null)
+
+// Reactive counter incremented on resize to force indicator recalculation
+const resizeTick = ref(0)
 
 const indicatorStyle = computed(() => {
+  // Reference resizeTick so the computed re-evaluates on resize
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  resizeTick.value
+
   const activeBtn = props.modelValue === 'by-date' ? byDateBtn.value : byVehicleBtn.value
   const offsetBtn = props.modelValue === 'by-date' ? null : byDateBtn.value
   
@@ -38,15 +46,30 @@ function selectOption(option: 'by-date' | 'by-vehicle') {
 
 // Force reactivity update after mount
 const mounted = ref(false)
+let resizeObserver: ResizeObserver | null = null
+
 onMounted(async () => {
   await nextTick()
   mounted.value = true
+
+  // Watch track element for size changes (viewport rotation, responsive breakpoints)
+  if (trackRef.value) {
+    resizeObserver = new ResizeObserver(() => {
+      resizeTick.value++
+    })
+    resizeObserver.observe(trackRef.value)
+  }
+})
+
+onUnmounted(() => {
+  resizeObserver?.disconnect()
+  resizeObserver = null
 })
 </script>
 
 <template>
   <div class="subsection-toggle">
-    <div class="subsection-toggle__track">
+    <div ref="trackRef" class="subsection-toggle__track">
       <div 
         v-if="mounted"
         class="subsection-toggle__indicator" 
