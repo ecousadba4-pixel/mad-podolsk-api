@@ -327,6 +327,7 @@ function handleApply() {
 
 .mileage-filters__mode-toggle {
   grid-area: toggle;
+  justify-self: start;
   display: inline-flex;
   background: var(--bg-muted);
   border-radius: var(--radius-md);
