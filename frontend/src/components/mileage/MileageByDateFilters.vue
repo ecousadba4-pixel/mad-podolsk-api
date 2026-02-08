@@ -226,52 +226,54 @@ function handleApply() {
 
       <!-- Date range -->
       <template v-else>
-        <div class="mileage-filters__field">
-          <label class="mileage-filters__label">Дата с</label>
-          <button 
-            ref="dateFromPickerRef"
-            type="button" 
-            class="mileage-filters__date-btn"
-            @click="openCalendarFrom"
-          >
-            <span>{{ formattedDateFrom || 'Дата начала' }}</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-          </button>
-          <CalendarDropdown
-            v-model:isOpen="isCalendarFromOpen"
-            :modelValue="dateFrom"
-            :anchorRect="calendarFromAnchorRect"
-            @select="onDateFromSelect"
-          />
-        </div>
+        <div class="mileage-filters__date-range-group">
+          <div class="mileage-filters__field">
+            <label class="mileage-filters__label">Дата с</label>
+            <button 
+              ref="dateFromPickerRef"
+              type="button" 
+              class="mileage-filters__date-btn"
+              @click="openCalendarFrom"
+            >
+              <span>{{ formattedDateFrom || 'Дата начала' }}</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </button>
+            <CalendarDropdown
+              v-model:isOpen="isCalendarFromOpen"
+              :modelValue="dateFrom"
+              :anchorRect="calendarFromAnchorRect"
+              @select="onDateFromSelect"
+            />
+          </div>
 
-        <div class="mileage-filters__field">
-          <label class="mileage-filters__label">Дата по</label>
-          <button 
-            ref="dateToPickerRef"
-            type="button" 
-            class="mileage-filters__date-btn"
-            @click="openCalendarTo"
-          >
-            <span>{{ formattedDateTo || 'Дата окончания' }}</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-          </button>
-          <CalendarDropdown
-            v-model:isOpen="isCalendarToOpen"
-            :modelValue="dateTo"
-            :anchorRect="calendarToAnchorRect"
-            @select="onDateToSelect"
-          />
+          <div class="mileage-filters__field">
+            <label class="mileage-filters__label">Дата по</label>
+            <button 
+              ref="dateToPickerRef"
+              type="button" 
+              class="mileage-filters__date-btn"
+              @click="openCalendarTo"
+            >
+              <span>{{ formattedDateTo || 'Дата окончания' }}</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </button>
+            <CalendarDropdown
+              v-model:isOpen="isCalendarToOpen"
+              :modelValue="dateTo"
+              :anchorRect="calendarToAnchorRect"
+              @select="onDateToSelect"
+            />
+          </div>
         </div>
       </template>
 
@@ -369,6 +371,10 @@ function handleApply() {
   }
 }
 
+.mileage-filters__date-range-group {
+  display: contents;
+}
+
 .mileage-filters__time-group {
   display: contents;
 }
@@ -417,6 +423,20 @@ function handleApply() {
   .mileage-filters__fields {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .mileage-filters__date-range-group {
+    display: flex;
+    gap: var(--gap-md);
+  }
+
+  .mileage-filters__date-range-group .mileage-filters__field {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mileage-filters__date-range-group .mileage-filters__date-btn {
+    min-width: 0;
   }
 
   .mileage-filters__time-group {
