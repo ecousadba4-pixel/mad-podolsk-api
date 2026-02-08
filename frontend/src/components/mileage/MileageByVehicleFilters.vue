@@ -113,40 +113,41 @@ function handleApply() {
 <template>
   <div class="mileage-filters">
     <div class="mileage-filters__fields">
-      <!-- Equipment Type -->
-      <div class="mileage-filters__field">
-        <label class="mileage-filters__label">Тип техники</label>
-        <select
-          v-model="selectedTypeId"
-          class="mileage-filters__select"
-        >
-          <option :value="null">Все типы</option>
-          <option 
-            v-for="et in equipmentTypes" 
-            :key="et.id" 
-            :value="et.id"
+      <!-- Equipment Type + Vehicle group -->
+      <div class="mileage-filters__select-group">
+        <div class="mileage-filters__field">
+          <label class="mileage-filters__label">Тип техники</label>
+          <select
+            v-model="selectedTypeId"
+            class="mileage-filters__select"
           >
-            {{ et.name }}
-          </option>
-        </select>
-      </div>
+            <option :value="null">Все типы</option>
+            <option 
+              v-for="et in equipmentTypes" 
+              :key="et.id" 
+              :value="et.id"
+            >
+              {{ et.name }}
+            </option>
+          </select>
+        </div>
 
-      <!-- Vehicle -->
-      <div class="mileage-filters__field">
-        <label class="mileage-filters__label">Номер машины</label>
-        <select
-          v-model="selectedVehicleId"
-          class="mileage-filters__select"
-        >
-          <option :value="null" disabled>Выберите машину</option>
-          <option 
-            v-for="v in filteredVehicles" 
-            :key="v.id" 
-            :value="v.id"
+        <div class="mileage-filters__field">
+          <label class="mileage-filters__label">Номер машины</label>
+          <select
+            v-model="selectedVehicleId"
+            class="mileage-filters__select"
           >
-            {{ v.plate_number }}
-          </option>
-        </select>
+            <option :value="null" disabled>Выберите машину</option>
+            <option 
+              v-for="v in filteredVehicles" 
+              :key="v.id" 
+              :value="v.id"
+            >
+              {{ v.plate_number }}
+            </option>
+          </select>
+        </div>
       </div>
 
       <!-- Date range container -->
@@ -256,6 +257,10 @@ function handleApply() {
   }
 }
 
+.mileage-filters__select-group {
+  display: contents;
+}
+
 .mileage-filters__date-group {
   display: contents;
 }
@@ -350,6 +355,16 @@ function handleApply() {
   .mileage-filters__fields {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .mileage-filters__select-group {
+    display: flex;
+    gap: var(--gap-md);
+  }
+
+  .mileage-filters__select-group .mileage-filters__field {
+    flex: 1;
+    min-width: 0;
   }
 
   .mileage-filters__date-group {
