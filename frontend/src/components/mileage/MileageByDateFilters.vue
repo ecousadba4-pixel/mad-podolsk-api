@@ -1,43 +1,96 @@
 <script setup lang="ts">
 /**
  * MileageByDateFilters — блок фильтров для подраздела "По дате"
+ *
+ * Поддерживает два режима выбора даты:
+ *   - single: одна конкретная дата
+ *   - range:  период (дата с / дата по)
+ *
+ * Время выбирается только по часам (без минут) в формате HH:00.
  */
 import { ref, computed, onMounted } from 'vue'
 import { UiButton } from '@/components/ui'
 import { TimePicker, CalendarDropdown } from '@/components/pickers'
+
+export type DateMode = 'single' | 'range'
+
+export interface MileageByDateFilterValues {
+  dateMode: DateMode
+  date: string
+  dateFrom: string
+  dateTo: string
+  timeFrom?: string
+  timeTo?: string
+}
 
 const props = defineProps<{
   isLoading?: boolean
 }>()
 
 const emit = defineEmits<{
-  (e: 'apply', filters: { date: string; timeFrom?: string; timeTo?: string }): void
+  (e: 'apply', filters: MileageByDateFilterValues): void
 }>()
 
-// Form state
+// ─────────────────────────────────────────────────────────────────────────────
+// State
+// ─────────────────────────────────────────────────────────────────────────────
+
+const dateMode = ref<DateMode>('single')
+
+// Single date state
 const selectedDate = ref('')
+
+// Range date state
+const dateFrom = ref('')
+const dateTo = ref('')
+
+// Time state
 const timeFrom = ref('')
 const timeTo = ref('')
 
-// Calendar state
+// Calendar states
 const isCalendarOpen = ref(false)
 const calendarAnchorRect = ref<DOMRect | null>(null)
 const datePickerRef = ref<HTMLElement | null>(null)
 
-const formattedDate = computed(() => {
-  if (!selectedDate.value) return ''
-  const d = new Date(selectedDate.value)
-  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
-})
+const isCalendarFromOpen = ref(false)
+const calendarFromAnchorRect = ref<DOMRect | null>(null)
+const dateFromPickerRef = ref<HTMLElement | null>(null)
 
+const isCalendarToOpen = ref(false)
+const calendarToAnchorRect = ref<DOMRect | null>(null)
+const dateToPickerRef = ref<HTMLElement | null>(null)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Computed
+// ─────────────────────────────────────────────────────────────────────────────
+
+function formatDateRu(dateStr: string): string {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
+const formattedDate = computed(() => formatDateRu(selectedDate.value))
+const formattedDateFrom = computed(() => formatDateRu(dateFrom.value))
+const formattedDateTo = computed(() => formatDateRu(dateTo.value))
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Initialize
+// ─────────────────────────────────────────────────────────────────────────────
+
 onMounted(() => {
-  const today = new Date()
-  selectedDate.value = today.toISOString().slice(0, 10)
+  const today = new Date().toISOString().slice(0, 10)
+  selectedDate.value = today
+  dateFrom.value = today
+  dateTo.value = today
   handleApply()
 })
 
-// Methods
+// ─────────────────────────────────────────────────────────────────────────────
+// Calendar methods — single date
+// ─────────────────────────────────────────────────────────────────────────────
+
 function openCalendar() {
   if (datePickerRef.value) {
     calendarAnchorRect.value = datePickerRef.value.getBoundingClientRect()
@@ -50,9 +103,71 @@ function onDateSelect(dateStr: string) {
   isCalendarOpen.value = false
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Calendar methods — range: date from
+// ─────────────────────────────────────────────────────────────────────────────
+
+function openCalendarFrom() {
+  if (dateFromPickerRef.value) {
+    calendarFromAnchorRect.value = dateFromPickerRef.value.getBoundingClientRect()
+  }
+  isCalendarFromOpen.value = true
+}
+
+function onDateFromSelect(dateStr: string) {
+  dateFrom.value = dateStr
+  isCalendarFromOpen.value = false
+  // Если дата "по" раньше даты "с" — подтянуть
+  if (dateTo.value && dateTo.value < dateStr) {
+    dateTo.value = dateStr
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Calendar methods — range: date to
+// ─────────────────────────────────────────────────────────────────────────────
+
+function openCalendarTo() {
+  if (dateToPickerRef.value) {
+    calendarToAnchorRect.value = dateToPickerRef.value.getBoundingClientRect()
+  }
+  isCalendarToOpen.value = true
+}
+
+function onDateToSelect(dateStr: string) {
+  dateTo.value = dateStr
+  isCalendarToOpen.value = false
+  // Если дата "с" позже даты "по" — подтянуть
+  if (dateFrom.value && dateFrom.value > dateStr) {
+    dateFrom.value = dateStr
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Mode toggle
+// ─────────────────────────────────────────────────────────────────────────────
+
+function setDateMode(mode: DateMode) {
+  dateMode.value = mode
+  // Синхронизируем даты при переключении режима
+  if (mode === 'single' && dateFrom.value) {
+    selectedDate.value = dateFrom.value
+  } else if (mode === 'range' && selectedDate.value) {
+    dateFrom.value = selectedDate.value
+    dateTo.value = selectedDate.value
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Apply
+// ─────────────────────────────────────────────────────────────────────────────
+
 function handleApply() {
   emit('apply', {
+    dateMode: dateMode.value,
     date: selectedDate.value,
+    dateFrom: dateFrom.value,
+    dateTo: dateTo.value,
     timeFrom: timeFrom.value || undefined,
     timeTo: timeTo.value || undefined,
   })
@@ -61,31 +176,104 @@ function handleApply() {
 
 <template>
   <div class="mileage-filters">
+    <!-- Date mode toggle -->
+    <div class="mileage-filters__mode-toggle">
+      <button
+        type="button"
+        class="mileage-filters__mode-btn"
+        :class="{ 'mileage-filters__mode-btn--active': dateMode === 'single' }"
+        @click="setDateMode('single')"
+      >
+        Одна дата
+      </button>
+      <button
+        type="button"
+        class="mileage-filters__mode-btn"
+        :class="{ 'mileage-filters__mode-btn--active': dateMode === 'range' }"
+        @click="setDateMode('range')"
+      >
+        Период
+      </button>
+    </div>
+
     <div class="mileage-filters__fields">
-      <!-- Date -->
-      <div class="mileage-filters__field">
-        <label class="mileage-filters__label">Дата</label>
-        <button 
-          ref="datePickerRef"
-          type="button" 
-          class="mileage-filters__date-btn"
-          @click="openCalendar"
-        >
-          <span>{{ formattedDate || 'Выберите дату' }}</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-            <line x1="16" y1="2" x2="16" y2="6"/>
-            <line x1="8" y1="2" x2="8" y2="6"/>
-            <line x1="3" y1="10" x2="21" y2="10"/>
-          </svg>
-        </button>
-        <CalendarDropdown
-          v-model:isOpen="isCalendarOpen"
-          :modelValue="selectedDate"
-          :anchorRect="calendarAnchorRect"
-          @select="onDateSelect"
-        />
-      </div>
+      <!-- Single date -->
+      <template v-if="dateMode === 'single'">
+        <div class="mileage-filters__field">
+          <label class="mileage-filters__label">Дата</label>
+          <button 
+            ref="datePickerRef"
+            type="button" 
+            class="mileage-filters__date-btn"
+            @click="openCalendar"
+          >
+            <span>{{ formattedDate || 'Выберите дату' }}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </button>
+          <CalendarDropdown
+            v-model:isOpen="isCalendarOpen"
+            :modelValue="selectedDate"
+            :anchorRect="calendarAnchorRect"
+            @select="onDateSelect"
+          />
+        </div>
+      </template>
+
+      <!-- Date range -->
+      <template v-else>
+        <div class="mileage-filters__field">
+          <label class="mileage-filters__label">Дата с</label>
+          <button 
+            ref="dateFromPickerRef"
+            type="button" 
+            class="mileage-filters__date-btn"
+            @click="openCalendarFrom"
+          >
+            <span>{{ formattedDateFrom || 'Дата начала' }}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </button>
+          <CalendarDropdown
+            v-model:isOpen="isCalendarFromOpen"
+            :modelValue="dateFrom"
+            :anchorRect="calendarFromAnchorRect"
+            @select="onDateFromSelect"
+          />
+        </div>
+
+        <div class="mileage-filters__field">
+          <label class="mileage-filters__label">Дата по</label>
+          <button 
+            ref="dateToPickerRef"
+            type="button" 
+            class="mileage-filters__date-btn"
+            @click="openCalendarTo"
+          >
+            <span>{{ formattedDateTo || 'Дата окончания' }}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </button>
+          <CalendarDropdown
+            v-model:isOpen="isCalendarToOpen"
+            :modelValue="dateTo"
+            :anchorRect="calendarToAnchorRect"
+            @select="onDateToSelect"
+          />
+        </div>
+      </template>
 
       <!-- Time fields container -->
       <div class="mileage-filters__time-group">
@@ -95,7 +283,7 @@ function handleApply() {
           <TimePicker 
             v-model="timeFrom"
             placeholder="—"
-            :minuteStep="15"
+            :hoursOnly="true"
           />
         </div>
 
@@ -105,7 +293,7 @@ function handleApply() {
           <TimePicker 
             v-model="timeTo"
             placeholder="—"
-            :minuteStep="15"
+            :hoursOnly="true"
           />
         </div>
       </div>
@@ -130,6 +318,38 @@ function handleApply() {
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
+}
+
+.mileage-filters__mode-toggle {
+  display: inline-flex;
+  background: var(--bg-muted);
+  border-radius: var(--radius-md);
+  padding: 2px;
+  margin-bottom: var(--gap-md);
+}
+
+.mileage-filters__mode-btn {
+  padding: var(--gap-xs) var(--gap-md);
+  border: none;
+  background: transparent;
+  border-radius: calc(var(--radius-md) - 2px);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(&--active) {
+    color: var(--text-main);
+  }
+
+  &--active {
+    background: var(--bg-card);
+    color: var(--text-main);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+  }
 }
 
 .mileage-filters__fields {

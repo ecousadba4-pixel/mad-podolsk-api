@@ -18,6 +18,8 @@ export interface MileageByDateItem {
 
 export interface MileageByDateResponse {
   date: string
+  date_from?: string | null
+  date_to?: string | null
   time_from: string | null
   time_to: string | null
   items: MileageByDateItem[]
@@ -52,15 +54,30 @@ export interface MileageByVehicleResponse {
 // =============================================================================
 
 /**
- * Get aggregated vehicle mileage for a given date and optional time range
+ * Get aggregated vehicle mileage for a given date (or date range) and optional time range.
+ *
+ * Supports two modes:
+ *   - Single date: pass `date` (YYYY-MM-DD)
+ *   - Date range:  pass `date_from` + `date_to` (YYYY-MM-DD)
+ *
+ * Time is in HH:MM format (typically HH:00 for hours-only selection).
  */
 export async function getMileageByDate(params: {
-  date: string       // YYYY-MM-DD
-  time_from?: string  // HH:MM
-  time_to?: string    // HH:MM
+  date?: string        // YYYY-MM-DD (single date mode)
+  date_from?: string   // YYYY-MM-DD (range mode)
+  date_to?: string     // YYYY-MM-DD (range mode)
+  time_from?: string   // HH:MM
+  time_to?: string     // HH:MM
 }): Promise<MileageByDateResponse> {
   const queryParams = new URLSearchParams()
-  queryParams.set('date', params.date)
+
+  if (params.date_from && params.date_to) {
+    queryParams.set('date_from', params.date_from)
+    queryParams.set('date_to', params.date_to)
+  } else if (params.date) {
+    queryParams.set('date', params.date)
+  }
+
   if (params.time_from) queryParams.set('time_from', params.time_from)
   if (params.time_to) queryParams.set('time_to', params.time_to)
 

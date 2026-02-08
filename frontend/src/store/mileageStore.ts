@@ -76,15 +76,26 @@ export const useMileageStore = defineStore('mileage', () => {
   // Actions - By Date
   // ==========================================================================
 
-  async function fetchMileageByDate(date: string, timeFrom?: string, timeTo?: string) {
+  /**
+   * Fetch mileage by date — поддерживает одну дату или период (date_from/date_to).
+   */
+  async function fetchMileageByDate(params: {
+    date?: string
+    dateFrom?: string
+    dateTo?: string
+    timeFrom?: string
+    timeTo?: string
+  }) {
     isLoadingByDate.value = true
     byDateError.value = null
 
     try {
       const result = await mileageApi.getMileageByDate({
-        date,
-        time_from: timeFrom,
-        time_to: timeTo,
+        date: params.date,
+        date_from: params.dateFrom,
+        date_to: params.dateTo,
+        time_from: params.timeFrom,
+        time_to: params.timeTo,
       })
       byDateData.value = result
     } catch (e) {

@@ -78,6 +78,25 @@ Key reusable composables in `composables/`:
 - `useDebouncedSearch` — debounced search input pattern
 - `useSort` — table sorting logic
 
+## Picker components (`components/pickers/`)
+
+Reusable picker UI in `components/pickers/`:
+- `CalendarDropdown` — date picker (single date). Teleported overlay with month navigation.
+- `TimePicker` — time picker. Props: `minuteStep` (default 5), `hoursOnly` (boolean — hours-only mode, hides minutes column, emits `HH:00`).
+- `DayPicker`, `MonthPicker`, `CalendarHeader`, `CalendarDayCell` — internal calendar building blocks.
+
+### Mileage "By date" filters
+
+`MileageByDateFilters` supports two date modes via a toggle:
+- **single** — one date (CalendarDropdown)
+- **range** — period from/to (two CalendarDropdowns with auto-sync validation)
+
+Time filters use `TimePicker` with `hoursOnly` — only hour selection (no minutes).
+
+Emits `MileageByDateFilterValues { dateMode, date, dateFrom, dateTo, timeFrom?, timeTo? }`.
+Store action `fetchMileageByDate(params)` accepts `{ date?, dateFrom?, dateTo?, timeFrom?, timeTo? }`.
+API function `getMileageByDate` sends either `date` or `date_from` + `date_to` query params depending on mode.
+
 ## Styles
 
 Design tokens in `styles/_tokens.scss`. Components use scoped styles with CSS variables from tokens.

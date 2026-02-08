@@ -4,6 +4,8 @@
  * 
  * Dropdown с двумя колонками для выбора часов и минут.
  * Поддерживает v-model для значения времени в формате HH:MM.
+ * 
+ * Режим hoursOnly — только выбор часов (без минут), формат HH:00.
  */
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 
@@ -12,6 +14,7 @@ const props = defineProps<{
   placeholder?: string
   disabled?: boolean
   minuteStep?: number  // 1, 5, 15, 30
+  hoursOnly?: boolean  // Only show hours column, emit HH:00
 }>()
 
 const emit = defineEmits<{
@@ -45,6 +48,10 @@ const minutes = computed(() => {
 
 // Format display value
 const displayValue = computed(() => {
+  if (props.hoursOnly && selectedHour.value !== null) {
+    const h = String(selectedHour.value).padStart(2, '0')
+    return `${h}:00`
+  }
   if (selectedHour.value !== null && selectedMinute.value !== null) {
     const h = String(selectedHour.value).padStart(2, '0')
     const m = String(selectedMinute.value).padStart(2, '0')
@@ -100,7 +107,14 @@ function closeDropdown() {
 
 function selectHour(hour: number) {
   selectedHour.value = hour
-  emitValue()
+  if (props.hoursOnly) {
+    // В режиме hoursOnly устанавливаем минуты в 00 и сразу закрываем
+    selectedMinute.value = 0
+    emitValue()
+    closeDropdown()
+  } else {
+    emitValue()
+  }
 }
 
 function selectMinute(minute: number) {
@@ -194,7 +208,7 @@ onUnmounted(() => {
           :style="dropdownStyle"
           @click.stop
         >
-          <div class="time-picker__columns">
+          <div class="time-picker__columns" :class="{ 'time-picker__columns--hours-only': hoursOnly }">
             <!-- Hours column -->
             <div class="time-picker__column">
               <div class="time-picker__column-header">Часы</div>
@@ -212,8 +226,8 @@ onUnmounted(() => {
               </div>
             </div>
             
-            <!-- Minutes column -->
-            <div class="time-picker__column">
+            <!-- Minutes column (hidden in hoursOnly mode) -->
+            <div v-if="!hoursOnly" class="time-picker__column">
               <div class="time-picker__column-header">Минуты</div>
               <div class="time-picker__column-list">
                 <button
@@ -314,6 +328,12 @@ onUnmounted(() => {
 
 .time-picker__columns {
   display: flex;
+
+  &--hours-only {
+    .time-picker__column {
+      width: 100px;
+    }
+  }
 }
 
 .time-picker__column {
