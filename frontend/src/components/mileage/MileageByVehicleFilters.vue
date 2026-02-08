@@ -205,28 +205,29 @@ function handleApply() {
         </div>
       </div>
 
-      <!-- By Hours checkbox -->
-      <div class="mileage-filters__field mileage-filters__field--checkbox">
-        <label class="mileage-filters__checkbox-label">
-          <input
-            v-model="byHours"
-            type="checkbox"
-            class="mileage-filters__checkbox"
-          />
-          <span>По часам</span>
-        </label>
-      </div>
+      <!-- Checkbox + Apply row -->
+      <div class="mileage-filters__action-group">
+        <div class="mileage-filters__field mileage-filters__field--checkbox">
+          <label class="mileage-filters__checkbox-label">
+            <input
+              v-model="byHours"
+              type="checkbox"
+              class="mileage-filters__checkbox"
+            />
+            <span>По часам</span>
+          </label>
+        </div>
 
-      <!-- Apply button -->
-      <div class="mileage-filters__field mileage-filters__field--action">
-        <UiButton 
-          variant="primary" 
-          :loading="isLoading"
-          :disabled="!canApply"
-          @click="handleApply"
-        >
-          Применить
-        </UiButton>
+        <div class="mileage-filters__field mileage-filters__field--action">
+          <UiButton 
+            variant="primary" 
+            :loading="isLoading"
+            :disabled="!canApply"
+            @click="handleApply"
+          >
+            Применить
+          </UiButton>
+        </div>
       </div>
     </div>
   </div>
@@ -262,6 +263,10 @@ function handleApply() {
 }
 
 .mileage-filters__date-group {
+  display: contents;
+}
+
+.mileage-filters__action-group {
   display: contents;
 }
 
@@ -387,9 +392,15 @@ function handleApply() {
     width: 100%;
   }
 
+  .mileage-filters__action-group {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+  }
+
   .mileage-filters__field--action {
-    margin-left: 0;
-    margin-top: var(--gap-sm);
+    margin-left: auto;
+    margin-top: 0;
   }
 }
 </style>
