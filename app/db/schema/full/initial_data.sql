@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict TjwuqNVwOTVuDphY1veN8leUIcC7zDCMKIpcKjom6HwFA6vC9TMc3fMaaGQFoHD
+\restrict zWXfo4I0tXc8b7NlDRZwqVjvhXKXlbVLszeFVcqZajJ44ATBCWSyQAb9enlBM2U
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -31,6 +31,23 @@ ALTER SCHEMA initial_data OWNER TO dima_admin;
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
+
+--
+-- Name: fact_daily_card_fuel; Type: TABLE; Schema: initial_data; Owner: dima_admin
+--
+
+CREATE TABLE initial_data.fact_daily_card_fuel (
+    date date NOT NULL,
+    card_number text NOT NULL,
+    liters_total numeric(18,6) DEFAULT 0 NOT NULL,
+    tx_count integer DEFAULT 0 NOT NULL,
+    first_tx_datetime timestamp with time zone,
+    last_tx_datetime timestamp with time zone,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE initial_data.fact_daily_card_fuel OWNER TO dima_admin;
 
 --
 -- Name: fact_equipment_shifts; Type: TABLE; Schema: initial_data; Owner: dima_admin
@@ -407,6 +424,14 @@ ALTER TABLE ONLY initial_data.fact_vehicle_mileage ALTER COLUMN fact_vehicle_mil
 
 
 --
+-- Name: fact_daily_card_fuel fact_daily_card_fuel_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+--
+
+ALTER TABLE ONLY initial_data.fact_daily_card_fuel
+    ADD CONSTRAINT fact_daily_card_fuel_pkey PRIMARY KEY (date, card_number);
+
+
+--
 -- Name: fact_equipment_shifts fact_equipment_shifts_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
 --
 
@@ -503,6 +528,13 @@ ALTER TABLE ONLY initial_data.fact_vehicle_mileage
 
 
 --
+-- Name: idx_fact_daily_card_fuel_card_date; Type: INDEX; Schema: initial_data; Owner: dima_admin
+--
+
+CREATE INDEX idx_fact_daily_card_fuel_card_date ON initial_data.fact_daily_card_fuel USING btree (card_number, date);
+
+
+--
 -- Name: idx_fact_vehicle_mileage_period; Type: INDEX; Schema: initial_data; Owner: dima_admin
 --
 
@@ -568,6 +600,13 @@ ALTER TABLE ONLY initial_data.fact_price_2025
 --
 
 GRANT USAGE ON SCHEMA initial_data TO app_mad_podolsk;
+
+
+--
+-- Name: TABLE fact_daily_card_fuel; Type: ACL; Schema: initial_data; Owner: dima_admin
+--
+
+GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_daily_card_fuel TO app_mad_podolsk;
 
 
 --
@@ -729,5 +768,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE dima_admin IN SCHEMA initial_data GRANT SELECT
 -- PostgreSQL database dump complete
 --
 
-\unrestrict TjwuqNVwOTVuDphY1veN8leUIcC7zDCMKIpcKjom6HwFA6vC9TMc3fMaaGQFoHD
+\unrestrict zWXfo4I0tXc8b7NlDRZwqVjvhXKXlbVLszeFVcqZajJ44ATBCWSyQAb9enlBM2U
 

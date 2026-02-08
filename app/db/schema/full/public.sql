@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 84oFJ781GP296ZaOMCKohBFwWzL3zPCuBGrp41PfB7KWLjIEaaZ206ZODbc775P
+\restrict pTqaSWfR3g8pyF6yYKUtKei6GncrxWPgvtg3D5V4uuzMIHvSyBAGcq67DSbTNlc
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -91,6 +91,23 @@ ALTER TABLE public.contract_amount_2026_h1 OWNER TO dima_admin;
 
 COMMENT ON TABLE public.contract_amount_2026_h1 IS 'the total amount of the contract for the 1st half of 2026';
 
+
+--
+-- Name: dim_daily_gas_limit; Type: TABLE; Schema: public; Owner: dima_admin
+--
+
+CREATE TABLE public.dim_daily_gas_limit (
+    employee_id bigint,
+    employee_name text,
+    vehicle_id bigint,
+    type_of_gas character varying,
+    daily_limit integer,
+    monthly_limit integer,
+    card_number bigint
+);
+
+
+ALTER TABLE public.dim_daily_gas_limit OWNER TO dima_admin;
 
 --
 -- Name: dim_date; Type: TABLE; Schema: public; Owner: dima_admin
@@ -1512,6 +1529,15 @@ GRANT SELECT ON TABLE public.contract_amount_2026_h1 TO metabase;
 
 
 --
+-- Name: TABLE dim_daily_gas_limit; Type: ACL; Schema: public; Owner: dima_admin
+--
+
+GRANT ALL ON TABLE public.dim_daily_gas_limit TO app_mad_podolsk;
+GRANT SELECT ON TABLE public.dim_daily_gas_limit TO app_turnover_u4s;
+GRANT SELECT ON TABLE public.dim_daily_gas_limit TO metabase;
+
+
+--
 -- Name: TABLE dim_date; Type: ACL; Schema: public; Owner: dima_admin
 --
 
@@ -1891,5 +1917,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 84oFJ781GP296ZaOMCKohBFwWzL3zPCuBGrp41PfB7KWLjIEaaZ206ZODbc775P
+\unrestrict pTqaSWfR3g8pyF6yYKUtKei6GncrxWPgvtg3D5V4uuzMIHvSyBAGcq67DSbTNlc
 
