@@ -2,23 +2,31 @@
  * Store module exports
  * 
  * Модульная архитектура:
- * - dashboardStore: главный координатор (обратная совместимость)
- * - monthlyStore: данные месячного дашборда
- * - dailyStore: данные дневного дашборда  
- * - smetaStore: данные смет
+ * - dashboardUiStore: UI state (режим, выбранный месяц)
+ * - monthlyStore: данные месячного дашборда (summary, months)
+ * - dailyStore: данные дневного дашборда (daily rows, dates)
+ * - smetaStore: данные смет (cards, details)
  * - authStore: аутентификация и управление пользователями
+ * - resourcesStore: учет техники и людей
+ * - mileageStore: пробег машин
+ * - pricesStore: расценки
+ * - roadSectionsStore: участки дороги
  * - helpers: общие утилиты и типы
  */
 
-// Main store (backward compatible API)
-export { useDashboardStore, isVneregKey } from './dashboardStore'
-export type { DashboardMode, NormalizedDailyRow, DailyData, SmetaDetailsWithTypesRow } from './dashboardStore'
+// UI state store
+export { useDashboardUiStore } from './dashboardUiStore'
+export type { DashboardMode } from './dashboardUiStore'
 
-// Feature stores (for direct access when needed)
+// Feature stores
 export { useMonthlyStore } from './monthlyStore'
 export { useDailyStore } from './dailyStore'
-export { useSmetaStore } from './smetaStore'
+export { useSmetaStore, isVneregKey } from './smetaStore'
 export { useAuthStore } from './authStore'
+export { useResourcesStore } from './resourcesStore'
+export { useMileageStore } from './mileageStore'
+export { usePricesStore } from './pricesStore'
+export { useRoadSectionsStore } from './roadSectionsStore'
 
 // Shared helpers
 export {
@@ -28,3 +36,5 @@ export {
   normalizeDailyRows,
   SMETA_LABELS
 } from './helpers'
+
+export type { NormalizedDailyRow, DailyData, SmetaDetailsWithTypesRow } from './helpers'

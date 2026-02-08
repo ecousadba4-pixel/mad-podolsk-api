@@ -117,7 +117,7 @@ import { computed, watch } from 'vue'
 import { useIsMobile } from '../../composables/useIsMobile'
 import { useSort } from '../../composables/useSort'
 import { useTitleExpansion } from '../../composables/useTitleExpansion'
-import { useDashboardStore, isVneregKey } from '../../store/dashboardStore'
+import { useSmetaStore, isVneregKey } from '../../store/smetaStore'
 import { storeToRefs } from 'pinia'
 import { formatMoney } from '../../utils/format'
 import SmetaDetailsMobile from './SmetaDetailsMobile.vue'
@@ -126,8 +126,8 @@ import SmetaDetailsDesktop from './SmetaDetailsDesktop.vue'
 const { isMobile } = useIsMobile()
 
 // detect selected smeta from global store so we can apply smeta-specific defaults
-const store = useDashboardStore()
-const { selectedSmeta, smetaDetailsWithTypes, defaultSmetaSortKey, isSelectedSmetaVnereg } = storeToRefs(store)
+const smetaStore = useSmetaStore()
+const { selectedSmeta, smetaDetailsWithTypes, defaultSmetaSortKey, isSelectedSmetaVnereg } = storeToRefs(smetaStore)
 
 // Check if we have typed data for hierarchical view
 const hasTypedData = computed(() => {

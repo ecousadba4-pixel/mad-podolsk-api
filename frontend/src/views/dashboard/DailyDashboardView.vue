@@ -35,16 +35,18 @@
   </main>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { useDashboardStore } from '../store/dashboardStore'
+import { useDashboardUiStore } from '@/store/dashboardUiStore'
+import { useDailyStore } from '@/store/dailyStore'
 import { storeToRefs } from 'pinia'
-import { DailyTable, MobileDailyFull } from '../components/dashboard'
-import { EmptyState } from '../components/common'
-import { useBodyClass, useIsMobile } from '../composables'
+import { DailyTable, MobileDailyFull } from '@/components/dashboard'
+import { EmptyState } from '@/components/common'
+import { useBodyClass, useIsMobile } from '@/composables'
 
-const store = useDashboardStore()
-const { dailyLoading, dailyRows, dailyTotal, selectedDate } = storeToRefs(store)
+const uiStore = useDashboardUiStore()
+const dailyStore = useDailyStore()
+const { dailyLoading, dailyRows, dailyTotal, selectedDate } = storeToRefs(dailyStore)
 
 // Body class для стилизации страницы
 useBodyClass('page-daily-bg')
@@ -65,8 +67,8 @@ const forceMobile = computed(() => {
 const showMobile = computed(() => isMobile.value || forceMobile.value)
 
 onMounted(() => {
-  store.setMode('daily')
-  store.fetchDaily(selectedDate.value)
+  uiStore.setMode('daily')
+  dailyStore.fetchDaily(selectedDate.value)
 })
 </script>
 

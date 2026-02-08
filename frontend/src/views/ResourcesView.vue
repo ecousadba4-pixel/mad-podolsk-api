@@ -5,7 +5,7 @@
 import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useResourcesStore } from '@/store/resourcesStore'
-import { SubsectionToggle } from '@/components/resources'
+import { ResourcesSubsectionToggle } from '@/components/resources'
 import ResourcesDataEntry from './resources/ResourcesDataEntry.vue'
 import ResourcesSummary from './resources/ResourcesSummary.vue'
 
@@ -22,7 +22,7 @@ onMounted(async () => {
   <div class="resources-view">
     <header class="resources-view__header">
       <h1 class="resources-view__title">Учет техники и людей</h1>
-      <SubsectionToggle v-model="activeSubsection" />
+      <ResourcesSubsectionToggle v-model="activeSubsection" />
     </header>
 
     <div v-if="isLoadingReferences" class="resources-view__loading">

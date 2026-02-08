@@ -14,7 +14,7 @@
 
   /* When viewing the "По дням" section, use a flat single-color background
      to match the provided screenshot. The class is toggled by the
-     `DailyDashboard` component on mount/unmount. */
+     `DailyDashboardView` component on mount/unmount. */
   body.page-daily-bg {
     background: var(--bg) !important;
   }

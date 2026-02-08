@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory, type RouteRecordRaw, type RouteLocationNormalized, type RouteLocationNormalizedLoaded } from 'vue-router'
 
 // Lazy load views with webpack magic comments for better chunk naming
-const MonthlyDashboard = () => import(/* webpackChunkName: "monthly" */ '../views/MonthlyDashboard.vue')
-const DailyDashboard = () => import(/* webpackChunkName: "daily" */ '../views/DailyDashboard.vue')
-const SmetaBreakdown = () => import(/* webpackChunkName: "smeta" */ '../views/SmetaBreakdown.vue')
+const MonthlyDashboardView = () => import(/* webpackChunkName: "monthly" */ '../views/dashboard/MonthlyDashboardView.vue')
+const DailyDashboardView = () => import(/* webpackChunkName: "daily" */ '../views/dashboard/DailyDashboardView.vue')
+const SmetaBreakdownView = () => import(/* webpackChunkName: "smeta" */ '../views/dashboard/SmetaBreakdownView.vue')
 const PricesView = () => import(/* webpackChunkName: "prices" */ '../views/PricesView.vue')
 const RoadSectionsView = () => import(/* webpackChunkName: "road-sections" */ '../views/RoadSectionsView.vue')
 const UsersView = () => import(/* webpackChunkName: "users" */ '../views/UsersView.vue')
@@ -24,19 +24,19 @@ const routes: RouteRecordRaw[] = [
   { 
     path: '/', 
     name: 'monthly',
-    component: MonthlyDashboard,
+    component: MonthlyDashboardView,
     meta: { title: 'Месячный дашборд', requiresAuth: true }
   },
   { 
     path: '/daily', 
     name: 'daily',
-    component: DailyDashboard,
+    component: DailyDashboardView,
     meta: { title: 'Дневной дашборд', requiresAuth: true }
   },
   { 
     path: '/smeta/:smetaKey', 
     name: 'smeta-breakdown',
-    component: SmetaBreakdown,
+    component: SmetaBreakdownView,
     props: true, // автоматически передаёт params как props
     meta: { title: 'Расшифровка сметы', requiresAuth: true }
   },

@@ -1,6 +1,6 @@
 import { computed, type ComputedRef, type Ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useDashboardStore, isVneregKey } from '../store/dashboardStore'
+import { useSmetaStore, isVneregKey } from '../store/smetaStore'
 import type { SmetaDetailRow } from '@/types/dashboard'
 
 // Re-export isVneregKey for backward compatibility
@@ -25,8 +25,8 @@ export interface UseSmetaBreakdownReturn {
 export function useSmetaBreakdown(
   smetaKeyRef: Ref<string> | ComputedRef<string>
 ): UseSmetaBreakdownReturn {
-  const store = useDashboardStore()
-  const { smetaDetailsLoading, smetaDetails, selectedSmetaLabel } = storeToRefs(store)
+  const smetaStore = useSmetaStore()
+  const { smetaDetailsLoading, smetaDetails, selectedSmetaLabel } = storeToRefs(smetaStore)
 
   const loading = computed(() => smetaDetailsLoading.value as boolean)
 

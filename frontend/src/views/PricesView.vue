@@ -3,90 +3,27 @@
  * PricesView — Раздел Расценки
  * Отображает таблицу расценок с поиском и фильтрацией
  */
-import { ref, watch, onMounted } from 'vue'
-import { getPrices, getPricesFilters, type PriceRow, type EstimateOption, type WorkTypeOption } from '@/api/prices'
+import { onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { usePricesStore } from '@/store/pricesStore'
 import { UiInput, UiCard } from '@/components/ui'
 import { TableSkeleton, EmptyState } from '@/components/common'
 import { formatMoney } from '@/utils/format'
 
-// State
-const searchQuery = ref('')
-const selectedEstimate = ref<number | null>(null)
-const selectedWorkType = ref<number | null>(null)
-const isLoading = ref(false)
-const rows = ref<PriceRow[]>([])
-const total = ref(0)
+const store = usePricesStore()
+const {
+  searchQuery,
+  selectedEstimate,
+  selectedWorkType,
+  isLoading,
+  rows,
+  total,
+  estimates,
+  workTypes,
+  hasActiveFilters
+} = storeToRefs(store)
 
-// Filters
-const estimates = ref<EstimateOption[]>([])
-const workTypes = ref<WorkTypeOption[]>([])
-
-// Debounced search
-let searchTimeout: ReturnType<typeof setTimeout> | null = null
-
-async function fetchFilters() {
-  try {
-    const response = await getPricesFilters()
-    estimates.value = response.estimates
-    workTypes.value = response.work_types
-  } catch (e) {
-    console.error('Failed to fetch filters:', e)
-  }
-}
-
-async function fetchPrices() {
-  isLoading.value = true
-  try {
-    const params: { search?: string; estimate_id?: number; work_type_id?: number } = {}
-    if (searchQuery.value.length >= 3) {
-      params.search = searchQuery.value
-    }
-    if (selectedEstimate.value !== null) {
-      params.estimate_id = selectedEstimate.value
-    }
-    if (selectedWorkType.value !== null) {
-      params.work_type_id = selectedWorkType.value
-    }
-    
-    const response = await getPrices(params)
-    rows.value = response.rows
-    total.value = response.total
-  } catch (e) {
-    console.error('Failed to fetch prices:', e)
-    rows.value = []
-    total.value = 0
-  } finally {
-    isLoading.value = false
-  }
-}
-
-// Watch for filter changes
-watch([selectedEstimate, selectedWorkType], () => {
-  fetchPrices()
-})
-
-// Debounced search
-watch(searchQuery, (val) => {
-  if (searchTimeout) {
-    clearTimeout(searchTimeout)
-  }
-  if (val.length >= 3 || val.length === 0) {
-    searchTimeout = setTimeout(() => {
-      fetchPrices()
-    }, 300)
-  }
-})
-
-function resetFilters() {
-  searchQuery.value = ''
-  selectedEstimate.value = null
-  selectedWorkType.value = null
-}
-
-onMounted(async () => {
-  await fetchFilters()
-  await fetchPrices()
-})
+onMounted(() => store.init())
 </script>
 
 <template>
@@ -147,9 +84,9 @@ onMounted(async () => {
         </div>
 
         <button 
-          v-if="searchQuery || selectedEstimate !== null || selectedWorkType !== null"
+          v-if="hasActiveFilters"
           class="prices-filters__reset"
-          @click="resetFilters"
+          @click="store.resetFilters()"
         >
           Сбросить фильтры
         </button>

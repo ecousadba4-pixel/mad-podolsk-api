@@ -44,14 +44,17 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { useDashboardStore } from '../../store/dashboardStore'
+import { useDashboardUiStore } from '../../store/dashboardUiStore'
+import { useMonthlyStore } from '../../store/monthlyStore'
 import { storeToRefs } from 'pinia'
 
 const props = defineProps({ modelValue: { type: String, default: '' } })
 const emit = defineEmits(['update:modelValue'])
 
-const store = useDashboardStore()
-const { availableMonths, selectedMonth } = storeToRefs(store)
+const uiStore = useDashboardUiStore()
+const monthlyStore = useMonthlyStore()
+const { selectedMonth } = storeToRefs(uiStore)
+const { availableMonths } = storeToRefs(monthlyStore)
 const open = ref(false)
 const loading = ref(false)
 const activeIndex = ref(-1)
@@ -180,7 +183,7 @@ onMounted(async ()=>{
   document.addEventListener('click', onClickOutside)
   if (!availableMonths.value || availableMonths.value.length === 0){
     loading.value = true
-    await store.fetchAvailableMonths()
+    await monthlyStore.fetchAvailableMonths()
     loading.value = false
   }
 })

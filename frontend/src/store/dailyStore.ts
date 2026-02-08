@@ -12,6 +12,7 @@ import { defineStore } from 'pinia'
 import { useQuery } from '../composables/useQueryClient'
 import { getAvailableDates, getDaily } from '../api/dashboard'
 import { normalizeDailyRows, type DailyData, type RawDailyRow } from './helpers'
+import { useDashboardUiStore } from './dashboardUiStore'
 
 interface RawDailyResponse {
   rows?: RawDailyRow[]
@@ -20,23 +21,23 @@ interface RawDailyResponse {
 }
 
 export const useDailyStore = defineStore('daily', () => {
+  const uiStore = useDashboardUiStore()
+
   // --------------------------------------------------------------------------
   // STATE
   // --------------------------------------------------------------------------
   const selectedDate: Ref<string> = ref(new Date().toISOString().slice(0, 10))
 
   // --------------------------------------------------------------------------
-  // QUERY FACTORIES
+  // QUERIES (use selectedMonth from UI store)
   // --------------------------------------------------------------------------
-  
-  function createAvailableDatesQuery(selectedMonth: () => string) {
-    return useQuery<string[]>({
-      queryKey: () => ['available-dates', selectedMonth()],
-      queryFn: () => getAvailableDates(selectedMonth()),
-      enabled: computed(() => Boolean(selectedMonth())),
-      staleTime: 60 * 1000
-    })
-  }
+
+  const availableDatesQuery = useQuery<string[]>({
+    queryKey: () => ['available-dates', uiStore.selectedMonth],
+    queryFn: () => getAvailableDates(uiStore.selectedMonth),
+    enabled: computed(() => Boolean(uiStore.selectedMonth)),
+    staleTime: 60 * 1000
+  })
 
   const dailyQuery = useQuery<DailyData>({
     queryKey: () => ['daily', selectedDate.value],
@@ -57,6 +58,7 @@ export const useDailyStore = defineStore('daily', () => {
   // COMPUTED GETTERS
   // --------------------------------------------------------------------------
   
+  const availableDates = computed(() => availableDatesQuery.data.value || [])
   const dailyRows = computed(() => dailyQuery.data.value?.rows || [])
   const dailyTotal = computed(() => dailyQuery.data.value?.total || 0)
   const dailyLoading = computed(() => dailyQuery.isLoading.value || dailyQuery.isFetching.value)
@@ -77,14 +79,21 @@ export const useDailyStore = defineStore('daily', () => {
   /**
    * Находит ближайшую дату с данными в текущем месяце
    */
-  async function findNearestDateWithData(availableDatesData: string[] | null | undefined): Promise<string> {
+  async function findNearestDateWithData(): Promise<string> {
+    let available = availableDatesQuery.data.value
+    
+    if (!available || !available.length) {
+      try { await availableDatesQuery.refetch() } catch { /* ignore */ }
+      available = availableDatesQuery.data.value
+    }
+
     const today = new Date()
     const start = new Date(today.getFullYear(), today.getMonth(), 1)
     
-    if (availableDatesData && availableDatesData.length) {
+    if (available && available.length) {
       const startIso = start.toISOString().slice(0, 10)
       const todayIso = today.toISOString().slice(0, 10)
-      const candidates = availableDatesData
+      const candidates = available
         .map(d => String(d).slice(0, 10))
         .filter(d => d >= startIso && d <= todayIso)
         .sort()
@@ -125,10 +134,8 @@ export const useDailyStore = defineStore('daily', () => {
     // State
     selectedDate,
     
-    // Query factories
-    createAvailableDatesQuery,
-    
     // Computed
+    availableDates,
     dailyRows,
     dailyTotal,
     dailyLoading,

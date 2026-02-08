@@ -1,14 +1,14 @@
 <script setup>
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useDashboardStore } from '../../store/dashboardStore'
+import { useSmetaStore } from '../../store/smetaStore'
 import { CardsGrid, PageSection } from '../layouts'
 import { formatNumber } from '../../utils/format'
 import { UiLabel, UiBadge, UiProgress } from '../ui'
 
-const store = useDashboardStore()
+const smetaStore = useSmetaStore()
 // use storeToRefs to subscribe only to specific refs, reducing re-renders
-const { smetaCards, smetaCardsLoading, selectedSmeta } = storeToRefs(store)
+const { smetaCards, smetaCardsLoading, selectedSmeta } = storeToRefs(smetaStore)
 
 /** @type {(key: string) => void} */
 const emit = defineEmits(['select'])

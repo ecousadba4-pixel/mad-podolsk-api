@@ -21,24 +21,24 @@
   </PageSection>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useDashboardStore } from '../store/dashboardStore'
+import { useSmetaStore } from '@/store/smetaStore'
 import { storeToRefs } from 'pinia'
-import { PageSection } from '../components/layouts'
-import { useIsMobile } from '../composables/useIsMobile'
-import { useSmetaBreakdown } from '../composables/useSmetaBreakdown'
-import { SmetaDetails } from '../components/dashboard'
+import { PageSection } from '@/components/layouts'
+import { useIsMobile } from '@/composables/useIsMobile'
+import { useSmetaBreakdown } from '@/composables/useSmetaBreakdown'
+import { SmetaDetails } from '@/components/dashboard'
 
 const route = useRoute()
 const router = useRouter()
-const store = useDashboardStore()
-const { selectedSmeta, defaultSmetaSortKey } = storeToRefs(store)
+const smetaStore = useSmetaStore()
+const { selectedSmeta, defaultSmetaSortKey } = storeToRefs(smetaStore)
 const { isMobile } = useIsMobile()
 
 // Ключ сметы из URL или store
-const smetaKey = computed(() => route.params.smetaKey || selectedSmeta.value || 'leto')
+const smetaKey = computed(() => (route.params.smetaKey as string) || selectedSmeta.value || 'leto')
 
 // Бизнес-логика вынесена в composable
 const { loading, filteredRows, smetaLabel } = useSmetaBreakdown(smetaKey)
@@ -48,18 +48,18 @@ const sortKey = ref(defaultSmetaSortKey.value)
 const sortDir = ref(-1)
 
 // Обновляем сортировку при смене типа сметы
-watch(defaultSmetaSortKey, (newKey) => {
+watch(defaultSmetaSortKey, (newKey: string) => {
   sortKey.value = newKey
   sortDir.value = -1
 })
 
 onMounted(async () => {
-  store.setSelectedSmeta(smetaKey.value)
-  await store.fetchSmetaDetails(smetaKey.value)
+  smetaStore.setSelectedSmeta(smetaKey.value)
+  await smetaStore.fetchSmetaDetails(smetaKey.value)
 })
 
-function openByDescription(row) {
-  store.setSelectedDescription(row.title || row.description, row.description_id)
+function openByDescription(row: { title?: string; description?: string; description_id?: string }) {
+  smetaStore.setSelectedDescription(row.title || row.description || null, row.description_id || null)
   router.push({ path: '/daily' })
 }
 </script>
@@ -157,4 +157,3 @@ function openByDescription(row) {
   }
 }
 </style>
-

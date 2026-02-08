@@ -1,0 +1,93 @@
+---
+description: Vue frontend architecture, conventions, and patterns for the MAD Podolsk project
+globs: frontend/src/**
+alwaysApply: false
+---
+
+# Frontend Architecture
+
+Vue 3 + TypeScript + Pinia + Vue Router. All components use `<script setup lang="ts">`.
+
+## Layer structure
+
+```
+frontend/src/
+  api/          — HTTP request functions (1 file per section)
+  components/   — Vue components grouped by section
+  composables/  — Reusable composition functions (useXxx.ts)
+  router/       — Vue Router config
+  store/        — Pinia stores (1 per section + dashboardUiStore for shared UI state)
+  styles/       — Global SCSS (tokens, foundations, modules)
+  types/        — TypeScript types (api.generated.d.ts is auto-generated)
+  utils/        — Pure utility functions (format.ts, etc.)
+  views/        — Page-level components (1 per route)
+```
+
+## Data flow
+
+View -> Store (Pinia) -> API module -> Backend
+
+Views use `storeToRefs()` for reactive state. Stores create queries internally.
+
+## Section pattern
+
+Each section follows: **View + Store + API + Components**.
+
+| Section       | View(s)                          | Store              | API              | Components folder     |
+|---------------|----------------------------------|--------------------|------------------|-----------------------|
+| Dashboard     | views/dashboard/*View.vue        | dashboardUiStore + monthlyStore + dailyStore + smetaStore | api/dashboard.ts | components/dashboard/ |
+| Resources     | ResourcesView.vue + subsections  | resourcesStore     | api/resources.ts | components/resources/ |
+| Mileage       | MileageView.vue + subsections    | mileageStore       | api/mileage.ts   | components/mileage/   |
+| Prices        | PricesView.vue                   | pricesStore        | api/prices.ts    | components/ (inline)  |
+| Road Sections | RoadSectionsView.vue             | roadSectionsStore  | api/roadSections.ts | components/ (inline) |
+| Auth          | LoginView.vue                    | authStore          | api/auth.ts      | —                     |
+
+## Naming conventions
+
+- Views: `{Feature}View.vue` (PascalCase with View suffix)
+- Stores: `{feature}Store.ts` (camelCase with Store suffix)
+- Composables: `use{Feature}.ts`
+- Components: `PascalCase.vue`, UI Kit prefixed with `Ui` (UiButton, UiCard)
+- API modules: `camelCase.ts`
+
+## Barrel exports
+
+Each component folder has `index.ts` with named exports. Import from the folder, not individual files:
+
+```typescript
+// Good
+import { SmetaDetails, DailyTable } from '@/components/dashboard'
+// Bad
+import SmetaDetails from '@/components/dashboard/SmetaDetails.vue'
+```
+
+## Store architecture
+
+- `dashboardUiStore` — shared UI state (selectedMonth, mode). No data logic.
+- Feature stores (monthlyStore, smetaStore, etc.) import dashboardUiStore for selectedMonth.
+- Components import specific stores they need, not a coordinator.
+
+## Composables
+
+Key reusable composables in `composables/`:
+- `useQueryClient` / `useQuery` — TanStack Query-like data fetching with caching
+- `useModal` — modal open/close state
+- `useIsMobile` — responsive breakpoint detection
+- `useToast` — toast notifications
+- `useErrorHandler` — centralized error handling
+- `useDebouncedSearch` — debounced search input pattern
+- `useSort` — table sorting logic
+
+## Styles
+
+Design tokens in `styles/_tokens.scss`. Components use scoped styles with CSS variables from tokens.
+Global modules in `styles/modules/` for cross-component patterns.
+
+## Adding a new section
+
+1. Create `api/{section}.ts` with request functions
+2. Create `store/{section}Store.ts` (Pinia composition API)
+3. Create `views/{Section}View.vue` with `<script setup lang="ts">`
+4. Create `components/{section}/` folder with `index.ts` barrel export
+5. Add route in `router/index.ts` (lazy-loaded)
+6. Export store in `store/index.ts`

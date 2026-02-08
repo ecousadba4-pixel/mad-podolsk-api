@@ -1,14 +1,14 @@
-<script setup>
+<script setup lang="ts">
 import { AppHeader } from './components/layouts'
 import { ToastContainer, ErrorBoundary } from './components/common'
-import { useDashboardStore } from './store/dashboardStore'
+import { useDashboardUiStore } from './store/dashboardUiStore'
 import { shallowRef, nextTick, onErrorCaptured, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import { provideToast, handleError } from './composables'
 
-const store = useDashboardStore()
-const { mode } = storeToRefs(store)
+const uiStore = useDashboardUiStore()
+const { mode } = storeToRefs(uiStore)
 const route = useRoute()
 
 // Не показываем хедер на странице логина

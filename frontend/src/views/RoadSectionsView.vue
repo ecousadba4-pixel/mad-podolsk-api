@@ -3,59 +3,17 @@
  * RoadSectionsView — Раздел Участки дороги
  * Отображает таблицу участков дорог с поиском
  */
-import { ref, watch, onMounted } from 'vue'
-import { getRoadSections, type RoadSectionRow } from '@/api/roadSections'
+import { onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useRoadSectionsStore } from '@/store/roadSectionsStore'
 import { UiInput, UiCard } from '@/components/ui'
 import { TableSkeleton, EmptyState } from '@/components/common'
+import { formatNumber } from '@/utils/format'
 
-// State
-const searchQuery = ref('')
-const isLoading = ref(false)
-const rows = ref<RoadSectionRow[]>([])
-const total = ref(0)
+const store = useRoadSectionsStore()
+const { searchQuery, isLoading, rows, total } = storeToRefs(store)
 
-// Debounced search
-let searchTimeout: ReturnType<typeof setTimeout> | null = null
-
-async function fetchRoadSections() {
-  isLoading.value = true
-  try {
-    const search = searchQuery.value.length >= 3 ? searchQuery.value : undefined
-    const response = await getRoadSections(search)
-    rows.value = response.rows
-    total.value = response.total
-  } catch (e) {
-    console.error('Failed to fetch road sections:', e)
-    rows.value = []
-    total.value = 0
-  } finally {
-    isLoading.value = false
-  }
-}
-
-// Debounced search
-watch(searchQuery, (val) => {
-  if (searchTimeout) {
-    clearTimeout(searchTimeout)
-  }
-  if (val.length >= 3 || val.length === 0) {
-    searchTimeout = setTimeout(() => {
-      fetchRoadSections()
-    }, 300)
-  }
-})
-
-function formatNumber(value: number | null): string {
-  if (value === null || value === undefined) return '—'
-  return new Intl.NumberFormat('ru-RU', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(value)
-}
-
-onMounted(async () => {
-  await fetchRoadSections()
-})
+onMounted(() => store.init())
 </script>
 
 <template>

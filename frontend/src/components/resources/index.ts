@@ -1,5 +1,5 @@
 // Resources section components
-export { default as SubsectionToggle } from './SubsectionToggle.vue'
+export { default as ResourcesSubsectionToggle } from './ResourcesSubsectionToggle.vue'
 export { default as OwnEquipmentBlock } from './OwnEquipmentBlock.vue'
 export { default as RentedEquipmentBlock } from './RentedEquipmentBlock.vue'
 export { default as MastersBlock } from './MastersBlock.vue'

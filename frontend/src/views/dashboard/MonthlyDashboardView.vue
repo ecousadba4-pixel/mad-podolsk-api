@@ -1,43 +1,46 @@
-<script setup>
+<script setup lang="ts">
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
-import { useIsMobile } from '../composables/useIsMobile'
-import { useModal } from '../composables/useModal'
-import { useDashboardStore } from '../store/dashboardStore'
+import { useIsMobile } from '@/composables/useIsMobile'
+import { useModal } from '@/composables/useModal'
+import { useDashboardUiStore } from '@/store/dashboardUiStore'
+import { useMonthlyStore } from '@/store/monthlyStore'
+import { useSmetaStore } from '@/store/smetaStore'
 import { storeToRefs } from 'pinia'
-import { TableSkeleton } from '../components/common'
-import { DailyRevenueChartModal, SmetaDescriptionDailyModal, TypeOfWorkModal } from '../components/modals'
-import { PageSection } from '../components/layouts'
+import { TableSkeleton } from '@/components/common'
+import { DailyRevenueChartModal, SmetaDescriptionDailyModal, TypeOfWorkModal } from '@/components/dashboard'
+import { PageSection } from '@/components/layouts'
 
-const ContractExecutionSection = defineAsyncComponent(() => import('../components/dashboard/ContractExecutionSection.vue'))
-const SummaryKpiSection = defineAsyncComponent(() => import('../components/dashboard/SummaryKpiSection.vue'))
-const SmetaCardsSection = defineAsyncComponent(() => import('../components/dashboard/SmetaCardsSection.vue'))
-const SmetaDetails = defineAsyncComponent(() => import('../components/dashboard/SmetaDetails.vue'))
+const ContractExecutionSection = defineAsyncComponent(() => import('@/components/dashboard/ContractExecutionSection.vue'))
+const SummaryKpiSection = defineAsyncComponent(() => import('@/components/dashboard/SummaryKpiSection.vue'))
+const SmetaCardsSection = defineAsyncComponent(() => import('@/components/dashboard/SmetaCardsSection.vue'))
+const SmetaDetails = defineAsyncComponent(() => import('@/components/dashboard/SmetaDetails.vue'))
 
 // use composable for mobile detection
 const { isMobile } = useIsMobile()
 
-const store = useDashboardStore()
+const uiStore = useDashboardUiStore()
+const monthlyStore = useMonthlyStore()
+const smetaStore = useSmetaStore()
+
+const { selectedMonth } = storeToRefs(uiStore)
+const { monthlyLoading, monthlyError, monthlySummary } = storeToRefs(monthlyStore)
 const {
-  monthlyLoading,
-  monthlyError,
-  monthlySummary,
   smetaDetails,
   smetaDetailsLoading,
-  selectedMonth,
   selectedSmeta,
   selectedDescription,
   selectedDescriptionId,
   selectedSmetaLabel,
   isSelectedSmetaVnereg,
   defaultSmetaSortKey
-} = storeToRefs(store)
+} = storeToRefs(smetaStore)
 
 // Sorting state - now initialized from store's defaultSmetaSortKey
 const smetaSortKey = ref(defaultSmetaSortKey.value)
 const smetaSortDir = ref(-1)
 
 // Watch for smeta changes to set default sort key from store
-watch(defaultSmetaSortKey, (newKey) => {
+watch(defaultSmetaSortKey, (newKey: string) => {
   smetaSortKey.value = newKey
   smetaSortDir.value = -1
 }, { immediate: true })
@@ -67,16 +70,16 @@ const openTypeOfWorkModal = () => typeOfWorkModal.open()
 const closeTypeOfWorkModal = () => typeOfWorkModal.close()
 
 // открыть попап расшифровки при выборе description
-function onSelectDescription(item){
+function onSelectDescription(item: { title?: string; description?: string; description_id?: string }) {
   // Use description_id for API calls, keep description for display
-  store.setSelectedDescription(item.title || item.description, item.description_id)
+  smetaStore.setSelectedDescription(item.title || item.description || null, item.description_id || null)
   openSmetaDescription()
 }
 
 // Handler for smeta card selection emitted by SmetaCardsSection
-function onSmetaSelect(key){
-  store.setSelectedSmeta(key)
-  store.fetchSmetaDetails(key)
+function onSmetaSelect(key: string) {
+  smetaStore.setSelectedSmeta(key)
+  smetaStore.fetchSmetaDetails(key)
 }
 </script>
 

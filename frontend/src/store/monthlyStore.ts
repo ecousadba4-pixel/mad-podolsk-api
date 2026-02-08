@@ -13,9 +13,11 @@ import { useQuery, useInvalidateQueries } from '../composables/useQueryClient'
 import { getAvailableMonths, getLastLoaded, getMonthlySummary } from '../api/dashboard'
 import type { MonthlySummary } from '@/types/dashboard'
 import { fallbackMonths } from './helpers'
+import { useDashboardUiStore } from './dashboardUiStore'
 
 export const useMonthlyStore = defineStore('monthly', () => {
   const invalidateQueries = useInvalidateQueries()
+  const uiStore = useDashboardUiStore()
 
   // --------------------------------------------------------------------------
   // QUERIES
@@ -45,15 +47,13 @@ export const useMonthlyStore = defineStore('monthly', () => {
     staleTime: 60 * 60 * 1000
   })
 
-  // Функция для создания query summary с переданным месяцем
-  function createSummaryQuery(selectedMonth: () => string) {
-    return useQuery<MonthlySummary>({
-      queryKey: () => ['monthly-summary', selectedMonth()],
-      queryFn: () => getMonthlySummary(selectedMonth()),
-      enabled: computed(() => Boolean(selectedMonth())),
-      staleTime: 5 * 60 * 1000
-    })
-  }
+  // Monthly summary query - uses selectedMonth from UI store
+  const monthlySummaryQuery = useQuery<MonthlySummary>({
+    queryKey: () => ['monthly-summary', uiStore.selectedMonth],
+    queryFn: () => getMonthlySummary(uiStore.selectedMonth),
+    enabled: computed(() => Boolean(uiStore.selectedMonth)),
+    staleTime: 5 * 60 * 1000
+  })
 
   const lastLoadedQuery = useQuery<{ loaded_at: string | null }>({
     queryKey: () => ['last-loaded'],
@@ -69,11 +69,22 @@ export const useMonthlyStore = defineStore('monthly', () => {
   const availableMonthsLoading = computed(() => availableMonthsQuery.isLoading.value)
   const lastLoadedAt = computed(() => lastLoadedQuery.data.value?.loaded_at ?? null)
 
+  const monthlySummary = computed(() => monthlySummaryQuery.data.value)
+  const monthlyLoading = computed(() => monthlySummaryQuery.isLoading.value || monthlySummaryQuery.isFetching.value)
+  const monthlyError = computed(() => monthlySummaryQuery.error.value ? (monthlySummaryQuery.error.value.message || 'Не удалось загрузить summary') : null)
+
+  const loadedAt = computed(() => {
+    const fromLastLoaded = lastLoadedAt.value
+    const fromSummary = monthlySummary.value || {} as Partial<MonthlySummary>
+    return fromLastLoaded || fromSummary.loaded_at || fromSummary.last_updated || fromSummary.updated_at || null
+  })
+
   // --------------------------------------------------------------------------
   // ACTIONS
   // --------------------------------------------------------------------------
   
   const fetchAvailableMonths = () => availableMonthsQuery.refetch()
+  const fetchMonthlySummary = () => monthlySummaryQuery.refetch()
   
   function invalidateLastLoaded() {
     invalidateQueries(['last-loaded'])
@@ -83,16 +94,18 @@ export const useMonthlyStore = defineStore('monthly', () => {
   // PUBLIC API
   // --------------------------------------------------------------------------
   return {
-    // Query factories (для использования в главном store)
-    createSummaryQuery,
-    
     // Computed
     availableMonths,
     availableMonthsLoading,
     lastLoadedAt,
+    monthlySummary,
+    monthlyLoading,
+    monthlyError,
+    loadedAt,
     
     // Actions
     fetchAvailableMonths,
+    fetchMonthlySummary,
     invalidateLastLoaded
   }
 })

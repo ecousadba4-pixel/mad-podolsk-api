@@ -29,12 +29,12 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useDashboardStore } from '../../store/dashboardStore'
+import { useDailyStore } from '../../store/dailyStore'
 import { storeToRefs } from 'pinia'
 import CalendarDropdown from './CalendarDropdown.vue'
 
-const store = useDashboardStore()
-const { selectedDate } = storeToRefs(store)
+const dailyStore = useDailyStore()
+const { selectedDate } = storeToRefs(dailyStore)
 const root = ref(null)
 const isCalendarOpen = ref(false)
 const anchorRect = ref(null)
@@ -77,8 +77,8 @@ function openCalendar() {
 async function onDateSelect(dateStr) {
   if (!dateStr) return
   if (dateStr < monthStart.value || dateStr > monthEnd.value) return
-  store.setSelectedDate(dateStr)
-  await store.fetchDaily(dateStr)
+  dailyStore.setSelectedDate(dateStr)
+  await dailyStore.fetchDaily(dateStr)
 }
 </script>
 

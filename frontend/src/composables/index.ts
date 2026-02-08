@@ -7,6 +7,10 @@
 export { useAsyncData } from './useAsyncData'
 export type { UseAsyncDataOptions, UseAsyncDataReturn } from './useAsyncData'
 
+// Debounced search
+export { useDebouncedSearch } from './useDebouncedSearch'
+export type { UseDebouncedSearchOptions, UseDebouncedSearchReturn } from './useDebouncedSearch'
+
 // Body class management
 export { useBodyClass } from './useBodyClass'
 

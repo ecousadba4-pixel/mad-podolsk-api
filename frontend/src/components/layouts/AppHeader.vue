@@ -1,20 +1,20 @@
-<script setup>
+<script setup lang="ts">
 import { useIsMobile } from '../../composables/useIsMobile'
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useDashboardStore } from '../../store/dashboardStore'
+import { useDashboardUiStore } from '../../store/dashboardUiStore'
+import { useMonthlyStore } from '../../store/monthlyStore'
+import { useDailyStore } from '../../store/dailyStore'
+import { useSmetaStore } from '../../store/smetaStore'
 import { storeToRefs } from 'pinia'
 import { LastUpdatedBadge, NavMenu } from '../common'
 import { MonthPicker, DayPicker } from '../pickers'
-// ExportPdfButton temporarily disabled in header during report work-in-progress
 
 const { isMobile } = useIsMobile()
-const innerRef = ref(null)
-
+const innerRef = ref<HTMLElement | null>(null)
 
 onMounted(async () => {
   await nextTick()
-  // No debug guides in production: overlays removed.
 })
 
 onUnmounted(() => {
@@ -23,8 +23,14 @@ onUnmounted(() => {
 
 const router = useRouter()
 const route = useRoute()
-const store = useDashboardStore()
-const { selectedMonth: selectedMonthRef, monthlySummary, selectedDate, loadedAt } = storeToRefs(store)
+const uiStore = useDashboardUiStore()
+const monthlyStore = useMonthlyStore()
+const dailyStore = useDailyStore()
+const smetaStore = useSmetaStore()
+
+const { selectedMonth: selectedMonthRef } = storeToRefs(uiStore)
+const { monthlySummary, loadedAt } = storeToRefs(monthlyStore)
+const { selectedDate } = storeToRefs(dailyStore)
 
 // Определяем текущий раздел
 const isRevenueSection = computed(() => {
@@ -38,32 +44,32 @@ const isMonthlyActive = computed(() => route.path === '/' || route.name === 'mon
 function setMonthly() {
   if (!isMonthlyActive.value) {
     router.push({ path: '/' })
-    store.setMode('monthly')
-    store.fetchMonthlySummary()
-    store.fetchSmetaCards()
+    uiStore.setMode('monthly')
+    monthlyStore.fetchMonthlySummary()
+    smetaStore.fetchSmetaCards()
   }
 }
 
 function setDaily() {
   if (isMonthlyActive.value) {
     router.push({ path: '/daily' })
-    store.setMode('daily')
+    uiStore.setMode('daily')
     ;(async () => {
-      try { await store.fetchMonthlySummary() } catch(e) { /* ignore */ }
-      await store.findNearestDateWithData()
-      await store.fetchDaily(selectedDate.value)
+      try { await monthlyStore.fetchMonthlySummary() } catch(e) { /* ignore */ }
+      await dailyStore.findNearestDateWithData()
+      await dailyStore.fetchDaily(selectedDate.value)
     })()
   }
 }
 
 const selectedMonth = computed({
   get: () => selectedMonthRef.value,
-  set: (value) => {
+  set: (value: string) => {
     if (!value) return
-    store.setSelectedMonth(value)
-    store.setSelectedSmeta(null)
-    store.fetchMonthlySummary()
-    store.fetchSmetaCards()
+    uiStore.setSelectedMonth(value)
+    smetaStore.setSelectedSmeta(null)
+    monthlyStore.fetchMonthlySummary()
+    smetaStore.fetchSmetaCards()
   }
 })
 </script>

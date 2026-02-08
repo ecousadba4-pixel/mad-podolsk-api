@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * SubsectionToggle — слайдер-переключатель между подразделами
+ * ResourcesSubsectionToggle — слайдер-переключатель между подразделами
  */
 import { ref, computed, onMounted, nextTick } from 'vue'
 
