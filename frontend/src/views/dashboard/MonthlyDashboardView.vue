@@ -31,7 +31,6 @@ const {
   selectedDescription,
   selectedDescriptionId,
   selectedSmetaLabel,
-  isSelectedSmetaVnereg,
   defaultSmetaSortKey
 } = storeToRefs(smetaStore)
 
@@ -121,7 +120,7 @@ function onSmetaSelect(key: string) {
                     </template>
 
                     <div v-show="!isSmetaCollapsed" class="smeta-details-wrapper" :class="{ 'is-loading': smetaDetailsLoading }">
-                      <SmetaDetails :items="smetaDetails" :sort-key="smetaSortKey" :sort-dir="smetaSortDir" @sort-changed="(p)=>{ smetaSortKey = p.key; smetaSortDir = p.dir }" @select="(item)=> onSelectDescription(item)" />
+                      <SmetaDetails :items="smetaDetails" :sort-key="smetaSortKey" :sort-dir="smetaSortDir" @sort-changed="(p: { key: string; dir: number })=>{ smetaSortKey = p.key; smetaSortDir = p.dir }" @select="(item: { title?: string; description?: string; description_id?: string })=> onSelectDescription(item)" />
                       <TableSkeleton v-if="smetaDetailsLoading" class="overlay-skeleton" />
                     </div>
                   </PageSection>

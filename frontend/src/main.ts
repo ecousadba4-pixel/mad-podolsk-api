@@ -77,8 +77,6 @@ installQueryClient(app, {
 
 // Import auth store after pinia is installed
 import { useAuthStore } from './store/authStore'
-// Initialize UI store early so feature stores can access selectedMonth
-import { useDashboardUiStore } from './store/dashboardUiStore'
 
 // Auth guard
 router.beforeEach(async (to, _from, next) => {

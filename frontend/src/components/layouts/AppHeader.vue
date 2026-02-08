@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { useIsMobile } from '../../composables/useIsMobile'
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDashboardUiStore } from '../../store/dashboardUiStore'
 import { useMonthlyStore } from '../../store/monthlyStore'
@@ -9,17 +8,6 @@ import { useSmetaStore } from '../../store/smetaStore'
 import { storeToRefs } from 'pinia'
 import { LastUpdatedBadge, NavMenu } from '../common'
 import { MonthPicker, DayPicker } from '../pickers'
-
-const { isMobile } = useIsMobile()
-const innerRef = ref<HTMLElement | null>(null)
-
-onMounted(async () => {
-  await nextTick()
-})
-
-onUnmounted(() => {
-  // nothing to cleanup for header overlays
-})
 
 const router = useRouter()
 const route = useRoute()
@@ -76,7 +64,7 @@ const selectedMonth = computed({
 
 <template>
   <header class="app-header new-app-header">
-    <div class="app-header__inner" ref="innerRef">
+    <div class="app-header__inner">
       <div class="new-header-row new-header-row--title">
         <NavMenu />
         <div class="app-header__title-block">
@@ -114,7 +102,7 @@ const selectedMonth = computed({
           </div>
 
           <div class="app-header__updated control">
-            <LastUpdatedBadge :loadedAt="monthlySummary?.value?.loaded_at || loadedAt" />
+            <LastUpdatedBadge :loadedAt="monthlySummary?.loaded_at || loadedAt" />
           </div>
           <div class="app-header__export control" v-if="false">
             <!-- ExportPdfButton temporarily disabled while report is being refined -->

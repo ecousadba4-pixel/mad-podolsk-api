@@ -18,10 +18,10 @@ const showHeader = computed(() => route.path !== '/login')
 provideToast()
 
 // shallowRef для DOM элемента - не нужна глубокая реактивность
-const routerShell = shallowRef(null)
+const routerShell = shallowRef<HTMLElement | null>(null)
 
 // Централизованная обработка ошибок Vue-компонентов
-onErrorCaptured((err, instance, info) => {
+onErrorCaptured((err, _instance, _info) => {
   handleError(err, {
     showToast: true,
     logToConsole: true,
@@ -31,7 +31,7 @@ onErrorCaptured((err, instance, info) => {
   return false
 })
 
-function fixHeight(h) {
+function fixHeight(h: number) {
   if (!routerShell.value) return
   routerShell.value.style.height = `${h}px`
   routerShell.value.style.overflow = 'hidden'
@@ -52,7 +52,7 @@ function beforeEnter() {
   fixHeight(h)
 }
 
-function enter(el, done) {
+function enter(el: Element, done: () => void) {
   nextTick(() => {
     if (!routerShell.value) { 
       done()

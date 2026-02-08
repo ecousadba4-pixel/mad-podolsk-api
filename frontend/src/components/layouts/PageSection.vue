@@ -17,26 +17,25 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 
-const props = defineProps({
-  /**
-   * Заголовок секции
-   */
-  title: { type: String, default: '' },
-  /**
-   * Подзаголовок
-   */
-  subtitle: { type: String, default: '' },
-  /**
-   * Вариант отображения
-   * @values 'default', 'panel', 'flat'
-   */
-  variant: { type: String, default: 'panel' }
-})
+const props = defineProps<{
+  /** Заголовок секции */
+  title?: string
+  /** Подзаголовок */
+  subtitle?: string
+  /** Вариант отображения */
+  variant?: 'default' | 'panel' | 'flat'
+}>()
 
-const variantClass = computed(() => `page-section--${props.variant}`)
+defineSlots<{
+  default(): unknown
+  header(): unknown
+  actions(): unknown
+}>()
+
+const variantClass = computed(() => `page-section--${props.variant ?? 'panel'}`)
 </script>
 
 <style scoped>
