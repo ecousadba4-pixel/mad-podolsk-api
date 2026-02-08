@@ -6,6 +6,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { UiButton } from '@/components/ui'
 import { CalendarDropdown } from '@/components/pickers'
 import type { EquipmentType, Vehicle } from '@/api/resources'
+import { formatDateShort } from '@/utils/format'
 
 const props = defineProps<{
   equipmentTypes: EquipmentType[]
@@ -40,17 +41,8 @@ const filteredVehicles = computed(() => {
   return props.vehicles.filter(v => v.equipment_type_id === selectedTypeId.value)
 })
 
-const formattedDateFrom = computed(() => {
-  if (!dateFrom.value) return ''
-  const d = new Date(dateFrom.value)
-  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })
-})
-
-const formattedDateTo = computed(() => {
-  if (!dateTo.value) return ''
-  const d = new Date(dateTo.value)
-  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })
-})
+const formattedDateFrom = computed(() => dateFrom.value ? formatDateShort(dateFrom.value) : '')
+const formattedDateTo = computed(() => dateTo.value ? formatDateShort(dateTo.value) : '')
 
 const canApply = computed(() => {
   return selectedVehicleId.value !== null && dateFrom.value && dateTo.value

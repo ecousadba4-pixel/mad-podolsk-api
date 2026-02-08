@@ -114,7 +114,6 @@ function formatKm(value: number): string {
   color: var(--text-muted);
   text-align: left;
   border-bottom: 2px solid var(--border-soft);
-  white-space: nowrap;
 
   &--right {
     text-align: right;
@@ -148,10 +147,25 @@ function formatKm(value: number): string {
     padding: var(--gap-md);
   }
 
+  .mileage-table__scroll {
+    overflow-x: visible;
+  }
+
+  .mileage-table__table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
   .mileage-table__th,
   .mileage-table__td {
     padding: var(--gap-xs) var(--gap-sm);
     font-size: var(--font-size-caption);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .mileage-table__td--plate {
+    white-space: normal;
   }
 }
 </style>

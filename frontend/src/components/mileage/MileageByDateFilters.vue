@@ -11,6 +11,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { UiButton } from '@/components/ui'
 import { TimePicker, CalendarDropdown } from '@/components/pickers'
+import { formatDateShort } from '@/utils/format'
 
 export type DateMode = 'single' | 'range'
 
@@ -65,15 +66,9 @@ const dateToPickerRef = ref<HTMLElement | null>(null)
 // Computed
 // ─────────────────────────────────────────────────────────────────────────────
 
-function formatDateRu(dateStr: string): string {
-  if (!dateStr) return ''
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
-}
-
-const formattedDate = computed(() => formatDateRu(selectedDate.value))
-const formattedDateFrom = computed(() => formatDateRu(dateFrom.value))
-const formattedDateTo = computed(() => formatDateRu(dateTo.value))
+const formattedDate = computed(() => selectedDate.value ? formatDateShort(selectedDate.value) : '')
+const formattedDateFrom = computed(() => dateFrom.value ? formatDateShort(dateFrom.value) : '')
+const formattedDateTo = computed(() => dateTo.value ? formatDateShort(dateTo.value) : '')
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Initialize

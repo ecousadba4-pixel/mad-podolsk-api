@@ -73,6 +73,19 @@ export function formatDate(
 }
 
 /**
+ * Форматирует дату в коротком формате ДД.ММ.ГГ (например 08.02.26)
+ */
+export function formatDateShort(value: string | Date | null | undefined): string {
+  if (value == null) return '-'
+  const date = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(date.getTime())) return '-'
+  const dd = String(date.getDate()).padStart(2, '0')
+  const mm = String(date.getMonth() + 1).padStart(2, '0')
+  const yy = String(date.getFullYear()).slice(-2)
+  return `${dd}.${mm}.${yy}`
+}
+
+/**
  * Форматирует дату и время
  */
 export function formatDateTime(value: string | Date | null | undefined): string {

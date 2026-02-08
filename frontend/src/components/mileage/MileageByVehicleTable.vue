@@ -7,6 +7,7 @@
 import type { MileageByVehicleResponse } from '@/api/mileage'
 import { computed, ref } from 'vue'
 import { UiCard } from '@/components/ui'
+import { formatDateShort } from '@/utils/format'
 
 const props = defineProps<{
   data: MileageByVehicleResponse | null
@@ -35,8 +36,7 @@ function isExpanded(dateStr: string): boolean {
 }
 
 function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+  return formatDateShort(dateStr)
 }
 
 function formatHourRange(hourFrom: number, hourTo: number): string {
@@ -205,7 +205,6 @@ const totalMileage = computed(() => {
   color: var(--text-muted);
   text-align: left;
   border-bottom: 2px solid var(--border-soft);
-  white-space: nowrap;
 
   &--right {
     text-align: right;
@@ -312,10 +311,21 @@ const totalMileage = computed(() => {
     padding: var(--gap-md);
   }
 
+  .mileage-table__scroll {
+    overflow-x: visible;
+  }
+
+  .mileage-table__table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
   .mileage-table__th,
   .mileage-table__td {
     padding: var(--gap-xs) var(--gap-sm);
     font-size: var(--font-size-caption);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .mileage-table__total {
