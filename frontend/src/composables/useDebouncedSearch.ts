@@ -29,7 +29,8 @@ export function useDebouncedSearch(
 
   watch(query, (val) => {
     if (timeout) clearTimeout(timeout)
-    if (val.length >= minLength || val.length === 0) {
+    const trimmed = val.trim()
+    if (trimmed.length >= minLength || trimmed.length === 0) {
       timeout = setTimeout(fetchFn, delay)
     }
   })

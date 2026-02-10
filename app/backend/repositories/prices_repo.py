@@ -17,9 +17,14 @@ async def get_prices(
     conditions = []
     params = []
     
-    if search and len(search) >= 3:
-        conditions.append("wi.work_name ILIKE %s")
-        params.append(f"%{search}%")
+    if search and len(search.strip()) >= 3:
+        # Split search into individual words for multi-word search
+        words = search.strip().split()
+        for word in words:
+            word = word.strip()
+            if word:
+                conditions.append("wi.work_name ILIKE %s")
+                params.append(f"%{word}%")
     
     if estimate_id is not None:
         conditions.append("fp.estimate_id = %s")

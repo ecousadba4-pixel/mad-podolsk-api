@@ -47,8 +47,9 @@ export const usePricesStore = defineStore('prices', () => {
     isLoading.value = true
     try {
       const params: { search?: string; estimate_id?: number; work_type_id?: number } = {}
-      if (searchQuery.value.length >= 3) {
-        params.search = searchQuery.value
+      const trimmedSearch = searchQuery.value.trim()
+      if (trimmedSearch.length >= 3) {
+        params.search = trimmedSearch
       }
       if (selectedEstimate.value !== null) {
         params.estimate_id = selectedEstimate.value
