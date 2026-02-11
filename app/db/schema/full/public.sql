@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict S37uZQrZjUEnMVnLf98JTz1OGVUIZj1zFmL4xKv7TTznNWLA63x72bx4AFV6HC4
+\restrict r1QbVWcZIFDPXrui3VNL1czSQYXZH2RXVDqFql3G1tYrKhBCi0lqdSQxZKTnDYs
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -706,6 +706,35 @@ CREATE MATERIALIZED VIEW public.mv_excess_rotor AS
 
 
 ALTER MATERIALIZED VIEW public.mv_excess_rotor OWNER TO dima_admin;
+
+--
+-- Name: mv_vehicle_expected_fuel_daily; Type: MATERIALIZED VIEW; Schema: public; Owner: dima_admin
+--
+
+CREATE MATERIALIZED VIEW public.mv_vehicle_expected_fuel_daily AS
+ WITH daily_mileage AS (
+         SELECT fm.vehicles_id,
+            (fm.period_start)::date AS mileage_date,
+            sum(fm.mileage_km) AS daily_mileage_km
+           FROM initial_data.fact_vehicle_mileage fm
+          GROUP BY fm.vehicles_id, ((fm.period_start)::date)
+        )
+ SELECT dm.mileage_date,
+    v.vehicles_id,
+    v.plate_number,
+    vt.vehicles_types_id,
+    vt.name AS vehicle_type_name,
+    vt.fuel_consumption_per_100km AS avg_fuel_consumption_l_per_100km,
+    dm.daily_mileage_km,
+    round(((dm.daily_mileage_km * vt.fuel_consumption_per_100km) / (100)::numeric), 2) AS expected_fuel_volume_liters
+   FROM ((daily_mileage dm
+     JOIN public.dim_vehicles v ON ((v.vehicles_id = dm.vehicles_id)))
+     JOIN public.dim_vehicles_types vt ON ((vt.vehicles_types_id = v.vehicles_types_id)))
+  WHERE (vt.fuel_consumption_per_100km IS NOT NULL)
+  WITH NO DATA;
+
+
+ALTER MATERIALIZED VIEW public.mv_vehicle_expected_fuel_daily OWNER TO dima_admin;
 
 --
 -- Name: mv_work_actual_daily_value; Type: MATERIALIZED VIEW; Schema: public; Owner: app_mad_podolsk
@@ -1755,6 +1784,15 @@ GRANT SELECT ON TABLE public.mv_excess_rotor TO metabase;
 
 
 --
+-- Name: TABLE mv_vehicle_expected_fuel_daily; Type: ACL; Schema: public; Owner: dima_admin
+--
+
+GRANT ALL ON TABLE public.mv_vehicle_expected_fuel_daily TO app_mad_podolsk;
+GRANT SELECT ON TABLE public.mv_vehicle_expected_fuel_daily TO app_turnover_u4s;
+GRANT SELECT ON TABLE public.mv_vehicle_expected_fuel_daily TO metabase;
+
+
+--
 -- Name: SEQUENCE podolsk_mad_2026_1sthalf_contract_amount_id_seq; Type: ACL; Schema: public; Owner: dima_admin
 --
 
@@ -1918,5 +1956,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 -- PostgreSQL database dump complete
 --
 
-\unrestrict S37uZQrZjUEnMVnLf98JTz1OGVUIZj1zFmL4xKv7TTznNWLA63x72bx4AFV6HC4
+\unrestrict r1QbVWcZIFDPXrui3VNL1czSQYXZH2RXVDqFql3G1tYrKhBCi0lqdSQxZKTnDYs
 
