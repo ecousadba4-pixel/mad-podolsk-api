@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict pTqaSWfR3g8pyF6yYKUtKei6GncrxWPgvtg3D5V4uuzMIHvSyBAGcq67DSbTNlc
+\restrict S37uZQrZjUEnMVnLf98JTz1OGVUIZj1zFmL4xKv7TTznNWLA63x72bx4AFV6HC4
 
 -- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
@@ -171,7 +171,8 @@ CREATE TABLE public.dim_vehicles_types (
     name character varying(255) CONSTRAINT dim_equipment_types_name_not_null NOT NULL,
     is_active boolean DEFAULT true CONSTRAINT dim_equipment_types_is_active_not_null NOT NULL,
     created_at timestamp with time zone DEFAULT now() CONSTRAINT dim_equipment_types_created_at_not_null NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() CONSTRAINT dim_equipment_types_updated_at_not_null NOT NULL
+    updated_at timestamp with time zone DEFAULT now() CONSTRAINT dim_equipment_types_updated_at_not_null NOT NULL,
+    fuel_consumption_per_100km numeric
 );
 
 
@@ -1917,5 +1918,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 -- PostgreSQL database dump complete
 --
 
-\unrestrict pTqaSWfR3g8pyF6yYKUtKei6GncrxWPgvtg3D5V4uuzMIHvSyBAGcq67DSbTNlc
+\unrestrict S37uZQrZjUEnMVnLf98JTz1OGVUIZj1zFmL4xKv7TTznNWLA63x72bx4AFV6HC4
 
