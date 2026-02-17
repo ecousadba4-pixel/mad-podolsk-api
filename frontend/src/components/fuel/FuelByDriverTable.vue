@@ -78,7 +78,8 @@ const totalAmount = computed(() => {
     </div>
 
     <div v-else class="fuel-table__content">
-      <div class="fuel-table__scroll">
+      <!-- Desktop: table view -->
+      <div class="fuel-table__scroll fuel-table__desktop">
         <table class="fuel-table__table">
           <thead>
             <tr>
@@ -105,6 +106,34 @@ const totalAmount = computed(() => {
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Mobile: card view -->
+      <div class="fuel-cards fuel-table__mobile">
+        <div
+          v-for="(item, idx) in data.items"
+          :key="idx"
+          class="fuel-card"
+        >
+          <div class="fuel-card__header">
+            <span class="fuel-card__date">{{ formatDate(item.date) }}</span>
+            <span v-if="item.type_of_gas" class="fuel-card__gas-badge">{{ item.type_of_gas }}</span>
+          </div>
+          <div class="fuel-card__metrics">
+            <div class="fuel-card__metric">
+              <span class="fuel-card__label">Пробег</span>
+              <span class="fuel-card__value">{{ formatKm(item.mileage_km) }} км</span>
+            </div>
+            <div class="fuel-card__metric">
+              <span class="fuel-card__label">Топливо</span>
+              <span class="fuel-card__value">{{ formatLiters(item.liters_total) }} л</span>
+            </div>
+            <div class="fuel-card__metric">
+              <span class="fuel-card__label">Стоимость</span>
+              <span class="fuel-card__value">{{ formatMoney(item.amount_for_fuel) }} ₽</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Totals -->
@@ -252,23 +281,88 @@ const totalAmount = computed(() => {
   color: var(--accent);
 }
 
+/* ── Mobile card view ── */
+.fuel-table__mobile {
+  display: none;
+}
+
+.fuel-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+
+.fuel-card {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md, 8px);
+  padding: var(--gap-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xs);
+}
+
+.fuel-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-sm);
+}
+
+.fuel-card__date {
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.fuel-card__gas-badge {
+  font-size: var(--font-size-caption);
+  color: var(--text-muted);
+  background: var(--overlay-accent-soft);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.fuel-card__metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--gap-xs);
+  margin-top: var(--gap-xs);
+}
+
+.fuel-card__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fuel-card__label {
+  font-size: var(--font-size-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.fuel-card__value {
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+
+/* ── Responsive ── */
+
 @media (max-width: 768px) {
   .fuel-table {
     padding: var(--gap-md);
   }
 
-  .fuel-table__scroll {
-    overflow-x: auto;
+  .fuel-table__desktop {
+    display: none;
   }
 
-  .fuel-table__table {
-    min-width: 500px;
-  }
-
-  .fuel-table__th,
-  .fuel-table__td {
-    padding: var(--gap-xs) var(--gap-sm);
-    font-size: var(--font-size-caption);
+  .fuel-table__mobile {
+    display: flex;
   }
 
   .fuel-table__totals {

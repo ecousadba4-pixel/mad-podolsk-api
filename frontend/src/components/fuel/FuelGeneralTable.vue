@@ -48,7 +48,8 @@ function formatMoney(value: number): string {
     </div>
 
     <div v-else class="fuel-table__content">
-      <div class="fuel-table__scroll">
+      <!-- Desktop: table view -->
+      <div class="fuel-table__scroll fuel-table__desktop">
         <table class="fuel-table__table">
           <thead>
             <tr>
@@ -91,6 +92,55 @@ function formatMoney(value: number): string {
             </tr>
           </tfoot>
         </table>
+      </div>
+
+      <!-- Mobile: card view -->
+      <div class="fuel-cards fuel-table__mobile">
+        <div
+          v-for="(item, idx) in data.items"
+          :key="idx"
+          class="fuel-card"
+        >
+          <div class="fuel-card__header">
+            <span class="fuel-card__name">{{ item.employee_name }}</span>
+          </div>
+          <div class="fuel-card__vehicle">
+            <span class="fuel-card__type">{{ item.vehicle_type_name }}</span>
+            <span v-if="item.plate_number" class="fuel-card__plate">{{ item.plate_number }}</span>
+          </div>
+          <div class="fuel-card__metrics">
+            <div class="fuel-card__metric">
+              <span class="fuel-card__label">Пробег</span>
+              <span class="fuel-card__value">{{ formatKm(item.mileage_km) }} км</span>
+            </div>
+            <div class="fuel-card__metric">
+              <span class="fuel-card__label">Топливо</span>
+              <span class="fuel-card__value">{{ formatLiters(item.liters_total) }} л</span>
+            </div>
+            <div class="fuel-card__metric">
+              <span class="fuel-card__label">Стоимость</span>
+              <span class="fuel-card__value">{{ formatMoney(item.amount_for_fuel) }} ₽</span>
+            </div>
+          </div>
+          <div v-if="item.type_of_gas" class="fuel-card__gas-type">
+            {{ item.type_of_gas }}
+          </div>
+        </div>
+
+        <!-- Mobile totals -->
+        <div class="fuel-cards__totals">
+          <span class="fuel-cards__totals-title">Итого:</span>
+          <div class="fuel-cards__totals-row">
+            <div class="fuel-card__metric">
+              <span class="fuel-card__label">Топливо</span>
+              <span class="fuel-card__value fuel-card__value--accent">{{ formatLiters(data.total_liters) }} л</span>
+            </div>
+            <div class="fuel-card__metric">
+              <span class="fuel-card__label">Стоимость</span>
+              <span class="fuel-card__value fuel-card__value--accent">{{ formatMoney(data.total_amount) }} ₽</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </UiCard>
@@ -193,27 +243,130 @@ function formatMoney(value: number): string {
   font-variant-numeric: tabular-nums;
 }
 
+/* ── Mobile card view ── */
+.fuel-table__mobile {
+  display: none;
+}
+
+.fuel-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+
+.fuel-card {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md, 8px);
+  padding: var(--gap-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xs);
+}
+
+.fuel-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fuel-card__name {
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.3;
+}
+
+.fuel-card__vehicle {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  flex-wrap: wrap;
+}
+
+.fuel-card__type {
+  font-size: var(--font-size-caption);
+  color: var(--text-muted);
+}
+
+.fuel-card__plate {
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.fuel-card__metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--gap-xs);
+  margin-top: var(--gap-xs);
+}
+
+.fuel-card__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fuel-card__label {
+  font-size: var(--font-size-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.fuel-card__value {
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+
+  &--accent {
+    font-size: var(--font-size-body);
+    font-weight: 700;
+  }
+}
+
+.fuel-card__gas-type {
+  font-size: var(--font-size-caption);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.fuel-cards__totals {
+  background: var(--overlay-accent-soft);
+  border-radius: var(--radius-md, 8px);
+  padding: var(--gap-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+
+.fuel-cards__totals-title {
+  font-size: var(--font-size-body);
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.fuel-cards__totals-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-sm);
+}
+
+/* ── Responsive ── */
+
 @media (max-width: 768px) {
   .fuel-table {
     padding: var(--gap-md);
   }
 
-  .fuel-table__scroll {
-    overflow-x: auto;
+  .fuel-table__desktop {
+    display: none;
   }
 
-  .fuel-table__table {
-    min-width: 700px;
-  }
-
-  .fuel-table__th,
-  .fuel-table__td {
-    padding: var(--gap-xs) var(--gap-sm);
-    font-size: var(--font-size-caption);
-  }
-
-  .fuel-table__td--total {
-    font-size: var(--font-size-body-sm) !important;
+  .fuel-table__mobile {
+    display: flex;
   }
 }
 </style>
