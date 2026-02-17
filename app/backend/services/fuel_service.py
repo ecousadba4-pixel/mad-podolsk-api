@@ -32,7 +32,7 @@ async def get_fuel_general(
         {
             "employee_name": row["employee_name"] or "Без имени",
             "vehicle_type_name": row["vehicle_type_name"] or "Без типа",
-            "plate_number": row["plate_number"],
+            "plate_number": row["plate_number"] or "",
             "mileage_km": row["mileage_km"],
             "liters_total": row["liters_total"],
             "type_of_gas": row["type_of_gas"],

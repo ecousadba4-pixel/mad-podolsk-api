@@ -31,9 +31,9 @@ async def get_fuel_general_by_date(
         FROM public.dim_daily_gas_limit gl
         JOIN initial_data.fact_daily_card_fuel f
             ON gl.card_number::text = f.card_number
-        JOIN public.dim_vehicles v
+        LEFT JOIN public.dim_vehicles v
             ON gl.vehicle_id = v.vehicles_id
-        JOIN public.dim_vehicles_types vt
+        LEFT JOIN public.dim_vehicles_types vt
             ON v.vehicles_types_id = vt.vehicles_types_id
         LEFT JOIN (
             SELECT
@@ -72,9 +72,9 @@ async def get_fuel_general_by_range(
         FROM public.dim_daily_gas_limit gl
         JOIN initial_data.fact_daily_card_fuel f
             ON gl.card_number::text = f.card_number
-        JOIN public.dim_vehicles v
+        LEFT JOIN public.dim_vehicles v
             ON gl.vehicle_id = v.vehicles_id
-        JOIN public.dim_vehicles_types vt
+        LEFT JOIN public.dim_vehicles_types vt
             ON v.vehicles_types_id = vt.vehicles_types_id
         LEFT JOIN (
             SELECT
