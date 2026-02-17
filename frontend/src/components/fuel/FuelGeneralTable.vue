@@ -78,16 +78,19 @@ function formatMoney(value: number): string {
               </td>
             </tr>
           </tbody>
+          <tfoot>
+            <tr class="fuel-table__total-row">
+              <td class="fuel-table__td fuel-table__td--total" colspan="4">Итого:</td>
+              <td class="fuel-table__td fuel-table__td--total fuel-table__td--right">
+                {{ formatLiters(data.total_liters) }} л
+              </td>
+              <td class="fuel-table__td fuel-table__td--total"></td>
+              <td class="fuel-table__td fuel-table__td--total fuel-table__td--right">
+                {{ formatMoney(data.total_amount) }} ₽
+              </td>
+            </tr>
+          </tfoot>
         </table>
-      </div>
-
-      <!-- Total -->
-      <div class="fuel-table__total">
-        <span>Итого:</span>
-        <div class="fuel-table__total-values">
-          <strong>{{ formatLiters(data.total_liters) }} л</strong>
-          <strong>{{ formatMoney(data.total_amount) }} ₽</strong>
-        </div>
       </div>
     </div>
   </UiCard>
@@ -176,29 +179,18 @@ function formatMoney(value: number): string {
   }
 }
 
-.fuel-table__total {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--gap-md);
-  margin-top: var(--gap-md);
+.fuel-table__total-row {
   background: var(--overlay-accent-soft);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-body);
-
-  span {
-    color: var(--text-main);
-  }
-
-  strong {
-    font-size: var(--font-size-h3);
-    color: var(--accent);
-  }
 }
 
-.fuel-table__total-values {
-  display: flex;
-  gap: var(--gap-lg);
+.fuel-table__td--total {
+  font-size: var(--font-size-body) !important;
+  font-weight: 700 !important;
+  color: var(--accent) !important;
+  border-bottom: none !important;
+  padding-top: var(--gap-md) !important;
+  padding-bottom: var(--gap-md) !important;
+  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 768px) {
@@ -220,12 +212,8 @@ function formatMoney(value: number): string {
     font-size: var(--font-size-caption);
   }
 
-  .fuel-table__total {
-    padding: var(--gap-sm) var(--gap-md);
-
-    strong {
-      font-size: var(--font-size-body);
-    }
+  .fuel-table__td--total {
+    font-size: var(--font-size-body-sm) !important;
   }
 }
 </style>
