@@ -248,7 +248,6 @@ function formatMoney(value: number): string {
 }
 
 .fuel-cards {
-  display: flex;
   flex-direction: column;
   gap: var(--gap-sm);
 }

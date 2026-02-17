@@ -287,7 +287,6 @@ const totalAmount = computed(() => {
 }
 
 .fuel-cards {
-  display: flex;
   flex-direction: column;
   gap: var(--gap-sm);
 }
