@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict r1QbVWcZIFDPXrui3VNL1czSQYXZH2RXVDqFql3G1tYrKhBCi0lqdSQxZKTnDYs
+\restrict l4iJiHxU4kpUEE9r0RWSuoUcD9prYQcwLL0NQdrHRCMsvbXj9CP3DKIE6C5IhZQ
 
--- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
--- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
+-- Dumped from database version 18.2 (Ubuntu 18.2-1.pgdg24.04+1)
+-- Dumped by pg_dump version 18.2 (Ubuntu 18.2-1.pgdg24.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -103,7 +103,8 @@ CREATE TABLE public.dim_daily_gas_limit (
     type_of_gas character varying,
     daily_limit integer,
     monthly_limit integer,
-    card_number bigint
+    card_number bigint,
+    pin_card bigint
 );
 
 
@@ -1956,5 +1957,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 -- PostgreSQL database dump complete
 --
 
-\unrestrict r1QbVWcZIFDPXrui3VNL1czSQYXZH2RXVDqFql3G1tYrKhBCi0lqdSQxZKTnDYs
+\unrestrict l4iJiHxU4kpUEE9r0RWSuoUcD9prYQcwLL0NQdrHRCMsvbXj9CP3DKIE6C5IhZQ
 

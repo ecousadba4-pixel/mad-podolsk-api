@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict pTRFBFOOJUNDECkdfPsOhOWpm9U8wBxmhhNDg2s6bfkpbFkYLVPmm3pujgiGEcV
+\restrict xu2d93J2tr4XCDw5emQkLRfs9Y811M70V6QfC69Qlny37zlcjL15tItR3hnMn3d
 
--- Dumped from database version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
--- Dumped by pg_dump version 18.1 (Ubuntu 18.1-1.pgdg24.04+2)
+-- Dumped from database version 18.2 (Ubuntu 18.2-1.pgdg24.04+1)
+-- Dumped by pg_dump version 18.2 (Ubuntu 18.2-1.pgdg24.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -768,5 +768,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE dima_admin IN SCHEMA initial_data GRANT SELECT
 -- PostgreSQL database dump complete
 --
 
-\unrestrict pTRFBFOOJUNDECkdfPsOhOWpm9U8wBxmhhNDg2s6bfkpbFkYLVPmm3pujgiGEcV
+\unrestrict xu2d93J2tr4XCDw5emQkLRfs9Y811M70V6QfC69Qlny37zlcjL15tItR3hnMn3d
 
