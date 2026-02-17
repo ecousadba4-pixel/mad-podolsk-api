@@ -1,6 +1,7 @@
 """Schemas for fuel consumption (потребление топлива) section."""
 
 from typing import List, Optional
+import datetime
 from datetime import date
 from decimal import Decimal
 
@@ -33,9 +34,9 @@ class FuelGeneralItem(_BaseSchema):
 
 class FuelGeneralResponse(_BaseSchema):
     """Response for fuel general data query."""
-    date: Optional[date] = None
-    date_from: Optional[date] = None
-    date_to: Optional[date] = None
+    date: Optional[datetime.date] = None
+    date_from: Optional[datetime.date] = None
+    date_to: Optional[datetime.date] = None
     items: List[FuelGeneralItem]
     total_amount: Decimal
 
