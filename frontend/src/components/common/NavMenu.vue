@@ -30,6 +30,7 @@ const navItems: NavItem[] = [
   { id: 'roads', label: 'Участки дороги', path: '/road-sections', icon: 'road' },
   { id: 'resources', label: 'Учет техники и людей', path: '/resources', icon: 'truck' },
   { id: 'mileage', label: 'Пробег машин', path: '/mileage', icon: 'mileage' },
+  { id: 'fuel', label: 'Потребление топлива', path: '/fuel', icon: 'fuel' },
   { id: 'users', label: 'Пользователи', path: '/users', icon: 'users', adminOnly: true },
 ]
 
@@ -49,6 +50,7 @@ const currentSection = computed(() => {
   if (path === '/road-sections') return 'roads'
   if (path === '/resources') return 'resources'
   if (path === '/mileage') return 'mileage'
+  if (path === '/fuel') return 'fuel'
   if (path === '/users') return 'users'
   if (path === '/login') return ''
   return 'revenue'
@@ -185,6 +187,13 @@ onUnmounted(() => {
                 <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10" stroke-linecap="round"/>
                 <path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M19 16l3 3M22 16l-3 3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <!-- Fuel icon (gas pump) -->
+              <svg v-else-if="item.icon === 'fuel'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 22V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M13 10h4a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 22v-4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3 22h10" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               <!-- Users icon -->
               <svg v-else-if="item.icon === 'users'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

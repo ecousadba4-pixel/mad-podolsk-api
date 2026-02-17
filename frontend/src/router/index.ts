@@ -9,6 +9,7 @@ const RoadSectionsView = () => import(/* webpackChunkName: "road-sections" */ '.
 const UsersView = () => import(/* webpackChunkName: "users" */ '../views/UsersView.vue')
 const ResourcesView = () => import(/* webpackChunkName: "resources" */ '../views/ResourcesView.vue')
 const MileageView = () => import(/* webpackChunkName: "mileage" */ '../views/MileageView.vue')
+const FuelView = () => import(/* webpackChunkName: "fuel" */ '../views/FuelView.vue')
 const LoginView = () => import(/* webpackChunkName: "login" */ '../views/LoginView.vue')
 
 // Extend RouteMeta for our custom properties
@@ -69,6 +70,12 @@ const routes: RouteRecordRaw[] = [
     name: 'mileage',
     component: MileageView,
     meta: { title: 'Пробег машин', requiresAuth: true }
+  },
+  {
+    path: '/fuel',
+    name: 'fuel',
+    component: FuelView,
+    meta: { title: 'Потребление топлива', requiresAuth: true }
   },
   {
     path: '/login',
