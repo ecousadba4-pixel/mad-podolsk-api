@@ -19,15 +19,15 @@ function formatDate(dateStr: string): string {
 }
 
 function formatKm(value: number): string {
-  return Number(value).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return Math.round(Number(value)).toLocaleString('ru-RU', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 }
 
 function formatLiters(value: number): string {
-  return Number(value).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return Math.round(Number(value)).toLocaleString('ru-RU', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 }
 
 function formatMoney(value: number): string {
-  return Number(value).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return Math.round(Number(value)).toLocaleString('ru-RU', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 }
 
 const totalMileage = computed(() => {
