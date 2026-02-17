@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict xu2d93J2tr4XCDw5emQkLRfs9Y811M70V6QfC69Qlny37zlcjL15tItR3hnMn3d
+\restrict vtbLVAhZSsvQiS5vaqKNnI7O0OsY9DfKUgnffdvDVKqUJTO2oW6LfLqlgGQZFth
 
 -- Dumped from database version 18.2 (Ubuntu 18.2-1.pgdg24.04+1)
 -- Dumped by pg_dump version 18.2 (Ubuntu 18.2-1.pgdg24.04+1)
@@ -43,7 +43,8 @@ CREATE TABLE initial_data.fact_daily_card_fuel (
     tx_count integer DEFAULT 0 NOT NULL,
     first_tx_datetime timestamp with time zone,
     last_tx_datetime timestamp with time zone,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    amount_for_fuel numeric
 );
 
 
@@ -768,5 +769,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE dima_admin IN SCHEMA initial_data GRANT SELECT
 -- PostgreSQL database dump complete
 --
 
-\unrestrict xu2d93J2tr4XCDw5emQkLRfs9Y811M70V6QfC69Qlny37zlcjL15tItR3hnMn3d
+\unrestrict vtbLVAhZSsvQiS5vaqKNnI7O0OsY9DfKUgnffdvDVKqUJTO2oW6LfLqlgGQZFth
 
