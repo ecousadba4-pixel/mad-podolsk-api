@@ -391,10 +391,9 @@ function handleApply() {
   .fuel-filters {
     padding: var(--gap-md);
     grid-template-areas:
-      "toggle"
-      "fields"
-      "action";
-    grid-template-columns: 1fr;
+      "toggle action"
+      "fields fields";
+    grid-template-columns: 1fr auto;
   }
 
   .fuel-filters__fields {
@@ -414,10 +413,6 @@ function handleApply() {
 
   .fuel-filters__date-range-group .fuel-filters__date-btn {
     min-width: 0;
-  }
-
-  .fuel-filters__field--action {
-    margin-top: var(--gap-sm);
   }
 }
 </style>

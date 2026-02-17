@@ -284,13 +284,19 @@ function handleApply() {
   }
 
   .fuel-filters__fields {
-    flex-direction: column;
-    align-items: stretch;
+    display: grid;
+    grid-template-areas:
+      "driver apply"
+      "dates  dates";
+    grid-template-columns: 1fr auto;
+    gap: var(--gap-md);
+    align-items: end;
   }
 
   .fuel-filters__select-group {
+    grid-area: driver;
     display: flex;
-    gap: var(--gap-md);
+    min-width: 0;
   }
 
   .fuel-filters__select-group .fuel-filters__field {
@@ -299,6 +305,7 @@ function handleApply() {
   }
 
   .fuel-filters__date-group {
+    grid-area: dates;
     display: flex;
     gap: var(--gap-md);
   }
@@ -306,6 +313,12 @@ function handleApply() {
   .fuel-filters__date-group .fuel-filters__field {
     flex: 1;
     min-width: 0;
+  }
+
+  .fuel-filters__action-group {
+    grid-area: apply;
+    display: flex;
+    align-items: flex-end;
   }
 
   .fuel-filters__select {
@@ -318,14 +331,8 @@ function handleApply() {
     width: 100%;
   }
 
-  .fuel-filters__action-group {
-    display: flex;
-    align-items: center;
-    gap: var(--gap-md);
-  }
-
   .fuel-filters__field--action {
-    margin-left: auto;
+    margin-left: 0;
     margin-top: 0;
   }
 }
