@@ -84,7 +84,10 @@ function formatMoney(value: number): string {
       <!-- Total -->
       <div class="fuel-table__total">
         <span>Итого:</span>
-        <strong>{{ formatMoney(data.total_amount) }} ₽</strong>
+        <div class="fuel-table__total-values">
+          <strong>{{ formatLiters(data.total_liters) }} л</strong>
+          <strong>{{ formatMoney(data.total_amount) }} ₽</strong>
+        </div>
       </div>
     </div>
   </UiCard>
@@ -191,6 +194,11 @@ function formatMoney(value: number): string {
     font-size: var(--font-size-h3);
     color: var(--accent);
   }
+}
+
+.fuel-table__total-values {
+  display: flex;
+  gap: var(--gap-lg);
 }
 
 @media (max-width: 768px) {

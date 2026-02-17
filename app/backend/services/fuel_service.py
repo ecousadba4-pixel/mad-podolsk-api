@@ -41,10 +41,12 @@ async def get_fuel_general(
         for row in rows
     ]
 
+    total_liters = sum(Decimal(str(item["liters_total"])) for item in items)
     total_amount = sum(Decimal(str(item["amount_for_fuel"])) for item in items)
 
     result: Dict[str, Any] = {
         "items": items,
+        "total_liters": total_liters,
         "total_amount": total_amount,
     }
 

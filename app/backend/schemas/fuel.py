@@ -38,6 +38,7 @@ class FuelGeneralResponse(_BaseSchema):
     date_from: Optional[datetime.date] = None
     date_to: Optional[datetime.date] = None
     items: List[FuelGeneralItem]
+    total_liters: Decimal
     total_amount: Decimal
 
 

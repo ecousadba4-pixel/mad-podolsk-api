@@ -21,6 +21,7 @@ export interface FuelGeneralResponse {
   date_from?: string | null
   date_to?: string | null
   items: FuelGeneralItem[]
+  total_liters: number
   total_amount: number
 }
 
