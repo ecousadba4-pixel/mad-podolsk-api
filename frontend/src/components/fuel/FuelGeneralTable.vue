@@ -103,6 +103,7 @@ function formatMoney(value: number): string {
         >
           <div class="fuel-card__header">
             <span class="fuel-card__name">{{ item.employee_name }}</span>
+            <span v-if="item.type_of_gas" class="fuel-card__gas-badge">{{ item.type_of_gas }}</span>
           </div>
           <div class="fuel-card__vehicle">
             <span class="fuel-card__type">{{ item.vehicle_type_name }}</span>
@@ -122,9 +123,7 @@ function formatMoney(value: number): string {
               <span class="fuel-card__value">{{ formatMoney(item.amount_for_fuel) }} ₽</span>
             </div>
           </div>
-          <div v-if="item.type_of_gas" class="fuel-card__gas-type">
-            {{ item.type_of_gas }}
-          </div>
+
         </div>
 
         <!-- Mobile totals -->
@@ -327,10 +326,13 @@ function formatMoney(value: number): string {
   }
 }
 
-.fuel-card__gas-type {
+.fuel-card__gas-badge {
   font-size: var(--font-size-caption);
   color: var(--text-muted);
-  margin-top: 2px;
+  background: var(--overlay-accent-soft);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm, 4px);
+  white-space: nowrap;
 }
 
 .fuel-cards__totals {
