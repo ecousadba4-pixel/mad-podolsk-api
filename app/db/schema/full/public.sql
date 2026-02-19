@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict iqEpteI51K4nvMPh5I9b53w1LRcV9xwH5XpfNr4jJ1qA0uW7zqHdYTNZw21quON
+\restrict 2EiT6glShnNzeO0zrvCT9rpHzwYAKugLorSiHcVugTVUbcNCsS34C5mLeBBeIso
 
 -- Dumped from database version 18.2 (Ubuntu 18.2-1.pgdg24.04+1)
 -- Dumped by pg_dump version 18.2 (Ubuntu 18.2-1.pgdg24.04+1)
@@ -104,11 +104,33 @@ CREATE TABLE public.dim_daily_gas_limit (
     daily_limit integer,
     monthly_limit integer,
     card_number bigint,
-    pin_card bigint
+    pin_card bigint,
+    id bigint NOT NULL
 );
 
 
 ALTER TABLE public.dim_daily_gas_limit OWNER TO dima_admin;
+
+--
+-- Name: dim_daily_gas_limit_id_seq; Type: SEQUENCE; Schema: public; Owner: dima_admin
+--
+
+CREATE SEQUENCE public.dim_daily_gas_limit_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.dim_daily_gas_limit_id_seq OWNER TO dima_admin;
+
+--
+-- Name: dim_daily_gas_limit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dima_admin
+--
+
+ALTER SEQUENCE public.dim_daily_gas_limit_id_seq OWNED BY public.dim_daily_gas_limit.id;
+
 
 --
 -- Name: dim_date; Type: TABLE; Schema: public; Owner: dima_admin
@@ -1237,6 +1259,13 @@ ALTER TABLE ONLY public.contract_amount_2026_h1 ALTER COLUMN id SET DEFAULT next
 
 
 --
+-- Name: dim_daily_gas_limit id; Type: DEFAULT; Schema: public; Owner: dima_admin
+--
+
+ALTER TABLE ONLY public.dim_daily_gas_limit ALTER COLUMN id SET DEFAULT nextval('public.dim_daily_gas_limit_id_seq'::regclass);
+
+
+--
 -- Name: dim_employee employee_id; Type: DEFAULT; Schema: public; Owner: dima_admin
 --
 
@@ -1284,6 +1313,14 @@ ALTER TABLE ONLY public.users ALTER COLUMN user_id SET DEFAULT nextval('public.u
 
 ALTER TABLE ONLY public.dim_date
     ADD CONSTRAINT dates_table_pkey PRIMARY KEY (date_day);
+
+
+--
+-- Name: dim_daily_gas_limit dim_daily_gas_limit_pkey; Type: CONSTRAINT; Schema: public; Owner: dima_admin
+--
+
+ALTER TABLE ONLY public.dim_daily_gas_limit
+    ADD CONSTRAINT dim_daily_gas_limit_pkey PRIMARY KEY (id);
 
 
 --
@@ -1380,6 +1417,14 @@ ALTER TABLE ONLY public.dim_work_type
 
 ALTER TABLE ONLY public.dim_unit
     ADD CONSTRAINT unit_list_pkey PRIMARY KEY (unit_id);
+
+
+--
+-- Name: dim_daily_gas_limit uq_dim_daily_gas_limit_card; Type: CONSTRAINT; Schema: public; Owner: dima_admin
+--
+
+ALTER TABLE ONLY public.dim_daily_gas_limit
+    ADD CONSTRAINT uq_dim_daily_gas_limit_card UNIQUE (card_number);
 
 
 --
@@ -1566,6 +1611,15 @@ GRANT SELECT ON TABLE public.contract_amount_2026_h1 TO metabase;
 GRANT ALL ON TABLE public.dim_daily_gas_limit TO app_mad_podolsk;
 GRANT SELECT ON TABLE public.dim_daily_gas_limit TO app_turnover_u4s;
 GRANT SELECT ON TABLE public.dim_daily_gas_limit TO metabase;
+
+
+--
+-- Name: SEQUENCE dim_daily_gas_limit_id_seq; Type: ACL; Schema: public; Owner: dima_admin
+--
+
+GRANT ALL ON SEQUENCE public.dim_daily_gas_limit_id_seq TO app_mad_podolsk;
+GRANT SELECT ON SEQUENCE public.dim_daily_gas_limit_id_seq TO app_turnover_u4s;
+GRANT SELECT,USAGE ON SEQUENCE public.dim_daily_gas_limit_id_seq TO metabase;
 
 
 --
@@ -1957,5 +2011,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 -- PostgreSQL database dump complete
 --
 
-\unrestrict iqEpteI51K4nvMPh5I9b53w1LRcV9xwH5XpfNr4jJ1qA0uW7zqHdYTNZw21quON
+\unrestrict 2EiT6glShnNzeO0zrvCT9rpHzwYAKugLorSiHcVugTVUbcNCsS34C5mLeBBeIso
 
