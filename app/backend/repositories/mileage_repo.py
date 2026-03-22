@@ -7,16 +7,32 @@ from app.backend import db
 
 
 async def get_mileage_by_date(
-    target_date: date,
+    target_date: Optional[date] = None,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
     time_from: Optional[time] = None,
     time_to: Optional[time] = None,
 ) -> List[dict]:
-    """Get aggregated mileage per vehicle for a given date and optional time range.
+    """Get aggregated mileage per vehicle for one day or an inclusive date range.
+
+    Pass either ``target_date`` (single day) or ``date_from`` and ``date_to`` (range).
+    Optional time filters apply to ``period_start`` / ``period_end`` time components.
 
     Returns list of dicts with vehicle_type_name, plate_number, mileage_km.
     """
-    conditions = ["fm.period_start::date = %s"]
-    params: List[Any] = [target_date]
+    conditions: List[str] = []
+    params: List[Any] = []
+
+    if target_date is not None:
+        conditions.append("fm.period_start::date = %s")
+        params.append(target_date)
+    elif date_from is not None and date_to is not None:
+        conditions.append("fm.period_start::date >= %s")
+        params.append(date_from)
+        conditions.append("fm.period_start::date <= %s")
+        params.append(date_to)
+    else:
+        raise ValueError("Either target_date or both date_from and date_to must be provided")
 
     if time_from is not None:
         conditions.append("fm.period_start::time >= %s")

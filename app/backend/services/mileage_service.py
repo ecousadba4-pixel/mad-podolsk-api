@@ -10,16 +10,34 @@ from app.backend.repositories import mileage_repo
 
 
 async def get_mileage_by_date(
-    target_date: date,
+    target_date: Optional[date] = None,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
     time_from: Optional[time] = None,
     time_to: Optional[time] = None,
 ) -> Dict[str, Any]:
-    """Get aggregated mileage per vehicle for a given date/time range."""
-    rows = await mileage_repo.get_mileage_by_date(
-        target_date=target_date,
-        time_from=time_from,
-        time_to=time_to,
-    )
+    """Get aggregated mileage per vehicle for one day or an inclusive date range."""
+    if target_date is not None:
+        rows = await mileage_repo.get_mileage_by_date(
+            target_date=target_date,
+            time_from=time_from,
+            time_to=time_to,
+        )
+        response_date = target_date
+        out_date_from: Optional[date] = None
+        out_date_to: Optional[date] = None
+    else:
+        if date_from is None or date_to is None:
+            raise ValueError("date_from and date_to are required when target_date is omitted")
+        rows = await mileage_repo.get_mileage_by_date(
+            date_from=date_from,
+            date_to=date_to,
+            time_from=time_from,
+            time_to=time_to,
+        )
+        response_date = date_from
+        out_date_from = date_from
+        out_date_to = date_to
 
     items = [
         {
@@ -31,7 +49,9 @@ async def get_mileage_by_date(
     ]
 
     return {
-        "date": target_date,
+        "date": response_date,
+        "date_from": out_date_from,
+        "date_to": out_date_to,
         "time_from": time_from,
         "time_to": time_to,
         "items": items,

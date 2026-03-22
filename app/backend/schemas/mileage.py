@@ -28,8 +28,15 @@ class MileageByDateItem(_BaseSchema):
 
 
 class MileageByDateResponse(_BaseSchema):
-    """Response for mileage-by-date query."""
+    """Response for mileage-by-date query.
+
+    Single-day mode: only ``date`` is set. Range mode: ``date`` matches ``date_from``,
+    and ``date_from`` / ``date_to`` describe the inclusive period.
+    """
+
     date: date
+    date_from: Optional[date] = None
+    date_to: Optional[date] = None
     time_from: Optional[time] = None
     time_to: Optional[time] = None
     items: List[MileageByDateItem]
