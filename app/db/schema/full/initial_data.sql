@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict fchsEAB5lFVbYqAbkpUB7i5gCL9yvO4QCBg3MpdXzNlUpeUfUfwC5IgWftsfmUQ
+\restrict PDMZogY0u8TcVIqCRVBJ4aXiths7dPx2dhIsi2bbJ2XsOKcOt1ftJqmoB3ugUQk
 
--- Dumped from database version 18.2 (Ubuntu 18.2-1.pgdg24.04+1)
--- Dumped by pg_dump version 18.2 (Ubuntu 18.2-1.pgdg24.04+1)
+-- Dumped from database version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
+-- Dumped by pg_dump version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -314,6 +314,26 @@ CREATE TABLE initial_data.fact_work_plan_monthly (
 ALTER TABLE initial_data.fact_work_plan_monthly OWNER TO app_mad_podolsk;
 
 --
+-- Name: fact_work_skpdi_manual_from_phone; Type: TABLE; Schema: initial_data; Owner: dima_admin
+--
+
+CREATE TABLE initial_data.fact_work_skpdi_manual_from_phone (
+    work_fact_report_id numeric(20,0),
+    date_from timestamp without time zone,
+    date_to timestamp without time zone,
+    date date,
+    work_item_id bigint,
+    work_fact_status character varying,
+    quantity_done_fact numeric,
+    road_section_id bigint,
+    employee_id integer,
+    row_hash text
+);
+
+
+ALTER TABLE initial_data.fact_work_skpdi_manual_from_phone OWNER TO dima_admin;
+
+--
 -- Name: fact_work_skpdi_report; Type: TABLE; Schema: initial_data; Owner: dima_admin
 --
 
@@ -557,6 +577,13 @@ CREATE INDEX idx_plan_agg_month_desc_unit ON initial_data.fact_work_plan_monthly
 
 
 --
+-- Name: ux_fact_work_skpdi_manual_from_phone_row_hash; Type: INDEX; Schema: initial_data; Owner: dima_admin
+--
+
+CREATE UNIQUE INDEX ux_fact_work_skpdi_manual_from_phone_row_hash ON initial_data.fact_work_skpdi_manual_from_phone USING btree (row_hash);
+
+
+--
 -- Name: fact_vehicle_mileage_state fact_vehicle_mileage_state_vehicles_id_fkey; Type: FK CONSTRAINT; Schema: initial_data; Owner: dima_admin
 --
 
@@ -720,6 +747,13 @@ GRANT INSERT,DELETE,UPDATE ON TABLE initial_data.fact_work_plan_monthly TO dima_
 
 
 --
+-- Name: TABLE fact_work_skpdi_manual_from_phone; Type: ACL; Schema: initial_data; Owner: dima_admin
+--
+
+GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_work_skpdi_manual_from_phone TO app_mad_podolsk;
+
+
+--
 -- Name: TABLE fact_work_skpdi_report; Type: ACL; Schema: initial_data; Owner: dima_admin
 --
 
@@ -769,5 +803,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE dima_admin IN SCHEMA initial_data GRANT SELECT
 -- PostgreSQL database dump complete
 --
 
-\unrestrict fchsEAB5lFVbYqAbkpUB7i5gCL9yvO4QCBg3MpdXzNlUpeUfUfwC5IgWftsfmUQ
+\unrestrict PDMZogY0u8TcVIqCRVBJ4aXiths7dPx2dhIsi2bbJ2XsOKcOt1ftJqmoB3ugUQk
 

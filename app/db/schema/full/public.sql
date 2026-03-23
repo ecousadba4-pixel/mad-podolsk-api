@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict 2EiT6glShnNzeO0zrvCT9rpHzwYAKugLorSiHcVugTVUbcNCsS34C5mLeBBeIso
+\restrict q24gwjFP2pqnCM0axo3C9iia3ceQiQfrSrGasKgJpwmLRxZwecZDSUMC3Jr5qST
 
--- Dumped from database version 18.2 (Ubuntu 18.2-1.pgdg24.04+1)
--- Dumped by pg_dump version 18.2 (Ubuntu 18.2-1.pgdg24.04+1)
+-- Dumped from database version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
+-- Dumped by pg_dump version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -183,6 +183,25 @@ ALTER SEQUENCE public.dim_employee_employee_id_seq OWNER TO dima_admin;
 --
 
 ALTER SEQUENCE public.dim_employee_employee_id_seq OWNED BY public.dim_employee.employee_id;
+
+
+--
+-- Name: dim_employee_vehicle; Type: TABLE; Schema: public; Owner: dima_admin
+--
+
+CREATE TABLE public.dim_employee_vehicle (
+    employee_id integer NOT NULL,
+    vehicles_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.dim_employee_vehicle OWNER TO dima_admin;
+
+--
+-- Name: TABLE dim_employee_vehicle; Type: COMMENT; Schema: public; Owner: dima_admin
+--
+
+COMMENT ON TABLE public.dim_employee_vehicle IS 'Назначение автомобилей сотрудникам (M:N). Карты и лимиты — только в dim_daily_gas_limit.';
 
 
 --
@@ -1332,6 +1351,14 @@ ALTER TABLE ONLY public.dim_employee
 
 
 --
+-- Name: dim_employee_vehicle dim_employee_vehicle_pkey; Type: CONSTRAINT; Schema: public; Owner: dima_admin
+--
+
+ALTER TABLE ONLY public.dim_employee_vehicle
+    ADD CONSTRAINT dim_employee_vehicle_pkey PRIMARY KEY (employee_id, vehicles_id);
+
+
+--
 -- Name: dim_vehicles_types dim_equipment_types_pkey; Type: CONSTRAINT; Schema: public; Owner: dima_admin
 --
 
@@ -1444,6 +1471,13 @@ ALTER TABLE ONLY public.dim_work_item
 
 
 --
+-- Name: idx_dim_employee_vehicle_vehicle; Type: INDEX; Schema: public; Owner: dima_admin
+--
+
+CREATE INDEX idx_dim_employee_vehicle_vehicle ON public.dim_employee_vehicle USING btree (vehicles_id);
+
+
+--
 -- Name: idx_mv_work_plan_monthly_value_work_item_id; Type: INDEX; Schema: public; Owner: app_mad_podolsk
 --
 
@@ -1525,6 +1559,22 @@ CREATE UNIQUE INDEX ux_users_login ON public.users USING btree (login);
 --
 
 CREATE TRIGGER trg_users_updated_at BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+
+--
+-- Name: dim_employee_vehicle dim_employee_vehicle_employee_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: dima_admin
+--
+
+ALTER TABLE ONLY public.dim_employee_vehicle
+    ADD CONSTRAINT dim_employee_vehicle_employee_id_fkey FOREIGN KEY (employee_id) REFERENCES public.dim_employee(employee_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: dim_employee_vehicle dim_employee_vehicle_vehicles_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: dima_admin
+--
+
+ALTER TABLE ONLY public.dim_employee_vehicle
+    ADD CONSTRAINT dim_employee_vehicle_vehicles_id_fkey FOREIGN KEY (vehicles_id) REFERENCES public.dim_vehicles(vehicles_id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
@@ -1647,6 +1697,15 @@ GRANT SELECT ON TABLE public.dim_employee TO metabase;
 GRANT ALL ON SEQUENCE public.dim_employee_employee_id_seq TO app_mad_podolsk;
 GRANT SELECT ON SEQUENCE public.dim_employee_employee_id_seq TO app_turnover_u4s;
 GRANT SELECT,USAGE ON SEQUENCE public.dim_employee_employee_id_seq TO metabase;
+
+
+--
+-- Name: TABLE dim_employee_vehicle; Type: ACL; Schema: public; Owner: dima_admin
+--
+
+GRANT ALL ON TABLE public.dim_employee_vehicle TO app_mad_podolsk;
+GRANT SELECT ON TABLE public.dim_employee_vehicle TO app_turnover_u4s;
+GRANT SELECT ON TABLE public.dim_employee_vehicle TO metabase;
 
 
 --
@@ -2011,5 +2070,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 2EiT6glShnNzeO0zrvCT9rpHzwYAKugLorSiHcVugTVUbcNCsS34C5mLeBBeIso
+\unrestrict q24gwjFP2pqnCM0axo3C9iia3ceQiQfrSrGasKgJpwmLRxZwecZDSUMC3Jr5qST
 
