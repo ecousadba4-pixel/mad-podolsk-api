@@ -1,9 +1,19 @@
 """Repository for fuel consumption (потребление топлива) data access."""
 
-from typing import Optional, List, Any
+from typing import List
 from datetime import date
 
 from app.backend import db
+
+# Fuel facts are per card/day; one employee may have several vehicles in dim_employee_vehicle.
+# We split liters/amount evenly across assigned vehicles so list totals stay consistent.
+_EMPLOYEE_VEHICLE_COUNT = """
+    NULLIF(GREATEST(
+        (SELECT COUNT(*)::int FROM public.dim_employee_vehicle evc
+         WHERE evc.employee_id = gl.employee_id::int),
+        1
+    ), 0)
+"""
 
 
 async def get_fuel_general_by_date(
@@ -11,28 +21,32 @@ async def get_fuel_general_by_date(
 ) -> List[dict]:
     """Get fuel consumption data for a single date.
 
-    Joins dim_daily_gas_limit → fact_daily_card_fuel (by card_number)
-    and dim_daily_gas_limit → dim_vehicles → dim_vehicles_types (by vehicle_id)
+    Joins dim_daily_gas_limit → fact_daily_card_fuel (by card_number),
+    dim_employee_vehicle → dim_vehicles → dim_vehicles_types,
     and fact_vehicle_mileage (by vehicles_id + date) for mileage.
 
     Returns list of dicts with employee_name, vehicle_type_name, plate_number,
     mileage_km, liters_total, type_of_gas, amount_for_fuel.
     """
     return await db.query_async(
-        """
+        f"""
         SELECT
             gl.employee_name,
             vt.name AS vehicle_type_name,
             v.plate_number,
             COALESCE(m.mileage_km, 0) AS mileage_km,
-            COALESCE(f.liters_total, 0) AS liters_total,
+            COALESCE(f.liters_total, 0)::numeric / {_EMPLOYEE_VEHICLE_COUNT.strip()}
+                AS liters_total,
             gl.type_of_gas,
-            COALESCE(f.amount_for_fuel, 0) AS amount_for_fuel
+            COALESCE(f.amount_for_fuel, 0)::numeric / {_EMPLOYEE_VEHICLE_COUNT.strip()}
+                AS amount_for_fuel
         FROM public.dim_daily_gas_limit gl
         JOIN initial_data.fact_daily_card_fuel f
             ON gl.card_number::text = f.card_number
+        LEFT JOIN public.dim_employee_vehicle ev
+            ON ev.employee_id = gl.employee_id::int
         LEFT JOIN public.dim_vehicles v
-            ON gl.vehicle_id = v.vehicles_id
+            ON v.vehicles_id = ev.vehicles_id
         LEFT JOIN public.dim_vehicles_types vt
             ON v.vehicles_types_id = vt.vehicles_types_id
         LEFT JOIN (
@@ -60,20 +74,28 @@ async def get_fuel_general_by_range(
     mileage_km, liters_total, type_of_gas, amount_for_fuel.
     """
     return await db.query_async(
-        """
+        f"""
         SELECT
             gl.employee_name,
             vt.name AS vehicle_type_name,
             v.plate_number,
             COALESCE(m.mileage_km, 0) AS mileage_km,
-            COALESCE(SUM(f.liters_total), 0) AS liters_total,
+            COALESCE(
+                SUM(f.liters_total::numeric / {_EMPLOYEE_VEHICLE_COUNT.strip()}),
+                0
+            ) AS liters_total,
             gl.type_of_gas,
-            COALESCE(SUM(f.amount_for_fuel), 0) AS amount_for_fuel
+            COALESCE(
+                SUM(f.amount_for_fuel::numeric / {_EMPLOYEE_VEHICLE_COUNT.strip()}),
+                0
+            ) AS amount_for_fuel
         FROM public.dim_daily_gas_limit gl
         JOIN initial_data.fact_daily_card_fuel f
             ON gl.card_number::text = f.card_number
+        LEFT JOIN public.dim_employee_vehicle ev
+            ON ev.employee_id = gl.employee_id::int
         LEFT JOIN public.dim_vehicles v
-            ON gl.vehicle_id = v.vehicles_id
+            ON v.vehicles_id = ev.vehicles_id
         LEFT JOIN public.dim_vehicles_types vt
             ON v.vehicles_types_id = vt.vehicles_types_id
         LEFT JOIN (
@@ -118,14 +140,16 @@ async def get_fuel_by_driver(
             ON gl.card_number::text = f.card_number
         LEFT JOIN (
             SELECT
-                fm.vehicles_id,
+                ev.employee_id,
                 fm.period_start::date AS mileage_date,
                 SUM(fm.mileage_km) AS mileage_km
             FROM initial_data.fact_vehicle_mileage fm
+            JOIN public.dim_employee_vehicle ev
+                ON ev.vehicles_id = fm.vehicles_id
             WHERE fm.period_start::date >= %s
               AND fm.period_start::date <= %s
-            GROUP BY fm.vehicles_id, fm.period_start::date
-        ) m ON m.vehicles_id = gl.vehicle_id
+            GROUP BY ev.employee_id, fm.period_start::date
+        ) m ON m.employee_id = gl.employee_id::int
            AND m.mileage_date = f.date
         WHERE gl.employee_id = %s
           AND f.date >= %s
