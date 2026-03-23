@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict h6Nwl9HJTrFfeBlW5wc479gIkft7ifgPUWNgGPfleJpsj23YOJIqYD4hUM858fg
+\restrict mRjCHWkP9D59IaVpgg8hDW012RlRQyDaqJRaWqrYfpfolzh7BPQCOA6CilwCOyC
 
 -- Dumped from database version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
 -- Dumped by pg_dump version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
@@ -20,20 +20,18 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: initial_data; Type: SCHEMA; Schema: -; Owner: dima_admin
+-- Name: initial_data; Type: SCHEMA; Schema: -; Owner: -
 --
 
 CREATE SCHEMA initial_data;
 
-
-ALTER SCHEMA initial_data OWNER TO dima_admin;
 
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: fact_daily_card_fuel; Type: TABLE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_daily_card_fuel; Type: TABLE; Schema: initial_data; Owner: -
 --
 
 CREATE TABLE initial_data.fact_daily_card_fuel (
@@ -48,10 +46,8 @@ CREATE TABLE initial_data.fact_daily_card_fuel (
 );
 
 
-ALTER TABLE initial_data.fact_daily_card_fuel OWNER TO dima_admin;
-
 --
--- Name: fact_equipment_shifts; Type: TABLE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_equipment_shifts; Type: TABLE; Schema: initial_data; Owner: -
 --
 
 CREATE TABLE initial_data.fact_equipment_shifts (
@@ -77,10 +73,8 @@ CREATE TABLE initial_data.fact_equipment_shifts (
 );
 
 
-ALTER TABLE initial_data.fact_equipment_shifts OWNER TO dima_admin;
-
 --
--- Name: fact_equipment_shifts_id_seq; Type: SEQUENCE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_equipment_shifts_id_seq; Type: SEQUENCE; Schema: initial_data; Owner: -
 --
 
 CREATE SEQUENCE initial_data.fact_equipment_shifts_id_seq
@@ -91,17 +85,15 @@ CREATE SEQUENCE initial_data.fact_equipment_shifts_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE initial_data.fact_equipment_shifts_id_seq OWNER TO dima_admin;
-
 --
--- Name: fact_equipment_shifts_id_seq; Type: SEQUENCE OWNED BY; Schema: initial_data; Owner: dima_admin
+-- Name: fact_equipment_shifts_id_seq; Type: SEQUENCE OWNED BY; Schema: initial_data; Owner: -
 --
 
 ALTER SEQUENCE initial_data.fact_equipment_shifts_id_seq OWNED BY initial_data.fact_equipment_shifts.id;
 
 
 --
--- Name: fact_master_shifts; Type: TABLE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_master_shifts; Type: TABLE; Schema: initial_data; Owner: -
 --
 
 CREATE TABLE initial_data.fact_master_shifts (
@@ -123,10 +115,8 @@ CREATE TABLE initial_data.fact_master_shifts (
 );
 
 
-ALTER TABLE initial_data.fact_master_shifts OWNER TO dima_admin;
-
 --
--- Name: fact_master_shifts_id_seq; Type: SEQUENCE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_master_shifts_id_seq; Type: SEQUENCE; Schema: initial_data; Owner: -
 --
 
 CREATE SEQUENCE initial_data.fact_master_shifts_id_seq
@@ -137,17 +127,15 @@ CREATE SEQUENCE initial_data.fact_master_shifts_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE initial_data.fact_master_shifts_id_seq OWNER TO dima_admin;
-
 --
--- Name: fact_master_shifts_id_seq; Type: SEQUENCE OWNED BY; Schema: initial_data; Owner: dima_admin
+-- Name: fact_master_shifts_id_seq; Type: SEQUENCE OWNED BY; Schema: initial_data; Owner: -
 --
 
 ALTER SEQUENCE initial_data.fact_master_shifts_id_seq OWNED BY initial_data.fact_master_shifts.id;
 
 
 --
--- Name: fact_price_2025; Type: TABLE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_price_2025; Type: TABLE; Schema: initial_data; Owner: -
 --
 
 CREATE TABLE initial_data.fact_price_2025 (
@@ -159,10 +147,8 @@ CREATE TABLE initial_data.fact_price_2025 (
 );
 
 
-ALTER TABLE initial_data.fact_price_2025 OWNER TO dima_admin;
-
 --
--- Name: fact_price_2026_upto_may; Type: TABLE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_price_2026_upto_may; Type: TABLE; Schema: initial_data; Owner: -
 --
 
 CREATE TABLE initial_data.fact_price_2026_upto_may (
@@ -174,10 +160,8 @@ CREATE TABLE initial_data.fact_price_2026_upto_may (
 );
 
 
-ALTER TABLE initial_data.fact_price_2026_upto_may OWNER TO dima_admin;
-
 --
--- Name: fact_resources_change_log; Type: TABLE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_resources_change_log; Type: TABLE; Schema: initial_data; Owner: -
 --
 
 CREATE TABLE initial_data.fact_resources_change_log (
@@ -193,10 +177,8 @@ CREATE TABLE initial_data.fact_resources_change_log (
 );
 
 
-ALTER TABLE initial_data.fact_resources_change_log OWNER TO dima_admin;
-
 --
--- Name: fact_resources_change_log_id_seq; Type: SEQUENCE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_resources_change_log_id_seq; Type: SEQUENCE; Schema: initial_data; Owner: -
 --
 
 CREATE SEQUENCE initial_data.fact_resources_change_log_id_seq
@@ -207,17 +189,15 @@ CREATE SEQUENCE initial_data.fact_resources_change_log_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE initial_data.fact_resources_change_log_id_seq OWNER TO dima_admin;
-
 --
--- Name: fact_resources_change_log_id_seq; Type: SEQUENCE OWNED BY; Schema: initial_data; Owner: dima_admin
+-- Name: fact_resources_change_log_id_seq; Type: SEQUENCE OWNED BY; Schema: initial_data; Owner: -
 --
 
 ALTER SEQUENCE initial_data.fact_resources_change_log_id_seq OWNED BY initial_data.fact_resources_change_log.id;
 
 
 --
--- Name: fact_vehicle_mileage; Type: TABLE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_vehicle_mileage; Type: TABLE; Schema: initial_data; Owner: -
 --
 
 CREATE TABLE initial_data.fact_vehicle_mileage (
@@ -233,10 +213,8 @@ CREATE TABLE initial_data.fact_vehicle_mileage (
 );
 
 
-ALTER TABLE initial_data.fact_vehicle_mileage OWNER TO dima_admin;
-
 --
--- Name: fact_vehicle_mileage_fact_vehicle_mileage_id_seq; Type: SEQUENCE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_vehicle_mileage_fact_vehicle_mileage_id_seq; Type: SEQUENCE; Schema: initial_data; Owner: -
 --
 
 CREATE SEQUENCE initial_data.fact_vehicle_mileage_fact_vehicle_mileage_id_seq
@@ -247,17 +225,15 @@ CREATE SEQUENCE initial_data.fact_vehicle_mileage_fact_vehicle_mileage_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE initial_data.fact_vehicle_mileage_fact_vehicle_mileage_id_seq OWNER TO dima_admin;
-
 --
--- Name: fact_vehicle_mileage_fact_vehicle_mileage_id_seq; Type: SEQUENCE OWNED BY; Schema: initial_data; Owner: dima_admin
+-- Name: fact_vehicle_mileage_fact_vehicle_mileage_id_seq; Type: SEQUENCE OWNED BY; Schema: initial_data; Owner: -
 --
 
 ALTER SEQUENCE initial_data.fact_vehicle_mileage_fact_vehicle_mileage_id_seq OWNED BY initial_data.fact_vehicle_mileage.fact_vehicle_mileage_id;
 
 
 --
--- Name: fact_vehicle_mileage_state; Type: TABLE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_vehicle_mileage_state; Type: TABLE; Schema: initial_data; Owner: -
 --
 
 CREATE TABLE initial_data.fact_vehicle_mileage_state (
@@ -268,10 +244,8 @@ CREATE TABLE initial_data.fact_vehicle_mileage_state (
 );
 
 
-ALTER TABLE initial_data.fact_vehicle_mileage_state OWNER TO dima_admin;
-
 --
--- Name: fact_work_actual_pik; Type: TABLE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_work_actual_pik; Type: TABLE; Schema: initial_data; Owner: -
 --
 
 CREATE TABLE initial_data.fact_work_actual_pik (
@@ -284,10 +258,8 @@ CREATE TABLE initial_data.fact_work_actual_pik (
 );
 
 
-ALTER TABLE initial_data.fact_work_actual_pik OWNER TO dima_admin;
-
 --
--- Name: fact_work_by_subcontractor; Type: TABLE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_work_by_subcontractor; Type: TABLE; Schema: initial_data; Owner: -
 --
 
 CREATE TABLE initial_data.fact_work_by_subcontractor (
@@ -295,10 +267,8 @@ CREATE TABLE initial_data.fact_work_by_subcontractor (
 );
 
 
-ALTER TABLE initial_data.fact_work_by_subcontractor OWNER TO dima_admin;
-
 --
--- Name: fact_work_plan_monthly; Type: TABLE; Schema: initial_data; Owner: app_mad_podolsk
+-- Name: fact_work_plan_monthly; Type: TABLE; Schema: initial_data; Owner: -
 --
 
 CREATE TABLE initial_data.fact_work_plan_monthly (
@@ -311,10 +281,8 @@ CREATE TABLE initial_data.fact_work_plan_monthly (
 );
 
 
-ALTER TABLE initial_data.fact_work_plan_monthly OWNER TO app_mad_podolsk;
-
 --
--- Name: fact_work_skpdi_manual_from_phone; Type: TABLE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_work_skpdi_manual_from_phone; Type: TABLE; Schema: initial_data; Owner: -
 --
 
 CREATE TABLE initial_data.fact_work_skpdi_manual_from_phone (
@@ -331,10 +299,8 @@ CREATE TABLE initial_data.fact_work_skpdi_manual_from_phone (
 );
 
 
-ALTER TABLE initial_data.fact_work_skpdi_manual_from_phone OWNER TO dima_admin;
-
 --
--- Name: fact_work_skpdi_report; Type: TABLE; Schema: initial_data; Owner: dima_admin
+-- Name: fact_work_skpdi_report; Type: TABLE; Schema: initial_data; Owner: -
 --
 
 CREATE TABLE initial_data.fact_work_skpdi_report (
@@ -352,10 +318,8 @@ CREATE TABLE initial_data.fact_work_skpdi_report (
 );
 
 
-ALTER TABLE initial_data.fact_work_skpdi_report OWNER TO dima_admin;
-
 --
--- Name: prices_2025_id_price_seq; Type: SEQUENCE; Schema: initial_data; Owner: dima_admin
+-- Name: prices_2025_id_price_seq; Type: SEQUENCE; Schema: initial_data; Owner: -
 --
 
 CREATE SEQUENCE initial_data.prices_2025_id_price_seq
@@ -366,17 +330,15 @@ CREATE SEQUENCE initial_data.prices_2025_id_price_seq
     CACHE 1;
 
 
-ALTER SEQUENCE initial_data.prices_2025_id_price_seq OWNER TO dima_admin;
-
 --
--- Name: prices_2025_id_price_seq; Type: SEQUENCE OWNED BY; Schema: initial_data; Owner: dima_admin
+-- Name: prices_2025_id_price_seq; Type: SEQUENCE OWNED BY; Schema: initial_data; Owner: -
 --
 
 ALTER SEQUENCE initial_data.prices_2025_id_price_seq OWNED BY initial_data.fact_price_2025.price_id;
 
 
 --
--- Name: prices_2026_uptomay_id_price_seq; Type: SEQUENCE; Schema: initial_data; Owner: dima_admin
+-- Name: prices_2026_uptomay_id_price_seq; Type: SEQUENCE; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE initial_data.fact_price_2026_upto_may ALTER COLUMN price_id ADD GENERATED BY DEFAULT AS IDENTITY (
@@ -390,7 +352,7 @@ ALTER TABLE initial_data.fact_price_2026_upto_may ALTER COLUMN price_id ADD GENE
 
 
 --
--- Name: skpdi_report_raw_tmp; Type: TABLE; Schema: initial_data; Owner: dima_admin
+-- Name: skpdi_report_raw_tmp; Type: TABLE; Schema: initial_data; Owner: -
 --
 
 CREATE TABLE initial_data.skpdi_report_raw_tmp (
@@ -407,45 +369,43 @@ CREATE TABLE initial_data.skpdi_report_raw_tmp (
 );
 
 
-ALTER TABLE initial_data.skpdi_report_raw_tmp OWNER TO dima_admin;
-
 --
--- Name: fact_equipment_shifts id; Type: DEFAULT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_equipment_shifts id; Type: DEFAULT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_equipment_shifts ALTER COLUMN id SET DEFAULT nextval('initial_data.fact_equipment_shifts_id_seq'::regclass);
 
 
 --
--- Name: fact_master_shifts id; Type: DEFAULT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_master_shifts id; Type: DEFAULT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_master_shifts ALTER COLUMN id SET DEFAULT nextval('initial_data.fact_master_shifts_id_seq'::regclass);
 
 
 --
--- Name: fact_price_2025 price_id; Type: DEFAULT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_price_2025 price_id; Type: DEFAULT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_price_2025 ALTER COLUMN price_id SET DEFAULT nextval('initial_data.prices_2025_id_price_seq'::regclass);
 
 
 --
--- Name: fact_resources_change_log id; Type: DEFAULT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_resources_change_log id; Type: DEFAULT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_resources_change_log ALTER COLUMN id SET DEFAULT nextval('initial_data.fact_resources_change_log_id_seq'::regclass);
 
 
 --
--- Name: fact_vehicle_mileage fact_vehicle_mileage_id; Type: DEFAULT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_vehicle_mileage fact_vehicle_mileage_id; Type: DEFAULT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_vehicle_mileage ALTER COLUMN fact_vehicle_mileage_id SET DEFAULT nextval('initial_data.fact_vehicle_mileage_fact_vehicle_mileage_id_seq'::regclass);
 
 
 --
--- Name: fact_daily_card_fuel fact_daily_card_fuel_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_daily_card_fuel fact_daily_card_fuel_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_daily_card_fuel
@@ -453,7 +413,7 @@ ALTER TABLE ONLY initial_data.fact_daily_card_fuel
 
 
 --
--- Name: fact_equipment_shifts fact_equipment_shifts_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_equipment_shifts fact_equipment_shifts_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_equipment_shifts
@@ -461,7 +421,7 @@ ALTER TABLE ONLY initial_data.fact_equipment_shifts
 
 
 --
--- Name: fact_master_shifts fact_master_shifts_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_master_shifts fact_master_shifts_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_master_shifts
@@ -469,7 +429,7 @@ ALTER TABLE ONLY initial_data.fact_master_shifts
 
 
 --
--- Name: fact_resources_change_log fact_resources_change_log_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_resources_change_log fact_resources_change_log_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_resources_change_log
@@ -477,7 +437,7 @@ ALTER TABLE ONLY initial_data.fact_resources_change_log
 
 
 --
--- Name: fact_vehicle_mileage fact_vehicle_mileage_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_vehicle_mileage fact_vehicle_mileage_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_vehicle_mileage
@@ -485,7 +445,7 @@ ALTER TABLE ONLY initial_data.fact_vehicle_mileage
 
 
 --
--- Name: fact_vehicle_mileage_state fact_vehicle_mileage_state_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_vehicle_mileage_state fact_vehicle_mileage_state_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_vehicle_mileage_state
@@ -493,7 +453,7 @@ ALTER TABLE ONLY initial_data.fact_vehicle_mileage_state
 
 
 --
--- Name: fact_work_by_subcontractor fact_work_by_subcontractor_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_work_by_subcontractor fact_work_by_subcontractor_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_work_by_subcontractor
@@ -501,7 +461,7 @@ ALTER TABLE ONLY initial_data.fact_work_by_subcontractor
 
 
 --
--- Name: fact_work_by_subcontractor fact_work_by_subcontractor_work_report_id_uniq; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_work_by_subcontractor fact_work_by_subcontractor_work_report_id_uniq; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_work_by_subcontractor
@@ -509,7 +469,7 @@ ALTER TABLE ONLY initial_data.fact_work_by_subcontractor
 
 
 --
--- Name: fact_price_2025 prices_2025_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_price_2025 prices_2025_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_price_2025
@@ -517,7 +477,7 @@ ALTER TABLE ONLY initial_data.fact_price_2025
 
 
 --
--- Name: fact_price_2026_upto_may prices_2026_uptomay_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_price_2026_upto_may prices_2026_uptomay_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_price_2026_upto_may
@@ -525,7 +485,7 @@ ALTER TABLE ONLY initial_data.fact_price_2026_upto_may
 
 
 --
--- Name: fact_work_plan_monthly skpdi_plan_agg_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: app_mad_podolsk
+-- Name: fact_work_plan_monthly skpdi_plan_agg_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_work_plan_monthly
@@ -533,7 +493,7 @@ ALTER TABLE ONLY initial_data.fact_work_plan_monthly
 
 
 --
--- Name: fact_work_skpdi_report skpdi_report_raw_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_work_skpdi_report skpdi_report_raw_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_work_skpdi_report
@@ -541,7 +501,7 @@ ALTER TABLE ONLY initial_data.fact_work_skpdi_report
 
 
 --
--- Name: fact_vehicle_mileage uq_vehicle_mileage_interval; Type: CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_vehicle_mileage uq_vehicle_mileage_interval; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_vehicle_mileage
@@ -549,42 +509,42 @@ ALTER TABLE ONLY initial_data.fact_vehicle_mileage
 
 
 --
--- Name: idx_fact_daily_card_fuel_card_date; Type: INDEX; Schema: initial_data; Owner: dima_admin
+-- Name: idx_fact_daily_card_fuel_card_date; Type: INDEX; Schema: initial_data; Owner: -
 --
 
 CREATE INDEX idx_fact_daily_card_fuel_card_date ON initial_data.fact_daily_card_fuel USING btree (card_number, date);
 
 
 --
--- Name: idx_fact_vehicle_mileage_period; Type: INDEX; Schema: initial_data; Owner: dima_admin
+-- Name: idx_fact_vehicle_mileage_period; Type: INDEX; Schema: initial_data; Owner: -
 --
 
 CREATE INDEX idx_fact_vehicle_mileage_period ON initial_data.fact_vehicle_mileage USING btree (period_start, period_end);
 
 
 --
--- Name: idx_plan_agg_description; Type: INDEX; Schema: initial_data; Owner: app_mad_podolsk
+-- Name: idx_plan_agg_description; Type: INDEX; Schema: initial_data; Owner: -
 --
 
 CREATE INDEX idx_plan_agg_description ON initial_data.fact_work_plan_monthly USING btree (work_name);
 
 
 --
--- Name: idx_plan_agg_month_desc_unit; Type: INDEX; Schema: initial_data; Owner: app_mad_podolsk
+-- Name: idx_plan_agg_month_desc_unit; Type: INDEX; Schema: initial_data; Owner: -
 --
 
 CREATE INDEX idx_plan_agg_month_desc_unit ON initial_data.fact_work_plan_monthly USING btree (month_start_date, work_name, unit);
 
 
 --
--- Name: ux_fact_work_skpdi_manual_from_phone_row_hash; Type: INDEX; Schema: initial_data; Owner: dima_admin
+-- Name: ux_fact_work_skpdi_manual_from_phone_row_hash; Type: INDEX; Schema: initial_data; Owner: -
 --
 
 CREATE UNIQUE INDEX ux_fact_work_skpdi_manual_from_phone_row_hash ON initial_data.fact_work_skpdi_manual_from_phone USING btree (row_hash);
 
 
 --
--- Name: fact_vehicle_mileage_state fact_vehicle_mileage_state_vehicles_id_fkey; Type: FK CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_vehicle_mileage_state fact_vehicle_mileage_state_vehicles_id_fkey; Type: FK CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_vehicle_mileage_state
@@ -592,7 +552,7 @@ ALTER TABLE ONLY initial_data.fact_vehicle_mileage_state
 
 
 --
--- Name: fact_vehicle_mileage fact_vehicle_mileage_vehicles_id_fkey; Type: FK CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_vehicle_mileage fact_vehicle_mileage_vehicles_id_fkey; Type: FK CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_vehicle_mileage
@@ -600,7 +560,7 @@ ALTER TABLE ONLY initial_data.fact_vehicle_mileage
 
 
 --
--- Name: fact_price_2025 fk_price_desc; Type: FK CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_price_2025 fk_price_desc; Type: FK CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_price_2025
@@ -608,7 +568,7 @@ ALTER TABLE ONLY initial_data.fact_price_2025
 
 
 --
--- Name: fact_price_2025 fk_price_section; Type: FK CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_price_2025 fk_price_section; Type: FK CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_price_2025
@@ -616,7 +576,7 @@ ALTER TABLE ONLY initial_data.fact_price_2025
 
 
 --
--- Name: fact_price_2025 fk_price_smeta; Type: FK CONSTRAINT; Schema: initial_data; Owner: dima_admin
+-- Name: fact_price_2025 fk_price_smeta; Type: FK CONSTRAINT; Schema: initial_data; Owner: -
 --
 
 ALTER TABLE ONLY initial_data.fact_price_2025
@@ -624,184 +584,8 @@ ALTER TABLE ONLY initial_data.fact_price_2025
 
 
 --
--- Name: SCHEMA initial_data; Type: ACL; Schema: -; Owner: dima_admin
---
-
-GRANT USAGE ON SCHEMA initial_data TO app_mad_podolsk;
-
-
---
--- Name: TABLE fact_daily_card_fuel; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_daily_card_fuel TO app_mad_podolsk;
-
-
---
--- Name: TABLE fact_equipment_shifts; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_equipment_shifts TO app_mad_podolsk;
-
-
---
--- Name: SEQUENCE fact_equipment_shifts_id_seq; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT,USAGE ON SEQUENCE initial_data.fact_equipment_shifts_id_seq TO app_mad_podolsk;
-
-
---
--- Name: TABLE fact_master_shifts; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_master_shifts TO app_mad_podolsk;
-
-
---
--- Name: SEQUENCE fact_master_shifts_id_seq; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT,USAGE ON SEQUENCE initial_data.fact_master_shifts_id_seq TO app_mad_podolsk;
-
-
---
--- Name: TABLE fact_price_2025; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT ON TABLE initial_data.fact_price_2025 TO app_turnover_u4s;
-GRANT ALL ON TABLE initial_data.fact_price_2025 TO app_mad_podolsk;
-
-
---
--- Name: TABLE fact_price_2026_upto_may; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT ALL ON TABLE initial_data.fact_price_2026_upto_may TO app_mad_podolsk;
-GRANT SELECT ON TABLE initial_data.fact_price_2026_upto_may TO app_turnover_u4s;
-
-
---
--- Name: TABLE fact_resources_change_log; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_resources_change_log TO app_mad_podolsk;
-
-
---
--- Name: SEQUENCE fact_resources_change_log_id_seq; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT,USAGE ON SEQUENCE initial_data.fact_resources_change_log_id_seq TO app_mad_podolsk;
-
-
---
--- Name: TABLE fact_vehicle_mileage; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_vehicle_mileage TO app_mad_podolsk;
-
-
---
--- Name: SEQUENCE fact_vehicle_mileage_fact_vehicle_mileage_id_seq; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT,USAGE ON SEQUENCE initial_data.fact_vehicle_mileage_fact_vehicle_mileage_id_seq TO app_mad_podolsk;
-
-
---
--- Name: TABLE fact_vehicle_mileage_state; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_vehicle_mileage_state TO app_mad_podolsk;
-
-
---
--- Name: TABLE fact_work_actual_pik; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT ON TABLE initial_data.fact_work_actual_pik TO app_turnover_u4s;
-GRANT ALL ON TABLE initial_data.fact_work_actual_pik TO app_mad_podolsk;
-
-
---
--- Name: TABLE fact_work_by_subcontractor; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_work_by_subcontractor TO app_mad_podolsk;
-
-
---
--- Name: COLUMN fact_work_by_subcontractor.work_report_id; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT INSERT(work_report_id),UPDATE(work_report_id) ON TABLE initial_data.fact_work_by_subcontractor TO dima_admin;
-
-
---
--- Name: TABLE fact_work_plan_monthly; Type: ACL; Schema: initial_data; Owner: app_mad_podolsk
---
-
-GRANT SELECT ON TABLE initial_data.fact_work_plan_monthly TO app_turnover_u4s;
-GRANT INSERT,DELETE,UPDATE ON TABLE initial_data.fact_work_plan_monthly TO dima_admin;
-
-
---
--- Name: TABLE fact_work_skpdi_manual_from_phone; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLE initial_data.fact_work_skpdi_manual_from_phone TO app_mad_podolsk;
-
-
---
--- Name: TABLE fact_work_skpdi_report; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT ON TABLE initial_data.fact_work_skpdi_report TO app_turnover_u4s;
-GRANT ALL ON TABLE initial_data.fact_work_skpdi_report TO app_mad_podolsk;
-
-
---
--- Name: SEQUENCE prices_2025_id_price_seq; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT ON SEQUENCE initial_data.prices_2025_id_price_seq TO app_turnover_u4s;
-GRANT ALL ON SEQUENCE initial_data.prices_2025_id_price_seq TO app_mad_podolsk;
-
-
---
--- Name: SEQUENCE prices_2026_uptomay_id_price_seq; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT ALL ON SEQUENCE initial_data.prices_2026_uptomay_id_price_seq TO app_mad_podolsk;
-GRANT SELECT ON SEQUENCE initial_data.prices_2026_uptomay_id_price_seq TO app_turnover_u4s;
-
-
---
--- Name: TABLE skpdi_report_raw_tmp; Type: ACL; Schema: initial_data; Owner: dima_admin
---
-
-GRANT SELECT ON TABLE initial_data.skpdi_report_raw_tmp TO app_turnover_u4s;
-GRANT ALL ON TABLE initial_data.skpdi_report_raw_tmp TO app_mad_podolsk;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: initial_data; Owner: dima_admin
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE dima_admin IN SCHEMA initial_data GRANT SELECT,USAGE ON SEQUENCES TO app_mad_podolsk;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: initial_data; Owner: dima_admin
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE dima_admin IN SCHEMA initial_data GRANT SELECT,INSERT,DELETE,TRUNCATE,UPDATE ON TABLES TO app_mad_podolsk;
-
-
---
 -- PostgreSQL database dump complete
 --
 
-\unrestrict h6Nwl9HJTrFfeBlW5wc479gIkft7ifgPUWNgGPfleJpsj23YOJIqYD4hUM858fg
+\unrestrict mRjCHWkP9D59IaVpgg8hDW012RlRQyDaqJRaWqrYfpfolzh7BPQCOA6CilwCOyC
 
