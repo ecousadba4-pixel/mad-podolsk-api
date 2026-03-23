@@ -6,6 +6,13 @@ EXPORT_DIR="app/db/schema/full"
 SCHEMAS=("public" "initial_data")
 BRANCH="main"
 
+# Postgres connection
+PGHOST="10.0.1.1"
+PGPORT="5433"
+PGDATABASE="app_mad_podolsk"
+PGUSER="app_mad_podolsk"
+PGPASSWORD="MA9Cs3eLu5QdJ2XVBZNJ"
+
 log() {
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
 }
@@ -34,7 +41,7 @@ command -v pg_dump >/dev/null 2>&1 || fail "pg_dump not found in PATH"
 log "Using remote: $REMOTE"
 log "Using branch: $BRANCH"
 
-# Перед обновлением репозитория рабочее дерево должно быть чистым.
+# До pull дерево должно быть чистым
 if ! git diff --quiet || ! git diff --cached --quiet; then
   fail "working tree has uncommitted changes. Commit/stash them first."
 fi
@@ -42,9 +49,12 @@ fi
 log "Pulling latest changes from $REMOTE/$BRANCH..."
 git pull --rebase "$REMOTE" "$BRANCH"
 
+export PGHOST PGPORT PGDATABASE PGUSER PGPASSWORD
+
 mkdir -p "$EXPORT_DIR"
 
 log "Exporting full schema for: ${SCHEMAS[*]} into '$EXPORT_DIR'..."
+log "Postgres target: host=$PGHOST port=$PGPORT db=$PGDATABASE user=$PGUSER"
 
 for schema in "${SCHEMAS[@]}"; do
   out_file="$EXPORT_DIR/${schema}.sql"
@@ -55,6 +65,10 @@ for schema in "${SCHEMAS[@]}"; do
     --no-owner \
     --no-privileges \
     --schema="$schema" \
+    --dbname="$PGDATABASE" \
+    --host="$PGHOST" \
+    --port="$PGPORT" \
+    --username="$PGUSER" \
     > "$out_file"
 done
 
