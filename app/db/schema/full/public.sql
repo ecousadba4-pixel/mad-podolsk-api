@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 06B2AXH2kkmY1qXJ2wPXuz0YOWLZFfbhpEHenRzStjU2VTwD9KLzbKKrah03LtL
+\restrict QBYw9KwsETUDvjgHOpTnnzWe3DeWCW6l48OqeCRLV3ozq1nJ95KMaF04EzKCTe7
 
 -- Dumped from database version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
 -- Dumped by pg_dump version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
@@ -99,7 +99,6 @@ COMMENT ON TABLE public.contract_amount_2026_h1 IS 'the total amount of the cont
 CREATE TABLE public.dim_daily_gas_limit (
     employee_id bigint,
     employee_name text,
-    vehicle_id bigint,
     type_of_gas character varying,
     daily_limit integer,
     monthly_limit integer,
@@ -2070,5 +2069,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT ON TABL
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 06B2AXH2kkmY1qXJ2wPXuz0YOWLZFfbhpEHenRzStjU2VTwD9KLzbKKrah03LtL
+\unrestrict QBYw9KwsETUDvjgHOpTnnzWe3DeWCW6l48OqeCRLV3ozq1nJ95KMaF04EzKCTe7
 
