@@ -1,59 +1,77 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-### НАСТРОЙКИ ###
+PROJECT_ROOT="/srv/apps/mad-podolsk-api"
+EXPORT_DIR="app/db/schema/full"
+SCHEMAS=("public" "initial_data")
+BRANCH="main"
 
-# DSN к БД (как в export_mviews.sh)
-DB_URL="postgresql://app_mad_podolsk:MA9Cs3eLu5QdJ2XVBZNJ@10.0.1.1:5433/app_mad_podolsk"
+log() {
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
+}
 
-# Список схем, которые выгружаем полностью
-SCHEMAS="${SCHEMAS:-public initial_data}"
+fail() {
+  echo "ERROR: $*" >&2
+  exit 1
+}
 
-# Куда складываем DDL полных схем
-OUT_DIR="${OUT_DIR:-app/db/schema/full}"
+cd "$PROJECT_ROOT"
 
-# Комментарий к коммиту
-COMMIT_MSG_PREFIX="${COMMIT_MSG_PREFIX:-Update full DB schema}"
+REMOTE="$(git config --get "branch.${BRANCH}.remote" || true)"
+if [[ -z "$REMOTE" ]]; then
+  REMOTE="origin"
+fi
 
-# Ветка
-BRANCH="${BRANCH:-main}"
+git remote get-url "$REMOTE" >/dev/null 2>&1 || fail "git remote '$REMOTE' not found"
 
-### ЛОГИКА ###
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+if [[ "$CURRENT_BRANCH" != "$BRANCH" ]]; then
+  fail "current branch is '$CURRENT_BRANCH', expected '$BRANCH'"
+fi
 
-REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$REPO_DIR"
+command -v pg_dump >/dev/null 2>&1 || fail "pg_dump not found in PATH"
 
-mkdir -p "$OUT_DIR"
+log "Using remote: $REMOTE"
+log "Using branch: $BRANCH"
 
-echo "Exporting full schema for: $SCHEMAS into '$OUT_DIR'..."
+# Перед обновлением репозитория рабочее дерево должно быть чистым.
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  fail "working tree has uncommitted changes. Commit/stash them first."
+fi
 
-for schema in $SCHEMAS; do
-  file="$OUT_DIR/${schema}.sql"
-  echo "  -> schema $schema -> $file"
+log "Pulling latest changes from $REMOTE/$BRANCH..."
+git pull --rebase "$REMOTE" "$BRANCH"
 
-  # Полный дамп схемы (только структура, без данных)
-  pg_dump "$DB_URL" -s -n "$schema" > "$file"
+mkdir -p "$EXPORT_DIR"
+
+log "Exporting full schema for: ${SCHEMAS[*]} into '$EXPORT_DIR'..."
+
+for schema in "${SCHEMAS[@]}"; do
+  out_file="$EXPORT_DIR/${schema}.sql"
+  log "  -> schema $schema -> $out_file"
+
+  pg_dump \
+    --schema-only \
+    --no-owner \
+    --no-privileges \
+    --schema="$schema" \
+    > "$out_file"
 done
 
-echo "Export finished. Checking git status..."
+log "Export finished. Checking changes..."
 
-did_commit=0
-
-if git status --porcelain | grep -q .; then
-  echo "Changes detected. Committing..."
-  git add "$OUT_DIR"
-
-  ts="$(date +'%Y-%m-%d %H:%M:%S')"
-  git commit -m "$COMMIT_MSG_PREFIX ($ts)" && did_commit=1 || echo "Nothing to commit."
-else
-  echo "No changes in schema files."
+if git diff --quiet -- "$EXPORT_DIR"; then
+  log "No schema changes detected. Nothing to commit."
+  exit 0
 fi
 
-if [ "$did_commit" -eq 1 ]; then
-  echo "Pushing to remote..."
-  git push origin "$BRANCH"
-else
-  echo "No new commit, skipping push."
-fi
+git add "$EXPORT_DIR"
 
-echo "Done."
+COMMIT_MSG="Update full DB schema ($(date '+%Y-%m-%d %H:%M:%S'))"
+log "Committing changes..."
+git commit -m "$COMMIT_MSG"
+
+log "Pushing to $REMOTE/$BRANCH..."
+git push "$REMOTE" "$BRANCH"
+
+log "Done."
