@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict mRjCHWkP9D59IaVpgg8hDW012RlRQyDaqJRaWqrYfpfolzh7BPQCOA6CilwCOyC
+\restrict cxf4HsJI11iMthKaFaHkXQgQXVFkZWRpMFQSuXu8gcHI2t507fc9NKaSlcnJlvh
 
 -- Dumped from database version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
 -- Dumped by pg_dump version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
@@ -587,5 +587,5 @@ ALTER TABLE ONLY initial_data.fact_price_2025
 -- PostgreSQL database dump complete
 --
 
-\unrestrict mRjCHWkP9D59IaVpgg8hDW012RlRQyDaqJRaWqrYfpfolzh7BPQCOA6CilwCOyC
+\unrestrict cxf4HsJI11iMthKaFaHkXQgQXVFkZWRpMFQSuXu8gcHI2t507fc9NKaSlcnJlvh
 
