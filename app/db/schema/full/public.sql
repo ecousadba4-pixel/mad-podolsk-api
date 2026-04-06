@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict DDVJbuZnZCb4QyUJrJtgRVLtIZ5uWA52MXn7Hlx42hdKAnGN2g39M8SC6G06cd7
+\restrict 8QjeuxcQkKN7vxNQMcuatQt8FVa6LCFp3RcbC4waCBzFfroeRUJnkkRIFCIuVxV
 
 -- Dumped from database version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
 -- Dumped by pg_dump version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
@@ -96,7 +96,8 @@ CREATE TABLE public.dim_daily_gas_limit (
     monthly_limit integer,
     card_number bigint,
     pin_card bigint,
-    id bigint NOT NULL
+    id bigint NOT NULL,
+    card_number_vezdehod bigint
 );
 
 
@@ -1541,5 +1542,5 @@ ALTER TABLE ONLY public.dim_work_item
 -- PostgreSQL database dump complete
 --
 
-\unrestrict DDVJbuZnZCb4QyUJrJtgRVLtIZ5uWA52MXn7Hlx42hdKAnGN2g39M8SC6G06cd7
+\unrestrict 8QjeuxcQkKN7vxNQMcuatQt8FVa6LCFp3RcbC4waCBzFfroeRUJnkkRIFCIuVxV
 
