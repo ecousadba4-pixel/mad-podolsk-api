@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict OxTVwIHWGcdtuHTzu1BFaazq3nEGMUCMGqT5nNjhFodBggASn2S6uqbJygTI4G4
+\restrict DDVJbuZnZCb4QyUJrJtgRVLtIZ5uWA52MXn7Hlx42hdKAnGN2g39M8SC6G06cd7
 
 -- Dumped from database version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
 -- Dumped by pg_dump version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
@@ -142,7 +142,8 @@ CREATE TABLE public.dim_date (
 CREATE TABLE public.dim_employee (
     employee_id integer NOT NULL,
     employee_name character varying(255),
-    type_of_employee_id integer
+    type_of_employee_id integer,
+    is_active boolean
 );
 
 
@@ -1540,5 +1541,5 @@ ALTER TABLE ONLY public.dim_work_item
 -- PostgreSQL database dump complete
 --
 
-\unrestrict OxTVwIHWGcdtuHTzu1BFaazq3nEGMUCMGqT5nNjhFodBggASn2S6uqbJygTI4G4
+\unrestrict DDVJbuZnZCb4QyUJrJtgRVLtIZ5uWA52MXn7Hlx42hdKAnGN2g39M8SC6G06cd7
 

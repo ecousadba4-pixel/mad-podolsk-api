@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict cxf4HsJI11iMthKaFaHkXQgQXVFkZWRpMFQSuXu8gcHI2t507fc9NKaSlcnJlvh
+\restrict jpOahLL6gSdNQjPnRZjjsy7YETvl7G0whrcEmWx3aaICEGepY4Z5wlqhd8Pdjnv
 
 -- Dumped from database version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
 -- Dumped by pg_dump version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
@@ -26,6 +26,16 @@ SET row_security = off;
 CREATE SCHEMA initial_data;
 
 
+--
+-- Name: fuel_provider_enum; Type: TYPE; Schema: initial_data; Owner: -
+--
+
+CREATE TYPE initial_data.fuel_provider_enum AS ENUM (
+    'ЦПК',
+    'Вездеход'
+);
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -42,7 +52,8 @@ CREATE TABLE initial_data.fact_daily_card_fuel (
     first_tx_datetime timestamp with time zone,
     last_tx_datetime timestamp with time zone,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    amount_for_fuel numeric
+    amount_for_fuel numeric,
+    fuel_provider initial_data.fuel_provider_enum
 );
 
 
@@ -587,5 +598,5 @@ ALTER TABLE ONLY initial_data.fact_price_2025
 -- PostgreSQL database dump complete
 --
 
-\unrestrict cxf4HsJI11iMthKaFaHkXQgQXVFkZWRpMFQSuXu8gcHI2t507fc9NKaSlcnJlvh
+\unrestrict jpOahLL6gSdNQjPnRZjjsy7YETvl7G0whrcEmWx3aaICEGepY4Z5wlqhd8Pdjnv
 
