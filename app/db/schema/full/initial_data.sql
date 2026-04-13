@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict B0lLDBAuBUaqc0L0eEJohVpCjLq4yHlSUEovhLGa98eerwalczBcsq29B9C0AbE
+\restrict lqTGmdoloJuwV2IRD8XStdZ6oqicgZdQZo7UQh9kFP0PJ2BbTeZcz0skVOlZP8G
 
 -- Dumped from database version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
 -- Dumped by pg_dump version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
@@ -205,6 +205,182 @@ CREATE SEQUENCE initial_data.fact_resources_change_log_id_seq
 --
 
 ALTER SEQUENCE initial_data.fact_resources_change_log_id_seq OWNED BY initial_data.fact_resources_change_log.id;
+
+
+--
+-- Name: fact_vehicle_fuel_daily; Type: TABLE; Schema: initial_data; Owner: -
+--
+
+CREATE TABLE initial_data.fact_vehicle_fuel_daily (
+    fact_vehicle_fuel_daily_id bigint NOT NULL,
+    vehicles_id bigint NOT NULL,
+    fuel_date date NOT NULL,
+    fuel_consumed_l numeric(12,3) DEFAULT 0 NOT NULL,
+    fuel_refueled_l numeric(12,3) DEFAULT 0 NOT NULL,
+    fuel_volume_2359_l numeric(12,3),
+    period_start timestamp with time zone NOT NULL,
+    period_end timestamp with time zone NOT NULL,
+    source text DEFAULT 'omnicomm'::text NOT NULL,
+    source_message_time timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT chk_fact_vehicle_fuel_daily_consumed_nonnegative CHECK ((fuel_consumed_l >= (0)::numeric)),
+    CONSTRAINT chk_fact_vehicle_fuel_daily_period_valid CHECK ((period_end > period_start)),
+    CONSTRAINT chk_fact_vehicle_fuel_daily_refueled_nonnegative CHECK ((fuel_refueled_l >= (0)::numeric)),
+    CONSTRAINT chk_fact_vehicle_fuel_daily_volume_2359_nonnegative CHECK (((fuel_volume_2359_l IS NULL) OR (fuel_volume_2359_l >= (0)::numeric)))
+);
+
+
+--
+-- Name: TABLE fact_vehicle_fuel_daily; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON TABLE initial_data.fact_vehicle_fuel_daily IS 'Суточные агрегированные показатели топлива по транспортному средству без разбивки по бакам. Одна строка = одно ТС за одну дату.';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily.fact_vehicle_fuel_daily_id; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily.fact_vehicle_fuel_daily_id IS 'Технический идентификатор записи.';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily.vehicles_id; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily.vehicles_id IS 'Идентификатор транспортного средства. Ссылка на public.dim_vehicles(vehicles_id).';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily.fuel_date; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily.fuel_date IS 'Календарная дата, за которую рассчитаны суточные показатели топлива.';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily.fuel_consumed_l; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily.fuel_consumed_l IS 'Расход топлива за сутки, литры.';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily.fuel_refueled_l; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily.fuel_refueled_l IS 'Объём заправок топлива за сутки, литры.';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily.fuel_volume_2359_l; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily.fuel_volume_2359_l IS 'Объём топлива в баке на 23:59:59 соответствующей даты, литры.';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily.period_start; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily.period_start IS 'Начало интервала, по которому рассчитаны суточные показатели топлива.';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily.period_end; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily.period_end IS 'Конец интервала, по которому рассчитаны суточные показатели топлива.';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily.source; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily.source IS 'Источник данных по топливу. По умолчанию omnicomm.';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily.source_message_time; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily.source_message_time IS 'Фактическое время сообщения или точки Omnicomm, на основании которой определён остаток топлива на конец суток.';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily.created_at; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily.created_at IS 'Дата и время создания записи.';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily.updated_at; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily.updated_at IS 'Дата и время последнего обновления записи.';
+
+
+--
+-- Name: fact_vehicle_fuel_daily_fact_vehicle_fuel_daily_id_seq; Type: SEQUENCE; Schema: initial_data; Owner: -
+--
+
+ALTER TABLE initial_data.fact_vehicle_fuel_daily ALTER COLUMN fact_vehicle_fuel_daily_id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME initial_data.fact_vehicle_fuel_daily_fact_vehicle_fuel_daily_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: fact_vehicle_fuel_daily_state; Type: TABLE; Schema: initial_data; Owner: -
+--
+
+CREATE TABLE initial_data.fact_vehicle_fuel_daily_state (
+    vehicles_id bigint NOT NULL,
+    last_synced_at timestamp with time zone NOT NULL,
+    last_fuel_date date,
+    last_source_message_time timestamp with time zone
+);
+
+
+--
+-- Name: TABLE fact_vehicle_fuel_daily_state; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON TABLE initial_data.fact_vehicle_fuel_daily_state IS 'Служебная таблица состояния синхронизации суточных топливных данных по транспортным средствам. Хранит информацию о последней успешной загрузке.';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily_state.vehicles_id; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily_state.vehicles_id IS 'Идентификатор транспортного средства. Ссылка на public.dim_vehicles(vehicles_id).';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily_state.last_synced_at; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily_state.last_synced_at IS 'Дата и время последней успешной синхронизации суточных топливных данных по ТС.';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily_state.last_fuel_date; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily_state.last_fuel_date IS 'Последняя дата, по которую загружены или пересчитаны суточные топливные показатели по ТС.';
+
+
+--
+-- Name: COLUMN fact_vehicle_fuel_daily_state.last_source_message_time; Type: COMMENT; Schema: initial_data; Owner: -
+--
+
+COMMENT ON COLUMN initial_data.fact_vehicle_fuel_daily_state.last_source_message_time IS 'Время последнего обработанного сообщения или точки Omnicomm, относящейся к топливным данным данного ТС.';
 
 
 --
@@ -448,6 +624,22 @@ ALTER TABLE ONLY initial_data.fact_resources_change_log
 
 
 --
+-- Name: fact_vehicle_fuel_daily fact_vehicle_fuel_daily_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: -
+--
+
+ALTER TABLE ONLY initial_data.fact_vehicle_fuel_daily
+    ADD CONSTRAINT fact_vehicle_fuel_daily_pkey PRIMARY KEY (fact_vehicle_fuel_daily_id);
+
+
+--
+-- Name: fact_vehicle_fuel_daily_state fact_vehicle_fuel_daily_state_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: -
+--
+
+ALTER TABLE ONLY initial_data.fact_vehicle_fuel_daily_state
+    ADD CONSTRAINT fact_vehicle_fuel_daily_state_pkey PRIMARY KEY (vehicles_id);
+
+
+--
 -- Name: fact_vehicle_mileage fact_vehicle_mileage_pkey; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
@@ -512,6 +704,14 @@ ALTER TABLE ONLY initial_data.fact_work_skpdi_report
 
 
 --
+-- Name: fact_vehicle_fuel_daily uq_fact_vehicle_fuel_daily_vehicle_date; Type: CONSTRAINT; Schema: initial_data; Owner: -
+--
+
+ALTER TABLE ONLY initial_data.fact_vehicle_fuel_daily
+    ADD CONSTRAINT uq_fact_vehicle_fuel_daily_vehicle_date UNIQUE (vehicles_id, fuel_date);
+
+
+--
 -- Name: fact_vehicle_mileage uq_vehicle_mileage_interval; Type: CONSTRAINT; Schema: initial_data; Owner: -
 --
 
@@ -524,6 +724,34 @@ ALTER TABLE ONLY initial_data.fact_vehicle_mileage
 --
 
 CREATE INDEX idx_fact_daily_card_fuel_card_date ON initial_data.fact_daily_card_fuel USING btree (card_number, date);
+
+
+--
+-- Name: idx_fact_vehicle_fuel_daily_fuel_date; Type: INDEX; Schema: initial_data; Owner: -
+--
+
+CREATE INDEX idx_fact_vehicle_fuel_daily_fuel_date ON initial_data.fact_vehicle_fuel_daily USING btree (fuel_date);
+
+
+--
+-- Name: idx_fact_vehicle_fuel_daily_period; Type: INDEX; Schema: initial_data; Owner: -
+--
+
+CREATE INDEX idx_fact_vehicle_fuel_daily_period ON initial_data.fact_vehicle_fuel_daily USING btree (period_start, period_end);
+
+
+--
+-- Name: idx_fact_vehicle_fuel_daily_state_last_fuel_date; Type: INDEX; Schema: initial_data; Owner: -
+--
+
+CREATE INDEX idx_fact_vehicle_fuel_daily_state_last_fuel_date ON initial_data.fact_vehicle_fuel_daily_state USING btree (last_fuel_date);
+
+
+--
+-- Name: idx_fact_vehicle_fuel_daily_vehicle_date; Type: INDEX; Schema: initial_data; Owner: -
+--
+
+CREATE INDEX idx_fact_vehicle_fuel_daily_vehicle_date ON initial_data.fact_vehicle_fuel_daily USING btree (vehicles_id, fuel_date);
 
 
 --
@@ -552,6 +780,22 @@ CREATE INDEX idx_plan_agg_month_desc_unit ON initial_data.fact_work_plan_monthly
 --
 
 CREATE UNIQUE INDEX ux_fact_work_skpdi_manual_from_phone_row_hash ON initial_data.fact_work_skpdi_manual_from_phone USING btree (row_hash);
+
+
+--
+-- Name: fact_vehicle_fuel_daily_state fact_vehicle_fuel_daily_state_vehicles_id_fkey; Type: FK CONSTRAINT; Schema: initial_data; Owner: -
+--
+
+ALTER TABLE ONLY initial_data.fact_vehicle_fuel_daily_state
+    ADD CONSTRAINT fact_vehicle_fuel_daily_state_vehicles_id_fkey FOREIGN KEY (vehicles_id) REFERENCES public.dim_vehicles(vehicles_id) ON DELETE CASCADE;
+
+
+--
+-- Name: fact_vehicle_fuel_daily fact_vehicle_fuel_daily_vehicles_id_fkey; Type: FK CONSTRAINT; Schema: initial_data; Owner: -
+--
+
+ALTER TABLE ONLY initial_data.fact_vehicle_fuel_daily
+    ADD CONSTRAINT fact_vehicle_fuel_daily_vehicles_id_fkey FOREIGN KEY (vehicles_id) REFERENCES public.dim_vehicles(vehicles_id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
@@ -598,5 +842,5 @@ ALTER TABLE ONLY initial_data.fact_price_2025
 -- PostgreSQL database dump complete
 --
 
-\unrestrict B0lLDBAuBUaqc0L0eEJohVpCjLq4yHlSUEovhLGa98eerwalczBcsq29B9C0AbE
+\unrestrict lqTGmdoloJuwV2IRD8XStdZ6oqicgZdQZo7UQh9kFP0PJ2BbTeZcz0skVOlZP8G
 
