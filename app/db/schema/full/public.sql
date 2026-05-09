@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 6S9SeRTJOtLWLmYY32rqXIH60orpQxinHX6Cy1MIGYZa7HIB47LLNbm1AlI7tft
+\restrict C7WWaPGkndSzWG6Dm3iikHgvPkJj4rbW3w4z6uXHFBODjMQUimznfadYQ9Vs8LX
 
 -- Dumped from database version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
 -- Dumped by pg_dump version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
@@ -144,7 +144,8 @@ CREATE TABLE public.dim_employee (
     employee_id integer NOT NULL,
     employee_name character varying(255),
     type_of_employee_id integer,
-    is_active boolean
+    is_active boolean,
+    project character varying(50)
 );
 
 
@@ -1111,6 +1112,70 @@ COMMENT ON COLUMN public.v_dim_date.year_month_key IS 'Year-month key (YYYY-MM) 
 
 
 --
+-- Name: v_pylesos_1397_daily_report; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.v_pylesos_1397_daily_report AS
+ WITH work AS (
+         SELECT w_1.work_date AS date,
+            sum(w_1.quantity_done) AS work_volume,
+            sum(w_1.actual_value) AS revenue
+           FROM (public.mv_work_actual_daily_value_rows w_1
+             JOIN public.dim_work_item wi ON ((wi.work_item_id = w_1.work_item_id)))
+          WHERE ((w_1.work_date > '2026-04-01'::date) AND (w_1.done_by_subcontractor = false) AND (w_1.work_status_id = 3) AND (wi.work_name = ANY (ARRAY['Подметание лотков улиц и площадей вакуумно-подметальными машинами'::text, 'Подметание улиц и площадей подметально-уборочными машинами с увлажнением'::text])))
+          GROUP BY w_1.work_date
+        ), card_fuel AS (
+         SELECT f.date,
+            sum(f.liters_total) AS card_fuel_liters,
+            sum(f.amount_for_fuel) AS card_fuel_amount
+           FROM initial_data.fact_daily_card_fuel f
+          WHERE (f.card_number = '1206086738'::text)
+          GROUP BY f.date
+        ), dut_fuel AS (
+         SELECT f.fuel_date AS date,
+            sum(f.fuel_refueled_l) AS dut_refueled_liters,
+            sum(f.fuel_consumed_l) AS dut_consumed_liters,
+            max(f.fuel_volume_2359_l) AS dut_tank_liters
+           FROM initial_data.fact_vehicle_fuel_daily f
+          WHERE (f.vehicles_id = 7)
+          GROUP BY f.fuel_date
+        ), mileage AS (
+         SELECT (m_1.period_end)::date AS date,
+            sum(m_1.mileage_km) AS mileage_km
+           FROM initial_data.fact_vehicle_mileage m_1
+          WHERE (((m_1.period_end)::date > '2026-04-01'::date) AND (m_1.vehicles_id = 7))
+          GROUP BY ((m_1.period_end)::date)
+        ), dates AS (
+         SELECT work.date
+           FROM work
+        UNION
+         SELECT card_fuel.date
+           FROM card_fuel
+        UNION
+         SELECT dut_fuel.date
+           FROM dut_fuel
+        UNION
+         SELECT mileage.date
+           FROM mileage
+        )
+ SELECT d.date AS "Дата",
+    COALESCE(w.work_volume, (0)::numeric) AS "Объем работ",
+    COALESCE(w.revenue, (0)::numeric) AS "Выручка",
+    COALESCE(m.mileage_km, (0)::numeric) AS "Пробег всего",
+    COALESCE(cf.card_fuel_liters, (0)::numeric) AS "Заправка по карте, л.",
+    COALESCE(cf.card_fuel_amount, (0)::numeric) AS "Ст-ть топлива",
+    COALESCE(df.dut_refueled_liters, (0)::numeric) AS "Заправка ДУТ",
+    COALESCE(df.dut_consumed_liters, (0)::numeric) AS "Топливо потреблено ДУТ",
+    COALESCE(df.dut_tank_liters, (0)::numeric) AS "Топливо в баке ДУТ"
+   FROM ((((dates d
+     LEFT JOIN work w ON ((w.date = d.date)))
+     LEFT JOIN mileage m ON ((m.date = d.date)))
+     LEFT JOIN card_fuel cf ON ((cf.date = d.date)))
+     LEFT JOIN dut_fuel df ON ((df.date = d.date)))
+  ORDER BY d.date;
+
+
+--
 -- Name: v_skpdi_unmatched_description; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -1542,5 +1607,5 @@ ALTER TABLE ONLY public.dim_work_item
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 6S9SeRTJOtLWLmYY32rqXIH60orpQxinHX6Cy1MIGYZa7HIB47LLNbm1AlI7tft
+\unrestrict C7WWaPGkndSzWG6Dm3iikHgvPkJj4rbW3w4z6uXHFBODjMQUimznfadYQ9Vs8LX
 
